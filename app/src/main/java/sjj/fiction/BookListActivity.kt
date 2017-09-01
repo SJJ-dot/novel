@@ -22,7 +22,6 @@ class BookListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show()
         }
-        Manifest
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
@@ -82,4 +81,5 @@ class BookListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
     }
+
 }
