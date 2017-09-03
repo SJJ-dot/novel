@@ -2,6 +2,7 @@ package sjj.fiction.data.service
 
 import android.text.Html
 import io.reactivex.Observable
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -10,5 +11,5 @@ import retrofit2.http.Query
  */
 interface SoduService {
     @GET("/search/index.aspx")
-    fun search(@Query("key") value: String): Observable<List<String>>;
+    fun search(@Query("key",encoded = true) value: String): Observable<List<String>>;
 }
