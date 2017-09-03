@@ -10,6 +10,7 @@ import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_book_list.*
 import kotlinx.android.synthetic.main.app_bar_book_list.*
+import sjj.fiction.data.source.remote.SoduDataSource
 
 class BookListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -29,6 +30,7 @@ class BookListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
+        SoduDataSource().search("")
     }
 
     override fun onBackPressed() {
