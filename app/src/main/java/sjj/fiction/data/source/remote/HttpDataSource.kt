@@ -10,6 +10,8 @@ import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 import sjj.fiction.data.source.DataSourceInterface
 import java.lang.reflect.Type
 
@@ -22,7 +24,8 @@ abstract class HttpDataSource : DataSourceInterface {
         return Retrofit.Builder()
                 .client(client)
                 .baseUrl(baseUrl())
-                .addConverterFactory(GsonConverterFactory(Gson()))
+                .addConverterFactory(ScalarsConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(ObserveOnMainCallAdapterFactory())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build()

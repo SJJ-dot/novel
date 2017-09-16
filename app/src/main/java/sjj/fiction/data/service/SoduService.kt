@@ -11,5 +11,5 @@ import retrofit2.http.Query
  */
 interface SoduService {
     @GET("/search/index.aspx")
-    fun search(@Query("key",encoded = true) value: String): Observable<List<String>>;
+    fun search(@Query("key",encoded = true) value: String): Observable<String>;
 }
