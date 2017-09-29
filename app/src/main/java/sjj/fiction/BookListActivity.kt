@@ -10,6 +10,10 @@ import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_book_list.*
 import kotlinx.android.synthetic.main.app_bar_book_list.*
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.launch
+import sjj.alog.Log
 import sjj.fiction.data.source.remote.SoduDataSource
 import sjj.fiction.util.SourcesUtil
 
@@ -33,6 +37,14 @@ class BookListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         nav_view.setNavigationItemSelectedListener(this)
         SoduDataSource().search("")
         val value: Any = SourcesUtil[""]
+
+        launch(CommonPool) { // create new coroutine in common thread pool
+            delay(1000L) // non-blocking delay for 1 second (default time unit is ms)
+            Log.e("World! " +Thread.currentThread().name) // print after delay
+        }
+        Log.e("Hello, "+Thread.currentThread().name) // main function continues while coroutine is delayed
+        Thread.sleep(2000L) // block main thread for 2 seconds to keep JVM alive
+
     }
 
     override fun onBackPressed() {
