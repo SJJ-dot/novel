@@ -1,8 +1,16 @@
 <resources>
-    <string name="app_name">小说</string>
+    <string name="app_name">看小说</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+    <string name="about_app">说明：\n
+        本项目为研究学习用途，不做任何更新完善保证，不会作为商业应用推广，禁止他人擅自应用于商业行为。\n
+        应用内容均来自网络，如果您认为应用内容侵犯了您网站的权利请通过邮箱联系通知。\n
+        欢迎前往github提交建议。\n
+        邮箱：978622005@qq.com\n
+        项目地址：https://github.com/lTBeL/fiction
+    </string>
+    <string name="title_activity_main">MainActivity</string>
 </resources>
