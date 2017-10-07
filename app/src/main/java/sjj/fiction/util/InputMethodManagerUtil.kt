@@ -14,3 +14,8 @@ fun showSoftInput(forcedView:View) {
     val inputMethodManager = App.app.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     inputMethodManager.showSoftInput(forcedView, InputMethodManager.SHOW_FORCED)
 }
+
+fun hideSoftInput(v: View) {
+    val imm = App.app.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.hideSoftInputFromWindow(v.windowToken, 0)
+}

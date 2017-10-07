@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".about.AboutActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name=".main.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -23,10 +23,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ScrollingActivity"
-            android:label="@string/title_activity_scrolling"
-            android:theme="@style/AppTheme.NoActionBarColorPrimaryDark"/>
     </application>
 
 </manifest>
