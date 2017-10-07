@@ -16,6 +16,7 @@ import sjj.fiction.books.BookrackFragment
 import sjj.fiction.search.SearchFragment
 import sjj.fiction.util.hideSoftInput
 import sjj.fiction.util.showSoftInput
+import sjj.fiction.util.submit
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private val tag_books = "tag_books"
