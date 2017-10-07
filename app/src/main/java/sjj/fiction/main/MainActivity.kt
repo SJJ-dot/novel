@@ -6,6 +6,7 @@ import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
 import kotlinx.android.synthetic.main.activity_main.*
@@ -17,6 +18,10 @@ import sjj.fiction.search.SearchFragment
 import sjj.fiction.util.hideSoftInput
 import sjj.fiction.util.showSoftInput
 import sjj.fiction.util.submit
+import android.view.inputmethod.EditorInfo
+import android.widget.TextView
+
+
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private val tag_books = "tag_books"
@@ -34,6 +39,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction().add(R.id.contentMain, BookrackFragment(), tag_books).commit()
+        } else {
+            supportFragmentManager.beginTransaction()
+                    .hide(supportFragmentManager.findFragmentByTag(tag_search))
+                    .show(supportFragmentManager.findFragmentByTag(tag_books))
+                    .commit()
         }
 
         searchText.setOnClickListener {
@@ -62,6 +72,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     .show(supportFragmentManager.findFragmentByTag(tag_books))
                     .commit()
         }
+        searchInput.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                val byTag = supportFragmentManager.findFragmentByTag(tag_search) as? SearchFragment
+                if (byTag != null) {
+                    byTag.search(searchInput.text.toString())
+                }
+                return@OnEditorActionListener true
+            }
+            false
+        })
     }
 
     override fun onBackPressed() {
