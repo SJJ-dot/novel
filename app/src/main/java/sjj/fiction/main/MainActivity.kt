@@ -20,7 +20,7 @@ import sjj.fiction.util.showSoftInput
 import sjj.fiction.util.submit
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
-
+import sjj.alog.Log
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
