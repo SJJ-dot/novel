@@ -9,9 +9,11 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import sjj.fiction.about.AboutActivity
+import sjj.fiction.util.showSoftInput
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -20,16 +22,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-        }
-
-        val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-        drawer_layout.addDrawerListener(toggle)
-        toggle.syncState()
+//        val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+//        drawer_layout.addDrawerListener(toggle)
+//        toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
+
+        searchText.setOnClickListener {
+            it.visibility = View.GONE
+            searchInput.visibility = View.VISIBLE
+            searchInput.requestFocus()
+            showSoftInput(searchInput)
+        }
+
     }
 
     override fun onBackPressed() {

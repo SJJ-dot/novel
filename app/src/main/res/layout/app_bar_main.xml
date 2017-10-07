@@ -17,38 +17,61 @@
             android:layout_height="?attr/actionBarSize"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
-            <FrameLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/material_white"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/searchLogo"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/searchText"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
+                    android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
-                    android:text="看小说"
+                    android:layout_weight="1"
+                    android:text="@string/app_name"
+                    android:textColor="@color/material_textBlack_secondaryText"
                     android:textSize="20sp" />
+
+                <EditText
+                    android:id="@+id/searchInput"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="8dp"
+                    android:imeOptions="actionSearch"
+                    android:layout_marginRight="8dp"
+                    android:layout_weight="1"
+                    android:background="@color/material_white"
+                    android:gravity="center_vertical"
+                    android:hint="@string/app_name"
+                    android:singleLine="true"
+                    android:textColor="@color/material_black"
+                    android:textColorHint="@color/material_textBlack_dividers"
+                    android:textSize="20sp"
+                    android:visibility="gone" />
 
                 <ImageView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="357dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginEnd="16dp"
                     android:layout_marginRight="16dp"
-                    android:layout_gravity="center_vertical|right"
                     android:src="@drawable/ic_menu_camera" />
-            </FrameLayout>
+            </LinearLayout>
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_main" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+    <FrameLayout
+        android:id="@+id/contentMain"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
 </android.support.design.widget.CoordinatorLayout>
