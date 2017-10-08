@@ -7,12 +7,12 @@ import sjj.fiction.App
  */
 fun dp2Px(value: Int): Int {
     val scale = App.app.resources.displayMetrics.density
-    return Math.round(value * scale).toInt()
+    return Math.round(value * scale)
 }
 
 fun sp2px(value: Int): Int {
     val fontScale = App.app.resources.displayMetrics.scaledDensity
-    return Math.round(value * fontScale).toInt()
+    return Math.round(value * fontScale)
 }
 
 fun Int.toDpx() = dp2Px(this)

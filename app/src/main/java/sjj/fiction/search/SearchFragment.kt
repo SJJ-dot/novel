@@ -18,11 +18,10 @@ import sjj.fiction.BaseFragment
 import sjj.fiction.R
 import sjj.fiction.data.Repository.SoduDataRepository
 import sjj.fiction.model.Book
+import sjj.fiction.model.BookCover
 import sjj.fiction.model.SearchResultBook
-import sjj.fiction.util.DATA_REPOSITORY_SODU
-import sjj.fiction.util.DataRepository
-import sjj.fiction.util.textView
-import sjj.fiction.util.toDpx
+import sjj.fiction.util.*
+import java.lang.reflect.Type
 
 /**
  * Created by SJJ on 2017/10/7.
@@ -30,6 +29,7 @@ import sjj.fiction.util.toDpx
 class SearchFragment : BaseFragment(), SearchContract.view {
     private val presenter = SearchPresenter(this)
     private val searchResultBookAdapter by lazy { SearchResultBookAdapter() }
+    private val soduDataRepository = DataRepository.get<SoduDataRepository>(DATA_REPOSITORY_SODU)
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater?.inflate(R.layout.fragment_search, container, false)
     }
@@ -50,9 +50,8 @@ class SearchFragment : BaseFragment(), SearchContract.view {
     }
 
     fun search(text: String) {
-        val data: SoduDataRepository = DataRepository[DATA_REPOSITORY_SODU]
         val dialog = indeterminateProgressDialog("请稍候")
-        data.search(if (text.isNotEmpty()) text else "极道天魔").subscribe({
+        soduDataRepository.search(if (text.isNotEmpty()) text else "极道天魔").subscribe({
             dialog.dismiss()
             showBookList(it)
         }, {
@@ -83,6 +82,7 @@ class SearchFragment : BaseFragment(), SearchContract.view {
             return object : RecyclerView.ViewHolder(with(parent!!.context) {
                 textView {
                     setPadding(16.toDpx(), 5.toDpx(), 16.toDpx(), 5.toDpx())
+                    textSize = 16f
                 }
             }) {}
         }
@@ -92,6 +92,8 @@ class SearchFragment : BaseFragment(), SearchContract.view {
             textView.text = data[position].name
             textView.setOnClickListener {
                 Log.e(data[position])
+                val sodu = DataRepository.get<SoduDataRepository>(DATA_REPOSITORY_SODU)
+                sodu.loadBook(data[position])
             }
         }
     }
