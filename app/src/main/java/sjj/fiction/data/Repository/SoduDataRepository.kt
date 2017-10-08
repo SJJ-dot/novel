@@ -1,13 +1,16 @@
 package sjj.fiction.data.Repository
 
-import sjj.fiction.data.source.DataSourceInterface
+import io.reactivex.Observable
+import sjj.fiction.data.DataRepositoryInterface
+import sjj.fiction.data.DataSourceInterface
+import sjj.fiction.model.SearchResultBook
 
 /**
  * Created by SJJ on 2017/9/2.
  */
-interface SoduDataRepository :DataRepositoryInterface{
-    fun search(search: String): String;
+interface SoduDataRepository : DataRepositoryInterface {
+    fun search(search: String): Observable<SearchResultBook>
     interface Source : DataSourceInterface {
-        fun search(search: String): String;
+        fun search(search: String): Observable<SearchResultBook>
     }
 }

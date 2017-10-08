@@ -1,6 +1,5 @@
 package sjj.fiction.data.source.remote
 
-import com.google.gson.Gson
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -12,8 +11,9 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
-import sjj.fiction.data.source.DataSourceInterface
+import sjj.fiction.data.DataSourceInterface
 import java.lang.reflect.Type
+import java.util.concurrent.TimeUnit
 
 /**
  * Created by SJJ on 2017/9/3.
@@ -63,4 +63,9 @@ abstract class HttpDataSource : DataSourceInterface {
     }
 }
 
-private val client = OkHttpClient.Builder().addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).build()
+private val client = OkHttpClient.Builder()
+        .connectTimeout(10, TimeUnit.SECONDS)
+        .writeTimeout(10, TimeUnit.SECONDS)
+        .readTimeout(10, TimeUnit.SECONDS)
+        .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+        .build()
