@@ -10,5 +10,5 @@ import sjj.fiction.model.SearchResultBook
  */
 class SoduDataRepositoryImpl :SoduDataRepository{
     private val source:SoduDataRepository.Source = SoduDataSource()
-    override fun search(search: String): Observable<SearchResultBook> = source.search(search)
+    override fun search(search: String): Observable<List<SearchResultBook>> = source.search(search)
 }

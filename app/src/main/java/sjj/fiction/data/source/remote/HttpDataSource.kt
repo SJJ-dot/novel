@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
  * Created by SJJ on 2017/9/3.
  */
 abstract class HttpDataSource : DataSourceInterface {
-    protected fun baseUrl() = "http://www.soduso.com"
+    abstract fun baseUrl(): String
     private fun retrofit(): Retrofit {
         return Retrofit.Builder()
                 .client(client)

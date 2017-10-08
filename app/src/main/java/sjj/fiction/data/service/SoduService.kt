@@ -10,6 +10,6 @@ import retrofit2.http.Query
  * Created by SJJ on 2017/9/3.
  */
 interface SoduService {
-    @GET("/search/index.aspx")
-    fun search(@Query("key",encoded = true) value: String): Observable<String>;
+    @GET("/result.html")
+    fun search(@Query("searchstr") value: String): Observable<String>;
 }

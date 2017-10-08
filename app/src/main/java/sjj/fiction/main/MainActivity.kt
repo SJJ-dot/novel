@@ -15,12 +15,11 @@ import sjj.fiction.R
 import sjj.fiction.about.AboutActivity
 import sjj.fiction.books.BookrackFragment
 import sjj.fiction.search.SearchFragment
-import sjj.fiction.util.hideSoftInput
-import sjj.fiction.util.showSoftInput
-import sjj.fiction.util.submit
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import sjj.alog.Log
+import sjj.fiction.data.Repository.SoduDataRepository
+import sjj.fiction.util.*
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
