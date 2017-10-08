@@ -11,6 +11,8 @@ import android.widget.TextView
 import kotlinx.android.synthetic.main.fragment_search.*
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.support.v4.indeterminateProgressDialog
+import org.jetbrains.anko.support.v4.progressDialog
 import sjj.alog.Log
 import sjj.fiction.BaseFragment
 import sjj.fiction.R
@@ -49,7 +51,14 @@ class SearchFragment : BaseFragment(), SearchContract.view {
 
     fun search(text: String) {
         val data: SoduDataRepository = DataRepository[DATA_REPOSITORY_SODU]
-        data.search(if (text.isNotEmpty()) text else "极道天魔").subscribe({ showBookList(it) }, { Log.e("error", it) })
+        val dialog = indeterminateProgressDialog("请稍候")
+        data.search(if (text.isNotEmpty()) text else "极道天魔").subscribe({
+            dialog.dismiss()
+            showBookList(it)
+        }, {
+            dialog.dismiss()
+            Log.e("error", it)
+        })
     }
 
     override fun setPresenter(presenter: SearchContract.presenter) {
