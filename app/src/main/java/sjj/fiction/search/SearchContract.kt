@@ -4,6 +4,7 @@ import io.reactivex.Observable
 import sjj.fiction.BasePresenter
 import sjj.fiction.BaseView
 import sjj.fiction.model.Book
+import sjj.fiction.model.SearchResultBook
 import sjj.fiction.model.Url
 
 /**
@@ -11,13 +12,13 @@ import sjj.fiction.model.Url
  */
 interface SearchContract {
     interface presenter : BasePresenter {
-        fun search(text: String): Observable<String>
-        fun onSelect(book: Book)
+        fun search(text: String): Observable<List<SearchResultBook>>
+        fun onSelect(book: SearchResultBook)
         fun onSelect(url: Url)
     }
 
     interface view : BaseView<presenter> {
-        fun showBookList(book: List<Book>)
+        fun showBookList(book: List<SearchResultBook>)
         fun showBookUrls(book: Book)
     }
 }

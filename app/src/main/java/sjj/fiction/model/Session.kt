@@ -2,6 +2,7 @@ package sjj.fiction.model
 
 import java.util.HashMap
 
+@Suppress("UNCHECKED_CAST")
 /**
  * Created by sjj on 2017/8/2.
  */

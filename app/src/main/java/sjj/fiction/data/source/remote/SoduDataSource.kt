@@ -19,7 +19,7 @@ class SoduDataSource : HttpDataSource(), SoduDataRepository.Source {
     private val service = create(SoduService::class.java)
 
     override fun search(search: String): Observable<List<SearchResultBook>> {
-        return service.search("哈利波特")
+        return service.search(search)
                 .map {
                     val elementsByClass = Jsoup.parse(it).body().getElementsByClass("main-html")
                     val results = List(elementsByClass.size) {
