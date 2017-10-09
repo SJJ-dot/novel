@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.internal.disposables.DisposableContainer
 import kotlinx.android.synthetic.main.fragment_search.*
 import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.sdk25.coroutines.onClick
@@ -30,6 +32,7 @@ class SearchFragment : BaseFragment(), SearchContract.view {
     private val presenter = SearchPresenter(this)
     private val searchResultBookAdapter by lazy { SearchResultBookAdapter() }
     private val soduDataRepository = DataRepository.get<SoduDataRepository>(DATA_REPOSITORY_SODU)
+    private var compDisposable: CompositeDisposable = CompositeDisposable()
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater?.inflate(R.layout.fragment_search, container, false)
     }
@@ -47,17 +50,19 @@ class SearchFragment : BaseFragment(), SearchContract.view {
     override fun onStop() {
         super.onStop()
         presenter.stop()
+        compDisposable.dispose()
+        compDisposable = CompositeDisposable()
     }
 
     fun search(text: String) {
         val dialog = indeterminateProgressDialog("请稍候")
-        soduDataRepository.search(if (text.isNotEmpty()) text else "极道天魔").subscribe({
+        compDisposable.add(soduDataRepository.search(if (text.isNotEmpty()) text else "极道天魔").subscribe({
             dialog.dismiss()
             showBookList(it)
         }, {
             dialog.dismiss()
             Log.e("error", it)
-        })
+        }))
     }
 
     override fun setPresenter(presenter: SearchContract.presenter) {
@@ -75,7 +80,7 @@ class SearchFragment : BaseFragment(), SearchContract.view {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    private class SearchResultBookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private inner class SearchResultBookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         var data = listOf<SearchResultBook>()
         override fun getItemCount(): Int = data.size
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder {
@@ -92,8 +97,7 @@ class SearchFragment : BaseFragment(), SearchContract.view {
             textView.text = data[position].name
             textView.setOnClickListener {
                 Log.e(data[position])
-                val sodu = DataRepository.get<SoduDataRepository>(DATA_REPOSITORY_SODU)
-                sodu.loadBook(data[position])
+                compDisposable.add(presenter.onSelect(data[position]).subscribe({ Log.e(it) }, { Log.e("error", it) }))
             }
         }
     }

@@ -14,3 +14,5 @@ fun <T> def(supplier: () -> T): io.reactivex.Observable<T> {
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
 }
+
+fun <T> errorObservable(message: String) = def<T> { throw Exception(message) }

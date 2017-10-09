@@ -11,9 +11,9 @@ import sjj.fiction.model.SearchResultBook
  */
 interface SoduDataRepository : DataRepositoryInterface {
     fun search(search: String): Observable<List<SearchResultBook>>
-    fun loadBook(searchResultBook: SearchResultBook): Observable<Book>
+    fun loadBookCoverAndOrigin(searchResultBook: SearchResultBook): Observable<Book>
     interface Source : DataSourceInterface {
         fun search(search: String): Observable<List<SearchResultBook>>
-
+        fun loadBookCoverAndOrigin(searchResultBook: SearchResultBook): Observable<Book>
     }
 }

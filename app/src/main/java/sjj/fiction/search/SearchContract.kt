@@ -13,7 +13,7 @@ import sjj.fiction.model.Url
 interface SearchContract {
     interface presenter : BasePresenter {
         fun search(text: String): Observable<List<SearchResultBook>>
-        fun onSelect(book: SearchResultBook)
+        fun onSelect(book: SearchResultBook):Observable<Book>
         fun onSelect(url: Url)
     }
 
