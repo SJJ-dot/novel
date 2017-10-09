@@ -4,15 +4,19 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
+import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.CallAdapter
+import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
+import sjj.alog.Log
 import sjj.fiction.data.source.DataSourceInterface
 import java.lang.reflect.Type
+import java.nio.charset.Charset
 import java.util.concurrent.TimeUnit
 
 /**
@@ -24,6 +28,7 @@ abstract class HttpDataSource : DataSourceInterface {
         return Retrofit.Builder()
                 .client(client)
                 .baseUrl(baseUrl())
+                .addConverterFactory(CharsetStringConverterFactory())
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(ObserveOnMainCallAdapterFactory())
@@ -59,6 +64,19 @@ abstract class HttpDataSource : DataSourceInterface {
                     return delegate.responseType()
                 }
             }
+        }
+    }
+
+    private class CharsetStringConverterFactory : Converter.Factory() {
+        override fun responseBodyConverter(type: Type?, annotations: Array<out Annotation>?, retrofit: Retrofit?): Converter<ResponseBody, *>? {
+            val find = annotations?.find { it is CHARSET }
+            if (type == String::class.java && find != null) {
+                return Converter<ResponseBody, String> {
+                    find as CHARSET
+                    it.bytes().toString(Charset.forName(find.charset))
+                }
+            }
+            return null
         }
     }
 }
