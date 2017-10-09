@@ -6,20 +6,18 @@ import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
-import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import sjj.fiction.R
 import sjj.fiction.about.AboutActivity
 import sjj.fiction.books.BookrackFragment
 import sjj.fiction.search.SearchFragment
-import android.view.inputmethod.EditorInfo
-import android.widget.TextView
-import sjj.alog.Log
-import sjj.fiction.data.Repository.SoduDataRepository
-import sjj.fiction.util.*
+import sjj.fiction.util.hideSoftInput
+import sjj.fiction.util.showSoftInput
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {

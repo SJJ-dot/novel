@@ -1,4 +1,4 @@
-package sjj.fiction.data
+package sjj.fiction.data.source
 
 /**
  * Created by SJJ on 2017/9/1.

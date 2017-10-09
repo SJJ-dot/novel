@@ -1,13 +1,12 @@
 package sjj.fiction.search
 
 import io.reactivex.Observable
-import sjj.fiction.data.Repository.SoduDataRepository
+import sjj.fiction.data.Repository.FictionDataRepository
 import sjj.fiction.model.Book
 import sjj.fiction.model.SearchResultBook
 import sjj.fiction.model.Url
-import sjj.fiction.util.DATA_REPOSITORY_SODU
+import sjj.fiction.util.DATA_REPOSITORY_FICTION
 import sjj.fiction.util.DataRepository
-import sjj.fiction.util.def
 import sjj.fiction.util.errorObservable
 
 /**
@@ -16,9 +15,9 @@ import sjj.fiction.util.errorObservable
 class SearchPresenter(private val view: SearchContract.view) : SearchContract.presenter {
 
 
-    private var data: SoduDataRepository? = null
+    private var data: FictionDataRepository? = null
     override fun start() {
-        data = DataRepository[DATA_REPOSITORY_SODU]
+        data = DataRepository[DATA_REPOSITORY_FICTION]
     }
 
     override fun stop() {

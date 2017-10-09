@@ -1,6 +1,5 @@
 package sjj.fiction.search
 
-import android.content.Context
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -9,21 +8,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.internal.disposables.DisposableContainer
 import kotlinx.android.synthetic.main.fragment_search.*
-import org.jetbrains.anko.coroutines.experimental.asReference
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.support.v4.indeterminateProgressDialog
-import org.jetbrains.anko.support.v4.progressDialog
 import sjj.alog.Log
 import sjj.fiction.BaseFragment
 import sjj.fiction.R
-import sjj.fiction.data.Repository.SoduDataRepository
+import sjj.fiction.data.Repository.FictionDataRepository
 import sjj.fiction.model.Book
-import sjj.fiction.model.BookCover
 import sjj.fiction.model.SearchResultBook
-import sjj.fiction.util.*
-import java.lang.reflect.Type
+import sjj.fiction.util.DATA_REPOSITORY_FICTION
+import sjj.fiction.util.DataRepository
+import sjj.fiction.util.textView
+import sjj.fiction.util.toDpx
 
 /**
  * Created by SJJ on 2017/10/7.
@@ -31,7 +27,6 @@ import java.lang.reflect.Type
 class SearchFragment : BaseFragment(), SearchContract.view {
     private val presenter = SearchPresenter(this)
     private val searchResultBookAdapter by lazy { SearchResultBookAdapter() }
-    private val soduDataRepository = DataRepository.get<SoduDataRepository>(DATA_REPOSITORY_SODU)
     private var compDisposable: CompositeDisposable = CompositeDisposable()
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater?.inflate(R.layout.fragment_search, container, false)
@@ -56,7 +51,7 @@ class SearchFragment : BaseFragment(), SearchContract.view {
 
     fun search(text: String) {
         val dialog = indeterminateProgressDialog("请稍候")
-        compDisposable.add(soduDataRepository.search(if (text.isNotEmpty()) text else "极道天魔").subscribe({
+        compDisposable.add(presenter.search(if (text.isNotEmpty()) text else "极道天魔").subscribe({
             dialog.dismiss()
             showBookList(it)
         }, {

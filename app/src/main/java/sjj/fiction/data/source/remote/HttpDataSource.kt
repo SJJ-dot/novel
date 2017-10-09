@@ -11,7 +11,7 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
-import sjj.fiction.data.DataSourceInterface
+import sjj.fiction.data.source.DataSourceInterface
 import java.lang.reflect.Type
 import java.util.concurrent.TimeUnit
 
