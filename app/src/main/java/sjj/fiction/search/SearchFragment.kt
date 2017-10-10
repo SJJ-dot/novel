@@ -9,7 +9,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_search.*
+import org.jetbrains.anko.find
+import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.support.v4.indeterminateProgressDialog
+import org.jetbrains.anko.verticalLayout
 import sjj.alog.Log
 import sjj.fiction.BaseFragment
 import sjj.fiction.R
@@ -80,17 +83,25 @@ class SearchFragment : BaseFragment(), SearchContract.view {
         override fun getItemCount(): Int = data.size
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder {
             return object : RecyclerView.ViewHolder(with(parent!!.context) {
-                textView {
-                    setPadding(16.toDpx(), 5.toDpx(), 16.toDpx(), 5.toDpx())
-                    textSize = 16f
+                linearLayout {
+                    textView {
+                        id = R.id.searchItemTitle
+                        setPadding(16.toDpx(), 5.toDpx(), 16.toDpx(), 5.toDpx())
+                        textSize = 16f
+                    }
+                    textView {
+                        id = R.id.searchItemAuthor
+                        setPadding(16.toDpx(), 5.toDpx(), 16.toDpx(), 5.toDpx())
+                        textSize = 16f
+                    }
                 }
             }) {}
         }
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-            val textView = holder.itemView as TextView
-            textView.text = data[position].name
-            textView.setOnClickListener {
+            holder.itemView.find<TextView>(R.id.searchItemTitle).text = data[position].name
+            holder.itemView.find<TextView>(R.id.searchItemAuthor).text = data[position].author
+            holder.itemView.setOnClickListener {
                 Log.e(data[position])
                 compDisposable.add(presenter.onSelect(data[position]).subscribe({ Log.e(it) }, { Log.e("error", it) }))
             }

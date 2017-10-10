@@ -26,7 +26,7 @@ class SearchPresenter(private val view: SearchContract.view) : SearchContract.pr
 
     override fun search(text: String): Observable<List<SearchResultBook>> = data?.search(text) ?: errorObservable<List<SearchResultBook>>("this presenter not start")
 
-    override fun onSelect(book: SearchResultBook):Observable<Book> = data?.loadBookCoverAndOrigin(book)?: errorObservable<Book>("this presenter not start")
+    override fun onSelect(book: SearchResultBook):Observable<Book> = data?.loadBookDetailsAndChapter(book)?: errorObservable<Book>("this presenter not start")
 
     override fun onSelect(url: Url) {
 

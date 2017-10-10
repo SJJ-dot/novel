@@ -11,5 +11,9 @@ interface HttpInterface {
     @FormUrlEncoded
     @CHARSET("gbk")
     @POST("modules/article/search.php")
-    fun search(@Field("searchkey",encoded = true) value: String): Observable<String>
+    fun search(@Field("searchkey", encoded = true) value: String): Observable<String>
+
+    @GET
+    @CHARSET("gbk")
+    fun loadBookDetailsAndChapter(@Url url: String): Observable<String>
 }

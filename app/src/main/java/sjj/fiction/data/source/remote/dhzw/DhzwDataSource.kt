@@ -20,19 +20,21 @@ class DhzwDataSource : HttpDataSource(), FictionDataRepository.Source {
     private val service = create(HttpInterface::class.java)
 
     override fun search(search: String): Observable<List<SearchResultBook>> {
-        return service.search(URLEncoder.encode(search,"gbk"))
+        return service.search(URLEncoder.encode(search, "gbk"))
                 .map {
-                    val elementsByClass = Jsoup.parse(it).body().getElementsByClass("main-html")
+                    val elementsByClass = Jsoup.parse(it).body().getElementById("newscontent").getElementsByTag("ul")[0].getElementsByTag("li")
                     val results = List(elementsByClass.size) {
-                        val element = elementsByClass[it]
-                        val ahref = element.select("a[href]")[0]
-                        SearchResultBook(ahref.text(), Url(ahref.attr("href")))
+                        val ahref = elementsByClass[it].child(1).child(0)
+                        SearchResultBook(ahref.text(), Url(ahref.attr("href")), elementsByClass[it].child(3).child(0).text())
                     }
                     results
                 }
     }
 
-    override fun loadBookCoverAndOrigin(searchResultBook: SearchResultBook): Observable<Book> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun loadBookDetailsAndChapter(searchResultBook: SearchResultBook): Observable<Book> {
+        return service.loadBookDetailsAndChapter(searchResultBook.url.url).map {
+            Log.e(it)
+            Book(searchResultBook.name, listOf())
+        }
     }
 }

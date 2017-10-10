@@ -12,5 +12,5 @@ import sjj.fiction.model.SearchResultBook
 class FictionDataRepositoryImpl : FictionDataRepository {
     private val source: FictionDataRepository.Source = DhzwDataSource()
     override fun search(search: String): Observable<List<SearchResultBook>> = source.search(search)
-    override fun loadBookCoverAndOrigin(searchResultBook: SearchResultBook): Observable<Book> = source.loadBookCoverAndOrigin(searchResultBook)
+    override fun loadBookDetailsAndChapter(searchResultBook: SearchResultBook): Observable<Book> = source.loadBookDetailsAndChapter(searchResultBook)
 }

@@ -60,14 +60,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         searchCancel.setOnClickListener {
             if (searchInput.visibility == View.GONE) return@setOnClickListener
-            hideSoftInput(searchInput)
-            searchInput.visibility = View.GONE
-            searchText.visibility = View.VISIBLE
-            toggle.isDrawerIndicatorEnabled = true
-            supportFragmentManager.beginTransaction()
-                    .hide(supportFragmentManager.findFragmentByTag(tag_search))
-                    .show(supportFragmentManager.findFragmentByTag(tag_books))
-                    .commit()
+            if (searchInput.text.isNotEmpty()) {
+                searchInput.setText("")
+            } else {
+                hideSoftInput(searchInput)
+                searchInput.visibility = View.GONE
+                searchText.visibility = View.VISIBLE
+                toggle.isDrawerIndicatorEnabled = true
+                supportFragmentManager.beginTransaction()
+                        .hide(supportFragmentManager.findFragmentByTag(tag_search))
+                        .show(supportFragmentManager.findFragmentByTag(tag_books))
+                        .commit()
+            }
         }
         searchInput.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {

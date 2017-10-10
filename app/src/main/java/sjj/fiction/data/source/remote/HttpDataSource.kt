@@ -31,6 +31,7 @@ abstract class HttpDataSource : DataSourceInterface {
                 .client(client)
                 .baseUrl(baseUrl())
                 .addConverterFactory(CharsetStringConverterFactory())
+                .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(ObserveOnMainCallAdapterFactory())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
