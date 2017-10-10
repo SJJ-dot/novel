@@ -2,4 +2,5 @@
 <resources>
     <item name="searchItemTitle" type="id"/>
     <item name="searchItemAuthor" type="id"/>
+    <item name="detailItemChapter" type="id"/>
 </resources>

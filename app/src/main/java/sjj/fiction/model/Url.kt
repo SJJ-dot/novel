@@ -1,12 +1,13 @@
 package sjj.fiction.model
 
+import java.io.Serializable
 import java.util.regex.Pattern
 import kotlin.properties.Delegates
 
 /**
  * Created by sjj on 2017/9/22.
  */
-data class Url(val url: String) {
+data class Url(val url: String) :Serializable{
     private val error = "error"
     val domain by lazy {
         val pattern = "(http(s)?://[a-zA-z\\d.]++)/?"

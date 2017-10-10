@@ -6,6 +6,7 @@ import sjj.alog.Log
 import sjj.fiction.data.Repository.FictionDataRepository
 import sjj.fiction.data.source.remote.HttpDataSource
 import sjj.fiction.model.Book
+import sjj.fiction.model.Chapter
 import sjj.fiction.model.SearchResultBook
 import sjj.fiction.model.Url
 import java.net.URLEncoder
@@ -34,7 +35,19 @@ class DhzwDataSource : HttpDataSource(), FictionDataRepository.Source {
     override fun loadBookDetailsAndChapter(searchResultBook: SearchResultBook): Observable<Book> {
         return service.loadBookDetailsAndChapter(searchResultBook.url.url).map {
             Log.e(it)
-            Book(searchResultBook.name, listOf())
+            val parse = Jsoup.parse(it,searchResultBook.url.url).body()
+            val fmsrc = parse.getElementById("fmimg").child(0).attr("src")
+            val info = parse.getElementById("info")
+            val infoTitle = info.child(0)
+            val name = infoTitle.child(0).text()
+            val author = infoTitle.child(1).text().split("：")[1]
+            val intro = info.child(1).text()
+            val latest = info.child(2).child(0).child(1)
+            val latestUrl = latest.attr("abs:href")
+            val latestName = latest.text()
+            val select = parse.getElementById("list").select("a[href]")
+            val list = select.map { Chapter(it.text(), Url(it.attr("abs:href"))) }
+            Book(name,author,Url(fmsrc),intro, Chapter(latestName,Url(latestUrl)),list)
         }
     }
 }

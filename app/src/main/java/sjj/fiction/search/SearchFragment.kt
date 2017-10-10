@@ -1,5 +1,6 @@
 package sjj.fiction.search
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -17,6 +18,7 @@ import sjj.alog.Log
 import sjj.fiction.BaseFragment
 import sjj.fiction.R
 import sjj.fiction.data.Repository.FictionDataRepository
+import sjj.fiction.details.DetailsActivity
 import sjj.fiction.model.Book
 import sjj.fiction.model.SearchResultBook
 import sjj.fiction.util.DATA_REPOSITORY_FICTION
@@ -101,9 +103,17 @@ class SearchFragment : BaseFragment(), SearchContract.view {
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             holder.itemView.find<TextView>(R.id.searchItemTitle).text = data[position].name
             holder.itemView.find<TextView>(R.id.searchItemAuthor).text = data[position].author
-            holder.itemView.setOnClickListener {
-                Log.e(data[position])
-                compDisposable.add(presenter.onSelect(data[position]).subscribe({ Log.e(it) }, { Log.e("error", it) }))
+            holder.itemView.setOnClickListener { v ->
+                val dialog = indeterminateProgressDialog("请稍候")
+                compDisposable.add(presenter.onSelect(data[position]).subscribe({
+                    dialog.dismiss()
+                    val intent = Intent(v.context, DetailsActivity::class.java);
+                    intent.putExtra(DetailsActivity.data, it)
+                    startActivity(intent)
+                }, {
+                    dialog.dismiss()
+                    Log.e("error", it)
+                }))
             }
         }
     }
