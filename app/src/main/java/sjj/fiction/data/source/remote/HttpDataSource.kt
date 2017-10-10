@@ -1,5 +1,7 @@
 package sjj.fiction.data.source.remote
 
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -29,7 +31,6 @@ abstract class HttpDataSource : DataSourceInterface {
                 .client(client)
                 .baseUrl(baseUrl())
                 .addConverterFactory(CharsetStringConverterFactory())
-                .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(ObserveOnMainCallAdapterFactory())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
@@ -38,6 +39,28 @@ abstract class HttpDataSource : DataSourceInterface {
 
     protected fun <T> create(service: Class<T>): T {
         return retrofit().create(service)
+    }
+
+    private class CharsetStringConverterFactory : Converter.Factory() {
+        private val gson = Gson()
+        override fun responseBodyConverter(type: Type?, annotations: Array<out Annotation>?, retrofit: Retrofit?): Converter<ResponseBody, *>? {
+            val charset = annotations?.find { it is CHARSET } as? CHARSET
+            if (charset != null)
+                if (type == String::class.java) {
+                    return Converter<ResponseBody, String> {
+                        responseCharset(it,charset)
+                    }
+                } else {
+                    val adapter = gson.getAdapter(TypeToken.get(type))
+                    return Converter<ResponseBody,Any> {
+                        adapter.fromJson(responseCharset(it,charset))
+                    }
+                }
+            return null
+        }
+
+        fun responseCharset(responseBody: ResponseBody, charset: CHARSET) = responseBody.bytes().toString(kotlin.text.charset(charset.charset))
+
     }
 
     private class ObserveOnMainCallAdapterFactory : CallAdapter.Factory() {
@@ -64,19 +87,6 @@ abstract class HttpDataSource : DataSourceInterface {
                     return delegate.responseType()
                 }
             }
-        }
-    }
-
-    private class CharsetStringConverterFactory : Converter.Factory() {
-        override fun responseBodyConverter(type: Type?, annotations: Array<out Annotation>?, retrofit: Retrofit?): Converter<ResponseBody, *>? {
-            val find = annotations?.find { it is CHARSET }
-            if (type == String::class.java && find != null) {
-                return Converter<ResponseBody, String> {
-                    find as CHARSET
-                    it.bytes().toString(Charset.forName(find.charset))
-                }
-            }
-            return null
         }
     }
 }

@@ -31,6 +31,7 @@ class DhzwDataSource : HttpDataSource(), FictionDataRepository.Source {
                     results
                 }
     }
+
     override fun loadBookCoverAndOrigin(searchResultBook: SearchResultBook): Observable<Book> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
