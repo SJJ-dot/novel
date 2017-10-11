@@ -15,7 +15,6 @@ import java.net.URLEncoder
  * Created by SJJ on 2017/9/3.
  */
 class DhzwDataSource : HttpDataSource(), FictionDataRepository.Source {
-
     override fun baseUrl(): String = "http://www.dhzw.org"
 
     private val service = create(HttpInterface::class.java)
@@ -34,8 +33,7 @@ class DhzwDataSource : HttpDataSource(), FictionDataRepository.Source {
 
     override fun loadBookDetailsAndChapter(searchResultBook: SearchResultBook): Observable<Book> {
         return service.loadBookDetailsAndChapter(searchResultBook.url.url).map {
-            Log.e(it)
-            val parse = Jsoup.parse(it,searchResultBook.url.url).body()
+            val parse = Jsoup.parse(it, searchResultBook.url.url).body()
             val fmsrc = parse.getElementById("fmimg").child(0).attr("src")
             val info = parse.getElementById("info")
             val infoTitle = info.child(0)
@@ -47,7 +45,15 @@ class DhzwDataSource : HttpDataSource(), FictionDataRepository.Source {
             val latestName = latest.text()
             val select = parse.getElementById("list").select("a[href]")
             val list = select.map { Chapter(it.text(), Url(it.attr("abs:href"))) }
-            Book(name,author,Url(fmsrc),intro, Chapter(latestName,Url(latestUrl)),list)
+            Book(name, author, Url(fmsrc), intro, Chapter(latestName, Url(latestUrl)), list)
+        }
+    }
+
+    override fun loadBookChapter(chapter: Chapter): Observable<Chapter> {
+        return service.loadBookChapter(chapter.url.url).map {
+            val parse = Jsoup.parse(it).getElementById("BookText")
+            chapter.content = parse.html()
+            chapter
         }
     }
 }

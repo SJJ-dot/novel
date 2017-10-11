@@ -12,6 +12,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import sjj.fiction.BaseActivity
 import sjj.fiction.R
 import sjj.fiction.about.AboutActivity
 import sjj.fiction.books.BookrackFragment
@@ -20,7 +21,7 @@ import sjj.fiction.util.hideSoftInput
 import sjj.fiction.util.showSoftInput
 
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
     private val tag_books = "tag_books"
     private val tag_search = "tag_search"
     override fun onCreate(savedInstanceState: Bundle?) {

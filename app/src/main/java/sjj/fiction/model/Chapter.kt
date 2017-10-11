@@ -6,5 +6,5 @@ import java.io.Serializable
  * Created by SJJ on 2017/10/10.
  */
 data class Chapter(val chapterName: String, val url: Url) : Serializable {
-    val content: String? = null
+    var content: String? = null
 }

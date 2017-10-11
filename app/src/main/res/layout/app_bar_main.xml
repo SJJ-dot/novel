@@ -44,12 +44,12 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="8dp"
-                    android:imeOptions="actionSearch"
                     android:layout_marginRight="8dp"
                     android:layout_weight="1"
                     android:background="@color/material_white"
                     android:gravity="center_vertical"
                     android:hint="@string/app_name"
+                    android:imeOptions="actionSearch"
                     android:singleLine="true"
                     android:textColor="@color/material_black"
                     android:textColorHint="@color/material_textBlack_dividers"
@@ -61,12 +61,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_vertical|end"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginRight="16dp"
-                    android:textColor="@color/material_textBlack_text"
                     android:gravity="center"
-                    android:textSize="20sp"
-                    android:text="X" />
+                    android:paddingRight="16dp"
+                    android:paddingLeft="16dp"
+                    android:text="X"
+                    android:textColor="@color/material_textBlack_text"
+                    android:textSize="20sp" />
             </LinearLayout>
         </android.support.v7.widget.Toolbar>
 
@@ -76,6 +76,6 @@
         android:id="@+id/contentMain"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 </android.support.design.widget.CoordinatorLayout>

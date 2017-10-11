@@ -1,5 +1,6 @@
 package sjj.fiction.details
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -15,6 +16,7 @@ import sjj.fiction.BaseActivity
 import sjj.fiction.R
 import sjj.fiction.model.Book
 import sjj.fiction.model.Chapter
+import sjj.fiction.read.ReadActivity
 import sjj.fiction.util.cardView
 import sjj.fiction.util.textView
 import sjj.fiction.util.toDpx
@@ -36,14 +38,14 @@ class DetailsActivity : BaseActivity() {
         latestChapter.text = book.latestChapter.chapterName
         intro.text = book.intro
         chapterList.layoutManager = LinearLayoutManager(this)
-        chapterList.adapter = ChapterListAdapter(book.chapterList)
+        chapterList.adapter = ChapterListAdapter(book)
         chapterListButton.setOnClickListener {
             chapterList.visibility = if (chapterList.visibility == View.GONE) View.VISIBLE else View.GONE
         }
     }
 
-    private class ChapterListAdapter(chapterList: List<Chapter>) : RecyclerView.Adapter<ViewHolder>() {
-        val data = chapterList
+    private class ChapterListAdapter(val book: Book) : RecyclerView.Adapter<ViewHolder>() {
+        val data = book.chapterList
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             return object : ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_text_text, parent, false)) {}
         }
@@ -53,7 +55,10 @@ class DetailsActivity : BaseActivity() {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             holder.itemView.find<TextView>(R.id.text1).text = data[position].chapterName
             holder.itemView.setOnClickListener {
-                Log.e(data[position])
+                val intent = Intent(it.context, ReadActivity::class.java)
+                intent.putExtra(ReadActivity.DATA_BOOK, book)
+                intent.putExtra(ReadActivity.DATA_CHAPTER_INDEX, position)
+                it.context.startActivity(intent)
             }
         }
 

@@ -16,4 +16,8 @@ interface HttpInterface {
     @GET
     @CHARSET("gbk")
     fun loadBookDetailsAndChapter(@Url url: String): Observable<String>
+
+    @GET
+    @CHARSET("gbk")
+    fun loadBookChapter(@Url url: String): Observable<String>
 }
