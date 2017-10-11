@@ -53,7 +53,7 @@ class ReadActivity : AppCompatActivity() {
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val textView = holder.itemView as TextView
             val chapter = chapters[position / 2]
-            if (position / 2 % 2 == 0) {
+            if (position % 2 == 0) {
                 textView.text = chapter.chapterName
             } else if (chapter.content != null) {
                 textView.text = Html.fromHtml(chapter.content)
