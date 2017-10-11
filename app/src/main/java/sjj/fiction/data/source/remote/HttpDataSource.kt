@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit
  */
 abstract class HttpDataSource : DataSourceInterface {
     abstract fun baseUrl(): String
-    private fun retrofit(): Retrofit {
+    protected fun retrofit(): Retrofit {
         return Retrofit.Builder()
                 .client(client)
                 .baseUrl(baseUrl())
@@ -38,8 +38,8 @@ abstract class HttpDataSource : DataSourceInterface {
                 .build()
     }
 
-    protected fun <T> create(service: Class<T>): T {
-        return retrofit().create(service)
+    protected inline fun <reified T> create(): T {
+        return retrofit().create(T::class.java)
     }
 
     private class CharsetStringConverterFactory : Converter.Factory() {
@@ -49,12 +49,12 @@ abstract class HttpDataSource : DataSourceInterface {
             if (charset != null)
                 if (type == String::class.java) {
                     return Converter<ResponseBody, String> {
-                        responseCharset(it,charset)
+                        responseCharset(it, charset)
                     }
                 } else {
                     val adapter = gson.getAdapter(TypeToken.get(type))
-                    return Converter<ResponseBody,Any> {
-                        adapter.fromJson(responseCharset(it,charset))
+                    return Converter<ResponseBody, Any> {
+                        adapter.fromJson(responseCharset(it, charset))
                     }
                 }
             return null

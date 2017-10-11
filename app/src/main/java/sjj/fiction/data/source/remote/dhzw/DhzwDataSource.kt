@@ -17,7 +17,7 @@ import java.net.URLEncoder
 class DhzwDataSource : HttpDataSource(), FictionDataRepository.Source {
     override fun baseUrl(): String = "http://www.dhzw.org"
 
-    private val service = create(HttpInterface::class.java)
+    private val service = create<HttpInterface>()
 
     override fun search(search: String): Observable<List<SearchResultBook>> {
         return service.searchForGBK("modules/article/search.php", mapOf(Pair("searchkey", URLEncoder.encode(search, "gbk"))))
@@ -45,7 +45,7 @@ class DhzwDataSource : HttpDataSource(), FictionDataRepository.Source {
             val latestName = latest.text()
             val select = parse.getElementById("list").select("a[href]")
             val list = select.map { Chapter(it.text(), Url(it.attr("abs:href"))) }
-            val book = Book(name, author, Url(fmsrc), intro, Chapter(latestName, Url(latestUrl)), list)
+            val book = Book(name, author, intro, searchResultBook.url, Url(fmsrc), Chapter(latestName, Url(latestUrl)), list)
             book.originUrls.add(searchResultBook.url)
             book
         }
