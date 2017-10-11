@@ -72,6 +72,7 @@ class ReadActivity : BaseActivity() {
                         setPadding(16.toDpx(), 8.toDpx(), 16.toDpx(), 8.toDpx())
                         textSize = 18f
                     }
+                    minimumHeight = parent.height
                 }
             }) {}
         }
