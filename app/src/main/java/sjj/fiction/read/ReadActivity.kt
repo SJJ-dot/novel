@@ -14,6 +14,7 @@ import android.widget.TextView
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_read.*
 import org.jetbrains.anko.find
+import org.jetbrains.anko.verticalLayout
 import sjj.alog.Log
 import sjj.fiction.BaseActivity
 import sjj.fiction.R
@@ -36,14 +37,14 @@ class ReadActivity : BaseActivity() {
         val book = intent.getSerializableExtra(DATA_BOOK) as Book
         chapterContent.layoutManager = LinearLayoutManager(this)
         chapterContent.adapter = ChapterContentAdapter(book.chapterList)
-        chapterContent.scrollToPosition(intent.getIntExtra(DATA_CHAPTER_INDEX, 0) * 2 + 1)
+        chapterContent.scrollToPosition(intent.getIntExtra(DATA_CHAPTER_INDEX, 0))
         chapterList.layoutManager = LinearLayoutManager(this)
         chapterList.adapter = ChapterListAdapter(book)
         drawer_layout.addDrawerListener(object : DrawerLayout.SimpleDrawerListener() {
             override fun onDrawerOpened(drawerView: View?) {
                 val manager = chapterContent.layoutManager as LinearLayoutManager
                 val position = manager.findFirstVisibleItemPosition()
-                chapterList.scrollToPosition(position/2)
+                chapterList.scrollToPosition(position)
             }
 
         })
@@ -60,20 +61,26 @@ class ReadActivity : BaseActivity() {
         private var compDisposable: CompositeDisposable = CompositeDisposable()
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             return object : RecyclerView.ViewHolder(with(parent.context) {
-                textView {
-                    setPadding(16.toDpx(), 8.toDpx(), 16.toDpx(), 8.toDpx())
-                    textSize = 16f
+                verticalLayout {
+                    textView {
+                        id = R.id.readItemChapterContentTitle
+                        setPadding(16.toDpx(), 8.toDpx(), 16.toDpx(), 8.toDpx())
+                        textSize = 20f
+                    }
+                    textView {
+                        id = R.id.readItemChapterContent
+                        setPadding(16.toDpx(), 8.toDpx(), 16.toDpx(), 8.toDpx())
+                        textSize = 18f
+                    }
                 }
             }) {}
         }
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-            val textView = holder.itemView as TextView
-            val chapter = chapters[position / 2]
-            if (position % 2 == 0) {
-                textView.text = chapter.chapterName
-            } else if (chapter.content != null) {
-                textView.text = Html.fromHtml(chapter.content)
+            val chapter = chapters[position]
+            holder.itemView.findViewById<TextView>(R.id.readItemChapterContentTitle).text = chapter.chapterName
+            if (chapter.content != null) {
+                holder.itemView.findViewById<TextView>(R.id.readItemChapterContent).text = Html.fromHtml(chapter.content)
             } else {
                 compDisposable.add(fiction.loadBookChapter(chapter).subscribe({ notifyDataSetChanged() }, {
                     chapter.content = "章节加载失败：${it.message}"
@@ -82,7 +89,7 @@ class ReadActivity : BaseActivity() {
             }
         }
 
-        override fun getItemCount(): Int = chapters.size * 2
+        override fun getItemCount(): Int = chapters.size
         fun cancel() {
             compDisposable.dispose()
         }
@@ -99,7 +106,7 @@ class ReadActivity : BaseActivity() {
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             holder.itemView.find<TextView>(R.id.text1).text = data[position].chapterName
             holder.itemView.setOnClickListener {
-                chapterContent.scrollToPosition(position * 2)
+                chapterContent.scrollToPosition(position)
             }
         }
 
