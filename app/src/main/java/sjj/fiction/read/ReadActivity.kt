@@ -1,14 +1,18 @@
 package sjj.fiction.read
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Html
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_read.*
+import org.jetbrains.anko.find
+import sjj.fiction.BaseActivity
 import sjj.fiction.R
 import sjj.fiction.data.Repository.FictionDataRepository
 import sjj.fiction.data.Repository.impl.FictionDataRepositoryImpl
@@ -17,7 +21,7 @@ import sjj.fiction.model.Chapter
 import sjj.fiction.util.textView
 import sjj.fiction.util.toDpx
 
-class ReadActivity : AppCompatActivity() {
+class ReadActivity : BaseActivity() {
     companion object {
         val DATA_BOOK = "DATA_BOOK"
         val DATA_CHAPTER_INDEX = "DATA_CHAPTER_INDEX"
@@ -29,7 +33,9 @@ class ReadActivity : AppCompatActivity() {
         val book = intent.getSerializableExtra(DATA_BOOK) as Book
         chapterContent.layoutManager = LinearLayoutManager(this)
         chapterContent.adapter = ChapterContentAdapter(book.chapterList)
-        chapterContent.scrollToPosition(intent.getIntExtra(DATA_CHAPTER_INDEX, 0) * 2 - 1)
+        chapterContent.scrollToPosition(intent.getIntExtra(DATA_CHAPTER_INDEX, 0) * 2 + 1)
+        chapterList.layoutManager = LinearLayoutManager(this)
+        chapterList.adapter = ChapterListAdapter(book)
     }
 
     override fun onDestroy() {
@@ -38,7 +44,7 @@ class ReadActivity : AppCompatActivity() {
         adapter.cancel()
     }
 
-    private inner class ChapterContentAdapter(val chapters: List<Chapter>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private class ChapterContentAdapter(val chapters: List<Chapter>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private val fiction: FictionDataRepository = FictionDataRepositoryImpl()
         private var compDisposable: CompositeDisposable = CompositeDisposable()
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -71,4 +77,20 @@ class ReadActivity : AppCompatActivity() {
         }
     }
 
+    private inner class ChapterListAdapter(val book: Book) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+        val data = book.chapterList
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+            return object : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_text_text, parent, false)) {}
+        }
+
+        override fun getItemCount() = data.size
+
+        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+            holder.itemView.find<TextView>(R.id.text1).text = data[position].chapterName
+            holder.itemView.setOnClickListener {
+                chapterContent.scrollToPosition(position * 2)
+            }
+        }
+
+    }
 }
