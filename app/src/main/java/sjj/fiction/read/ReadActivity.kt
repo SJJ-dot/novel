@@ -41,7 +41,7 @@ class ReadActivity : BaseActivity() {
         chapterList.adapter = ChapterListAdapter(book)
         drawer_layout.addDrawerListener(object : DrawerLayout.SimpleDrawerListener() {
             override fun onDrawerOpened(drawerView: View?) {
-                val manager = chapterList.layoutManager as LinearLayoutManager
+                val manager = chapterContent.layoutManager as LinearLayoutManager
                 val position = manager.findFirstVisibleItemPosition()
                 chapterList.scrollToPosition(position/2)
             }
