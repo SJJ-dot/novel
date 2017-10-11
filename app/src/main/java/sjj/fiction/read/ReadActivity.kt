@@ -43,7 +43,7 @@ class ReadActivity : BaseActivity() {
             override fun onDrawerOpened(drawerView: View?) {
                 val manager = chapterList.layoutManager as LinearLayoutManager
                 val position = manager.findFirstVisibleItemPosition()
-                chapterList.scrollToPosition(position)
+                chapterList.scrollToPosition(position/2)
             }
 
         })
