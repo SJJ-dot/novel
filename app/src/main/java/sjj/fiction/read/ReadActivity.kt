@@ -3,15 +3,18 @@ package sjj.fiction.read
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Html
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_read.*
 import org.jetbrains.anko.find
+import sjj.alog.Log
 import sjj.fiction.BaseActivity
 import sjj.fiction.R
 import sjj.fiction.data.Repository.FictionDataRepository
@@ -36,6 +39,14 @@ class ReadActivity : BaseActivity() {
         chapterContent.scrollToPosition(intent.getIntExtra(DATA_CHAPTER_INDEX, 0) * 2 + 1)
         chapterList.layoutManager = LinearLayoutManager(this)
         chapterList.adapter = ChapterListAdapter(book)
+        drawer_layout.addDrawerListener(object : DrawerLayout.SimpleDrawerListener() {
+            override fun onDrawerOpened(drawerView: View?) {
+                val manager = chapterList.layoutManager as LinearLayoutManager
+                val position = manager.findFirstVisibleItemPosition()
+                chapterList.scrollToPosition(position)
+            }
+
+        })
     }
 
     override fun onDestroy() {
