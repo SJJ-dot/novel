@@ -1,4 +1,4 @@
-package sjj.fiction.data.source.remote.dhzw
+package sjj.fiction.data.source.remote
 
 import io.reactivex.Observable
 import retrofit2.http.*
