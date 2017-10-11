@@ -20,7 +20,7 @@ class DhzwDataSource : HttpDataSource(), FictionDataRepository.Source {
     private val service = create(HttpInterface::class.java)
 
     override fun search(search: String): Observable<List<SearchResultBook>> {
-        return service.search(URLEncoder.encode(search, "gbk"))
+        return service.searchForGBK("modules/article/search.php", mapOf(Pair("searchkey", URLEncoder.encode(search, "gbk"))))
                 .map {
                     val elementsByClass = Jsoup.parse(it).body().getElementById("newscontent").getElementsByTag("ul")[0].getElementsByTag("li")
                     val results = List(elementsByClass.size) {
@@ -32,7 +32,7 @@ class DhzwDataSource : HttpDataSource(), FictionDataRepository.Source {
     }
 
     override fun loadBookDetailsAndChapter(searchResultBook: SearchResultBook): Observable<Book> {
-        return service.loadBookDetailsAndChapter(searchResultBook.url.url).map {
+        return service.loadHtmlForGBK(searchResultBook.url.url).map {
             val parse = Jsoup.parse(it, searchResultBook.url.url).body()
             val fmsrc = parse.getElementById("fmimg").child(0).attr("src")
             val info = parse.getElementById("info")
@@ -45,12 +45,14 @@ class DhzwDataSource : HttpDataSource(), FictionDataRepository.Source {
             val latestName = latest.text()
             val select = parse.getElementById("list").select("a[href]")
             val list = select.map { Chapter(it.text(), Url(it.attr("abs:href"))) }
-            Book(name, author, Url(fmsrc), intro, Chapter(latestName, Url(latestUrl)), list)
+            val book = Book(name, author, Url(fmsrc), intro, Chapter(latestName, Url(latestUrl)), list)
+            book.originUrls.add(searchResultBook.url)
+            book
         }
     }
 
     override fun loadBookChapter(chapter: Chapter): Observable<Chapter> {
-        return service.loadBookChapter(chapter.url.url).map {
+        return service.loadHtmlForGBK(chapter.url.url).map {
             val parse = Jsoup.parse(it).getElementById("BookText")
             chapter.content = parse.html()
             chapter

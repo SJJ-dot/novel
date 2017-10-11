@@ -10,14 +10,11 @@ import sjj.fiction.data.source.remote.CHARSET
 interface HttpInterface {
     @FormUrlEncoded
     @CHARSET("gbk")
-    @POST("modules/article/search.php")
-    fun search(@Field("searchkey", encoded = true) value: String): Observable<String>
+    @POST
+    fun searchForGBK(@Url url: String, @FieldMap(encoded = true) map: Map<String, String>): Observable<String>
 
     @GET
     @CHARSET("gbk")
-    fun loadBookDetailsAndChapter(@Url url: String): Observable<String>
+    fun loadHtmlForGBK(@Url url: String): Observable<String>
 
-    @GET
-    @CHARSET("gbk")
-    fun loadBookChapter(@Url url: String): Observable<String>
 }
