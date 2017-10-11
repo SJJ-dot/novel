@@ -36,6 +36,12 @@ class DetailsActivity : BaseActivity() {
         bookName.text = book.name
         author.text = book.author
         latestChapter.text = book.latestChapter.chapterName
+        latestChapter.setOnClickListener {
+            val intent = Intent(it.context, ReadActivity::class.java)
+            intent.putExtra(ReadActivity.DATA_BOOK, book)
+            intent.putExtra(ReadActivity.DATA_CHAPTER_INDEX, book.chapterList.size - 1)
+            it.context.startActivity(intent)
+        }
         intro.text = book.intro
         chapterList.layoutManager = LinearLayoutManager(this)
         chapterList.adapter = ChapterListAdapter(book)

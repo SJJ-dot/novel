@@ -29,7 +29,7 @@ class ReadActivity : AppCompatActivity() {
         val book = intent.getSerializableExtra(DATA_BOOK) as Book
         chapterContent.layoutManager = LinearLayoutManager(this)
         chapterContent.adapter = ChapterContentAdapter(book.chapterList)
-        chapterContent.scrollToPosition(intent.getIntExtra(DATA_CHAPTER_INDEX, 0))
+        chapterContent.scrollToPosition(intent.getIntExtra(DATA_CHAPTER_INDEX, 0) * 2 - 1)
     }
 
     override fun onDestroy() {
