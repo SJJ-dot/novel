@@ -22,8 +22,7 @@ import sjj.fiction.data.Repository.FictionDataRepository
 import sjj.fiction.data.Repository.impl.FictionDataRepositoryImpl
 import sjj.fiction.model.Book
 import sjj.fiction.model.Chapter
-import sjj.fiction.util.DATA_REPOSITORY_FICTION
-import sjj.fiction.util.DataRepository
+import sjj.fiction.util.fictionDataRepository
 import sjj.fiction.util.textView
 import sjj.fiction.util.toDpx
 
@@ -38,7 +37,7 @@ class ReadActivity : BaseActivity() {
         setContentView(R.layout.activity_read)
         val book = intent.getSerializableExtra(DATA_BOOK) as Book
         chapterContent.layoutManager = LinearLayoutManager(this)
-        chapterContent.adapter = ChapterContentAdapter(book.chapterList)
+        chapterContent.adapter = ChapterContentAdapter(book.content.chapterList)
         chapterContent.scrollToPosition(intent.getIntExtra(DATA_CHAPTER_INDEX, 0))
         chapterList.layoutManager = LinearLayoutManager(this)
         chapterList.adapter = ChapterListAdapter(book)
@@ -59,7 +58,7 @@ class ReadActivity : BaseActivity() {
     }
 
     private class ChapterContentAdapter(val chapters: List<Chapter>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-        private val fiction: FictionDataRepository = DataRepository[DATA_REPOSITORY_FICTION]
+        private val fiction: FictionDataRepository = fictionDataRepository
         private var compDisposable: CompositeDisposable = CompositeDisposable()
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             return object : RecyclerView.ViewHolder(with(parent.context) {
@@ -99,7 +98,7 @@ class ReadActivity : BaseActivity() {
     }
 
     private inner class ChapterListAdapter(val book: Book) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-        val data = book.chapterList
+        val data = book.content.chapterList
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             return object : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_text_text, parent, false)) {}
         }

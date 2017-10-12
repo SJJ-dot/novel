@@ -7,7 +7,8 @@ import kotlin.properties.Delegates
 /**
  * Created by sjj on 2017/9/22.
  */
-data class Url(val url: String) :Serializable{
+data class Url(val url: String = "error") : Serializable {
+
     private val error = "error"
     val domain by lazy {
         val pattern = "(http(s)?://[a-zA-z\\d.]++)/?"

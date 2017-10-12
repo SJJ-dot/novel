@@ -35,11 +35,11 @@ class DetailsActivity : BaseActivity() {
         val book = intent.getSerializableExtra(data) as Book
         bookName.text = book.name
         author.text = book.author
-        latestChapter.text = book.latestChapter.chapterName
+        latestChapter.text = book.content.latestChapter.chapterName
         latestChapter.setOnClickListener {
             val intent = Intent(it.context, ReadActivity::class.java)
             intent.putExtra(ReadActivity.DATA_BOOK, book)
-            intent.putExtra(ReadActivity.DATA_CHAPTER_INDEX, book.chapterList.size - 1)
+            intent.putExtra(ReadActivity.DATA_CHAPTER_INDEX, book.content.chapterList.size - 1)
             it.context.startActivity(intent)
         }
         intro.text = book.intro
@@ -51,7 +51,7 @@ class DetailsActivity : BaseActivity() {
     }
 
     private class ChapterListAdapter(val book: Book) : RecyclerView.Adapter<ViewHolder>() {
-        val data = book.chapterList
+        val data = book.content.chapterList
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             return object : ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_text_text, parent, false)) {}
         }

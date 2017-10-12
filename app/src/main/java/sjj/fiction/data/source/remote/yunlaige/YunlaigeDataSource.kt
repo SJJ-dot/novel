@@ -7,10 +7,7 @@ import sjj.fiction.App
 import sjj.fiction.data.Repository.FictionDataRepository
 import sjj.fiction.data.source.remote.HttpDataSource
 import sjj.fiction.data.source.remote.HttpInterface
-import sjj.fiction.model.Book
-import sjj.fiction.model.Chapter
-import sjj.fiction.model.SearchResultBook
-import sjj.fiction.model.Url
+import sjj.fiction.model.*
 import java.net.URLEncoder
 
 /**
@@ -18,6 +15,8 @@ import java.net.URLEncoder
  */
 class YunlaigeDataSource : HttpDataSource(), FictionDataRepository.Source {
     private val service = create<HttpInterface>()
+
+    override fun domain(): Url = Url(baseUrl())
     override fun search(search: String): Observable<List<SearchResultBook>> {
         val url = "http://www.yunlaige.com/modules/article/search.php"
         val encode = URLEncoder.encode(search, "gbk");
@@ -25,14 +24,14 @@ class YunlaigeDataSource : HttpDataSource(), FictionDataRepository.Source {
             try {
                 Jsoup.parse(it).body().getElementsByClass("chart-dashed-list")[0].children().map {
                     val child1 = it.child(1).child(0).child(0).select("a[href]")[0]
-                    SearchResultBook(child1.text(), Url(child1.attr("href")), it.child(1).child(1).text().split("/")[0])
+                    SearchResultBook(child1.text(), it.child(1).child(1).text().split("/")[0], Url(child1.attr("href")))
                 }
             } catch (e: Exception) {
                 val element = Jsoup.parse(it).body().getElementsByClass("book-info")[0]
                 val info = element.getElementsByClass("info")[0]
                 val name = info.child(0).child(0).text()
                 val author = info.child(1).child(0).text()
-                listOf(SearchResultBook(name, Url(App.app.config.getHttp302Url(url, "searchkey=$encode")), author))
+                listOf(SearchResultBook(name, author, Url(App.app.config.getHttp302Url(url, "searchkey=$encode"))))
             }
         }
     }
@@ -48,9 +47,8 @@ class YunlaigeDataSource : HttpDataSource(), FictionDataRepository.Source {
             val intro = info.child(2).text()
             val child = element.getElementsByClass("tabnewlist")[0].child(0).child(0).child(0).child(0).select("a[href]")[0]
             val latestChapterval = Chapter(child.text(), Url(child.attr("href")))
-            val book = Book(name, author, intro, searchResultBook.url, Url(coverImgUrl), latestChapterval)
-            book.originUrls.add(searchResultBook.url)
-            book.originChapterList = Url(info.child(3).select("a[href]")[0].attr("href"))
+            val bookContent = BookContent(searchResultBook.url,Url(coverImgUrl),latestChapterval,Url(info.child(3).select("a[href]")[0].attr("href")))
+            val book = Book(name, author, intro,bookContent)
             book
         }.flatMap {
             loadChapterList(it)
@@ -58,8 +56,8 @@ class YunlaigeDataSource : HttpDataSource(), FictionDataRepository.Source {
     }
 
     private fun loadChapterList(book: Book): Observable<Book> {
-        return service.loadHtmlForGBK(book.originChapterList.url).map {
-            book.chapterList = Jsoup.parse(it, book.originChapterList.url).getElementById("contenttable").child(0).select("a[href]").map {
+        return service.loadHtmlForGBK(book.content.chapterListOrigin.url).map {
+            book.content.chapterList = Jsoup.parse(it, book.content.chapterListOrigin.url).getElementById("contenttable").child(0).select("a[href]").map {
                 Log.e(it)
                 Chapter(it.text(), Url(it.attr("abs:href")))
             }

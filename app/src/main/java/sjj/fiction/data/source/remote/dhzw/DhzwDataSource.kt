@@ -5,10 +5,7 @@ import org.jsoup.Jsoup
 import sjj.fiction.data.Repository.FictionDataRepository
 import sjj.fiction.data.source.remote.HttpDataSource
 import sjj.fiction.data.source.remote.HttpInterface
-import sjj.fiction.model.Book
-import sjj.fiction.model.Chapter
-import sjj.fiction.model.SearchResultBook
-import sjj.fiction.model.Url
+import sjj.fiction.model.*
 import java.net.URLEncoder
 
 /**
@@ -16,6 +13,8 @@ import java.net.URLEncoder
  */
 class DhzwDataSource : HttpDataSource(), FictionDataRepository.Source {
     override fun baseUrl(): String = "http://www.dhzw.org"
+
+    override fun domain(): Url = Url(baseUrl())
 
     private val service = create<HttpInterface>()
 
@@ -25,7 +24,7 @@ class DhzwDataSource : HttpDataSource(), FictionDataRepository.Source {
                     val elementsByClass = Jsoup.parse(it).body().getElementById("newscontent").getElementsByTag("ul")[0].getElementsByTag("li")
                     val results = List(elementsByClass.size) {
                         val ahref = elementsByClass[it].child(1).select("a[href]")[0]
-                        SearchResultBook(ahref.text(), Url(ahref.attr("href")), elementsByClass[it].child(3).child(0).text())
+                        SearchResultBook(ahref.text(),elementsByClass[it].child(3).child(0).text(), Url(ahref.attr("href")))
                     }
                     results
                 }
@@ -45,8 +44,8 @@ class DhzwDataSource : HttpDataSource(), FictionDataRepository.Source {
             val latestName = latest.text()
             val select = parse.getElementById("list").select("a[href]")
             val list = select.map { Chapter(it.text(), Url(it.attr("abs:href"))) }
-            val book = Book(name, author, intro, searchResultBook.url, Url(fmsrc), Chapter(latestName, Url(latestUrl)), list)
-            book.originUrls.add(searchResultBook.url)
+            val bookContent = BookContent(searchResultBook.url,Url(fmsrc),Chapter(latestName, Url(latestUrl)),searchResultBook.url,list)
+            val book = Book(name, author, intro,bookContent)
             book
         }
     }
