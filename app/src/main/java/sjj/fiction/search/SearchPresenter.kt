@@ -2,6 +2,8 @@ package sjj.fiction.search
 
 import io.reactivex.Observable
 import sjj.fiction.data.Repository.FictionDataRepository
+import sjj.fiction.data.source.remote.dhzw.DhzwDataSource
+import sjj.fiction.data.source.remote.yunlaige.YunlaigeDataSource
 import sjj.fiction.model.Book
 import sjj.fiction.model.SearchResultBook
 import sjj.fiction.model.Url
@@ -13,8 +15,7 @@ import sjj.fiction.util.errorObservable
  * Created by SJJ on 2017/10/8.
  */
 class SearchPresenter(private val view: SearchContract.view) : SearchContract.presenter {
-
-
+    private val sources = arrayOf<FictionDataRepository.Source>(DhzwDataSource(),YunlaigeDataSource())
     private var data: FictionDataRepository? = null
     override fun start() {
         data = DataRepository[DATA_REPOSITORY_FICTION]
@@ -30,6 +31,10 @@ class SearchPresenter(private val view: SearchContract.view) : SearchContract.pr
 
     override fun onSelect(url: Url) {
 
+    }
+
+    fun setSource(toInt: Int) {
+        data?.source = sources[toInt]
     }
 
 }

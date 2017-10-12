@@ -22,6 +22,8 @@ import sjj.fiction.data.Repository.FictionDataRepository
 import sjj.fiction.data.Repository.impl.FictionDataRepositoryImpl
 import sjj.fiction.model.Book
 import sjj.fiction.model.Chapter
+import sjj.fiction.util.DATA_REPOSITORY_FICTION
+import sjj.fiction.util.DataRepository
 import sjj.fiction.util.textView
 import sjj.fiction.util.toDpx
 
@@ -57,7 +59,7 @@ class ReadActivity : BaseActivity() {
     }
 
     private class ChapterContentAdapter(val chapters: List<Chapter>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-        private val fiction: FictionDataRepository = FictionDataRepositoryImpl()
+        private val fiction: FictionDataRepository = DataRepository[DATA_REPOSITORY_FICTION]
         private var compDisposable: CompositeDisposable = CompositeDisposable()
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             return object : RecyclerView.ViewHolder(with(parent.context) {

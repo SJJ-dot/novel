@@ -12,8 +12,7 @@ import sjj.fiction.model.SearchResultBook
  * Created by SJJ on 2017/9/3.
  */
 class FictionDataRepositoryImpl : FictionDataRepository {
-    private val source: FictionDataRepository.Source = YunlaigeDataSource()
-
+    override var source: FictionDataRepository.Source = DhzwDataSource()
     override fun search(search: String): Observable<List<SearchResultBook>> = source.search(search)
     override fun loadBookDetailsAndChapter(searchResultBook: SearchResultBook): Observable<Book> = source.loadBookDetailsAndChapter(searchResultBook)
     override fun loadBookChapter(chapter: Chapter): Observable<Chapter> = source.loadBookChapter(chapter)

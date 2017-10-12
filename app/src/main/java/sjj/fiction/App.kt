@@ -11,9 +11,11 @@ class App : Application() {
         lateinit var app: App
     }
 
+    lateinit var config: Configuration
     override fun onCreate() {
         super.onCreate()
         app = this
+        config = Configuration(this)
         DataRepository.initDataSource(this)
     }
 

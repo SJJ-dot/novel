@@ -5,9 +5,9 @@ import com.google.gson.reflect.TypeToken
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import okhttp3.OkHttpClient
-import okhttp3.ResponseBody
+import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
+import okio.Buffer
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Converter
@@ -16,8 +16,11 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import sjj.alog.Log
+import sjj.fiction.App
 import sjj.fiction.data.source.DataSourceInterface
+import java.io.EOFException
 import java.lang.reflect.Type
+import java.net.HttpURLConnection
 import java.nio.charset.Charset
 import java.util.concurrent.TimeUnit
 
@@ -96,5 +99,38 @@ private val client = OkHttpClient.Builder()
         .connectTimeout(10, TimeUnit.SECONDS)
         .writeTimeout(10, TimeUnit.SECONDS)
         .readTimeout(10, TimeUnit.SECONDS)
+        .addNetworkInterceptor {
+            val response = it.proceed(it.request())
+            if (response.code() == HttpURLConnection.HTTP_MOVED_TEMP) {
+                val buffer = Buffer()
+                it.request().body()?.writeTo(buffer)
+                val utf8 = Charset.forName("UTF-8")
+                val charset: Charset = it.request().body()?.contentType()?.charset(utf8) ?: utf8
+                val body = if (isPlaintext(buffer)) buffer.readString(charset) else ""
+                App.app.config.setHttp302Url(it.request().url().toString(), response.header("Location") ?: "",body)
+            }
+            response
+        }
         .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
         .build()
+
+internal fun isPlaintext(buffer: Buffer): Boolean {
+    try {
+        val prefix = Buffer()
+        val byteCount = if (buffer.size() < 64) buffer.size() else 64
+        buffer.copyTo(prefix, 0, byteCount)
+        for (i in 0..15) {
+            if (prefix.exhausted()) {
+                break
+            }
+            val codePoint = prefix.readUtf8CodePoint()
+            if (Character.isISOControl(codePoint) && !Character.isWhitespace(codePoint)) {
+                return false
+            }
+        }
+        return true
+    } catch (e: EOFException) {
+        return false // Truncated UTF-8 sequence.
+    }
+
+}

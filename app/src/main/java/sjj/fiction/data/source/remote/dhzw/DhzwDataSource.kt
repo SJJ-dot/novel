@@ -24,7 +24,7 @@ class DhzwDataSource : HttpDataSource(), FictionDataRepository.Source {
                 .map {
                     val elementsByClass = Jsoup.parse(it).body().getElementById("newscontent").getElementsByTag("ul")[0].getElementsByTag("li")
                     val results = List(elementsByClass.size) {
-                        val ahref = elementsByClass[it].child(1).child(0)
+                        val ahref = elementsByClass[it].child(1).select("a[href]")[0]
                         SearchResultBook(ahref.text(), Url(ahref.attr("href")), elementsByClass[it].child(3).child(0).text())
                     }
                     results
@@ -34,13 +34,13 @@ class DhzwDataSource : HttpDataSource(), FictionDataRepository.Source {
     override fun loadBookDetailsAndChapter(searchResultBook: SearchResultBook): Observable<Book> {
         return service.loadHtmlForGBK(searchResultBook.url.url).map {
             val parse = Jsoup.parse(it, searchResultBook.url.url).body()
-            val fmsrc = parse.getElementById("fmimg").child(0).attr("src")
+            val fmsrc = parse.getElementById("fmimg").select("a[href]")[0].attr("src")
             val info = parse.getElementById("info")
             val infoTitle = info.child(0)
             val name = infoTitle.child(0).text()
             val author = infoTitle.child(1).text().split("：")[1]
             val intro = info.child(1).text()
-            val latest = info.child(2).child(0).child(1)
+            val latest = info.child(2).child(0).select("a[href]")[0]
             val latestUrl = latest.attr("abs:href")
             val latestName = latest.text()
             val select = parse.getElementById("list").select("a[href]")

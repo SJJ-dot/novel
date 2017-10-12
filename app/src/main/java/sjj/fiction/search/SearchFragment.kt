@@ -55,9 +55,17 @@ class SearchFragment : BaseFragment(), SearchContract.view {
     }
 
     fun search(text: String) {
+        val split = text.split(":")
+        if (split.size > 1) {
+            try {
+                presenter.setSource(split[1].toInt())
+            } catch (e: Exception) {
+            }
+        }
         val dialog = indeterminateProgressDialog("请稍候")
-        compDisposable.add(presenter.search(if (text.isNotEmpty()) text else "极道天魔").subscribe({
+        compDisposable.add(presenter.search(if (split[0].isNotEmpty()) text else "极道天魔").subscribe({
             dialog.dismiss()
+            Log.e(it)
             showBookList(it)
         }, {
             dialog.dismiss()

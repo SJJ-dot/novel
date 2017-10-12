@@ -10,6 +10,7 @@ import sjj.fiction.model.SearchResultBook
  * Created by SJJ on 2017/9/2.
  */
 interface FictionDataRepository : DataRepositoryInterface {
+    var source:Source
     fun search(search: String): Observable<List<SearchResultBook>>
     fun loadBookDetailsAndChapter(searchResultBook: SearchResultBook): Observable<Book>
     fun loadBookChapter(chapter: Chapter): Observable<Chapter>
