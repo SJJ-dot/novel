@@ -14,6 +14,7 @@ import android.widget.TextView
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_read.*
 import org.jetbrains.anko.find
+import org.jetbrains.anko.textColor
 import org.jetbrains.anko.verticalLayout
 import sjj.alog.Log
 import sjj.fiction.BaseActivity
@@ -66,12 +67,14 @@ class ReadActivity : BaseActivity() {
                     textView {
                         id = R.id.readItemChapterContentTitle
                         setPadding(16.toDpx(), 8.toDpx(), 16.toDpx(), 8.toDpx())
-                        textSize = 20f
+                        textSize = 24f
+                        textColor = getColor(R.color.material_textBlack_text)
                     }
                     textView {
                         id = R.id.readItemChapterContent
                         setPadding(16.toDpx(), 8.toDpx(), 16.toDpx(), 8.toDpx())
-                        textSize = 18f
+                        textSize = 20f
+                        textColor = getColor(R.color.material_textBlack_text)
                     }
                     minimumHeight = parent.height
                 }
