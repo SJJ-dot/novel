@@ -43,6 +43,7 @@ class DetailsActivity : BaseActivity() {
             it.context.startActivity(intent)
         }
         intro.text = book.intro
+        originWebsite.text = book.content.bookOrigin.domain
         chapterList.layoutManager = LinearLayoutManager(this)
         chapterList.adapter = ChapterListAdapter(book)
         chapterListButton.setOnClickListener {
