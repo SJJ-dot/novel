@@ -5,6 +5,4 @@ import java.io.Serializable
 /**
  * Created by SJJ on 2017/10/10.
  */
-data class Chapter(var chapterName: String = "", val url: Url) : Serializable {
-    var content: String? = null
-}
+data class Chapter(var chapterName: String = "", var url: Url =Url.def, var content: String = "") : Serializable

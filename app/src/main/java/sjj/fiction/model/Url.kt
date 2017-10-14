@@ -7,10 +7,15 @@ import kotlin.properties.Delegates
 /**
  * Created by sjj on 2017/9/22.
  */
-data class Url(val url: String = "error") : Serializable {
+data class Url(var url: String = "") : Serializable {
+    companion object {
+        val def = Url()
+    }
 
     private val error = "error"
-    val domain by lazy {
+    fun domain(): Url = Url(domainLazy.value)
+
+    private val domainLazy = lazy {
         val pattern = "(http(s)?://[a-zA-z\\d.]++)/?"
         val r = Pattern.compile(pattern)
         val m = r.matcher(url)
@@ -19,5 +24,4 @@ data class Url(val url: String = "error") : Serializable {
         }
         return@lazy error
     }
-    val valid = domain != error
 }

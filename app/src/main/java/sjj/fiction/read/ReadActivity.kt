@@ -84,7 +84,7 @@ class ReadActivity : BaseActivity() {
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val chapter = chapters[position]
             holder.itemView.findViewById<TextView>(R.id.readItemChapterContentTitle).text = chapter.chapterName
-            if (chapter.content != null) {
+            if (chapter.content.isNotEmpty()) {
                 holder.itemView.findViewById<TextView>(R.id.readItemChapterContent).text = Html.fromHtml(chapter.content)
             } else {
                 compDisposable.add(fiction.loadBookChapter(chapter).subscribe({ notifyDataSetChanged() }, {

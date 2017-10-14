@@ -43,7 +43,7 @@ class FictionDataRepositoryImpl : FictionDataRepository {
         }
     }
 
-    override fun loadBookDetailsAndChapter(searchResultBook: SearchResultBook): Observable<Book> = sources[Url(searchResultBook.url.domain)]?.loadBookDetailsAndChapter(searchResultBook) ?: error("未知源 ${searchResultBook.url}")
+    override fun loadBookDetailsAndChapter(searchResultBook: SearchResultBook): Observable<Book> = sources[searchResultBook.url.domain()]?.loadBookDetailsAndChapter(searchResultBook) ?: error("未知源 ${searchResultBook.url}")
 
-    override fun loadBookChapter(chapter: Chapter): Observable<Chapter> = sources[Url(chapter.url.domain)]?.loadBookChapter(chapter) ?: error("未知源 ${chapter.url}")
+    override fun loadBookChapter(chapter: Chapter): Observable<Chapter> = sources[chapter.url.domain()]?.loadBookChapter(chapter) ?: error("未知源 ${chapter.url}")
 }

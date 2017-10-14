@@ -133,7 +133,7 @@ class SearchFragment : BaseFragment(), SearchContract.view {
                 val book = data[position]
                 if (book.origins.size > 1) {
                     alert {
-                        items(book.origins.map { it.domain }) { d, i ->
+                        items(book.origins.map { it.domain().url }) { d, i ->
                             d.dismiss()
                             book.url = book.origins[i]
                             startActivity(v.context, book)
