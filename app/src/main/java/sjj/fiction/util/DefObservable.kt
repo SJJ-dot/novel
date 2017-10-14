@@ -1,6 +1,7 @@
 package sjj.fiction.util
 
 import io.reactivex.Observable
+import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.Callable
@@ -9,9 +10,9 @@ import java.util.concurrent.Callable
 /**
  * Created by SJJ on 2017/10/8.
  */
-fun <T> def(supplier: () -> T): io.reactivex.Observable<T> {
+fun <T> def(scheduler: Scheduler = Schedulers.computation(), supplier: () -> T): io.reactivex.Observable<T> {
     return Observable.fromCallable(supplier)
-            .subscribeOn(Schedulers.computation())
+            .subscribeOn(scheduler)
             .observeOn(AndroidSchedulers.mainThread())
 }
 

@@ -1,6 +1,8 @@
 package sjj.fiction.data.Repository.impl
 
 import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import sjj.alog.Log
 import sjj.fiction.data.Repository.FictionDataRepository
 import sjj.fiction.data.source.remote.dhzw.DhzwDataSource
@@ -9,6 +11,9 @@ import sjj.fiction.model.Book
 import sjj.fiction.model.BookGroup
 import sjj.fiction.model.Chapter
 import sjj.fiction.model.Url
+import sjj.fiction.util.def
+import java.util.concurrent.atomic.AtomicReference
+import kotlin.coroutines.experimental.buildSequence
 
 /**
  * Created by SJJ on 2017/9/3.
@@ -24,20 +29,32 @@ class FictionDataRepositoryImpl : FictionDataRepository {
     }
 
     override fun search(search: String): Observable<List<BookGroup>> {
-        return Observable.combineLatest(sources.map { it.value.search(search) }) { t ->
-            val list = mutableListOf<BookGroup>()
-            t.toList().forEach { s ->
-                s as List<Book>
-                s.forEach {
-                    val find = list.find { r -> r.currentBook.name == it.name && r.currentBook.author == it.author }
-                    if (find == null) {
-                        list.add(BookGroup(it, mutableListOf(it)))
-                    } else {
-                        find.books.add(it)
+
+        return def(Schedulers.io()) {
+            val map = mutableMapOf<String, BookGroup>()
+            val count = object : Object() {
+                var count = sources.size
+                @Synchronized
+                fun tryNotify() {
+                    count--
+                    if (count == 0) {
+                        notify()
                     }
                 }
             }
-            list
+            sources.forEach {
+                it.value.search(search).subscribe({
+                    it.forEach {
+                        map.getOrPut(it.name + it.author, { BookGroup(it) }).books.add(it)
+                    }
+                    count.tryNotify()
+                }, {
+                    Log.e("search error", it)
+                    count.tryNotify()
+                })
+            }
+            synchronized(count) { count.wait() }
+            map.values.toList()
         }
     }
 
