@@ -2,7 +2,6 @@ package sjj.fiction.data.source.remote.yunlaige
 
 import io.reactivex.Observable
 import org.jsoup.Jsoup
-import sjj.alog.Log
 import sjj.fiction.App
 import sjj.fiction.data.Repository.FictionDataRepository
 import sjj.fiction.data.source.remote.HttpDataSource
@@ -13,7 +12,7 @@ import java.net.URLEncoder
 /**
  * Created by SJJ on 2017/10/11.
  */
-class YunlaigeDataSource : HttpDataSource(), FictionDataRepository.Source {
+class YunlaigeDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
     private val service = create<HttpInterface>()
 
     override fun domain(): Url = Url(baseUrl())

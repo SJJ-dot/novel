@@ -9,14 +9,19 @@ import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.widget.ArrayAdapter
 import android.widget.TextView
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import sjj.alog.Log
+import sjj.fiction.App
 import sjj.fiction.BaseActivity
 import sjj.fiction.R
 import sjj.fiction.about.AboutActivity
 import sjj.fiction.books.BookrackFragment
 import sjj.fiction.search.SearchFragment
+import sjj.fiction.util.fictionDataRepository
 import sjj.fiction.util.hideSoftInput
 import sjj.fiction.util.showSoftInput
 
@@ -24,11 +29,11 @@ import sjj.fiction.util.showSoftInput
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
     private val tag_books = "tag_books"
     private val tag_search = "tag_search"
+    private var disposable: Disposable? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-
         val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
@@ -43,7 +48,15 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                     .show(supportFragmentManager.findFragmentByTag(tag_books))
                     .commit()
         }
-
+        disposable = fictionDataRepository.getSearchHistory().subscribe({
+            val adapter = ArrayAdapter<String>(this,R.layout.item_text_text,R.id.text1, it)
+            searchInput.setAdapter(adapter)
+            disposable = null
+            Log.e(it)
+        }, {
+            Log.e("getSearchHistory error", it)
+            disposable = null
+        })
         searchText.setOnClickListener {
             it.visibility = View.GONE
             searchInput.visibility = View.VISIBLE
@@ -58,6 +71,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 b.show(supportFragmentManager.findFragmentByTag(tag_search))
             }
             b.commit()
+            searchInput.showDropDown()
         }
         searchCancel.setOnClickListener {
             if (searchInput.visibility == View.GONE) return@setOnClickListener
@@ -84,6 +98,11 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             }
             false
         })
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        disposable?.dispose()
     }
 
     override fun onBackPressed() {

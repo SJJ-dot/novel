@@ -11,7 +11,7 @@ import java.net.URLEncoder
 /**
  * Created by SJJ on 2017/9/3.
  */
-class DhzwDataSource : HttpDataSource(), FictionDataRepository.Source {
+class DhzwDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
     override fun baseUrl(): String = "http://www.dhzw.org"
 
     override fun domain(): Url = Url(baseUrl())

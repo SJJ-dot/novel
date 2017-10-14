@@ -12,10 +12,19 @@ import sjj.fiction.model.Url
  */
 interface FictionDataRepository : DataRepositoryInterface {
     fun search(search: String): Observable<List<BookGroup>>
+    fun getSearchHistory(): Observable<List<String>>
     fun loadBookDetailsAndChapter(book: BookGroup): Observable<BookGroup>
     fun loadBookChapter(chapter: Chapter): Observable<Chapter>
-    interface Source : DataSourceInterface {
+    interface RemoteSource : Base {
         fun domain(): Url
+    }
+
+    interface SourceLocal : Base {
+        fun setSearchHistory(value: List<String>): Observable<List<String>>
+        fun getSearchHistory(): Observable<List<String>>
+    }
+
+    interface Base : DataSourceInterface {
         fun search(search: String): Observable<List<Book>>
         fun loadBookDetailsAndChapter(book: Book): Observable<Book>
         fun loadBookChapter(chapter: Chapter): Observable<Chapter>

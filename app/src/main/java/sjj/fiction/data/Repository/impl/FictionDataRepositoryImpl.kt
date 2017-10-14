@@ -1,30 +1,29 @@
 package sjj.fiction.data.Repository.impl
 
 import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import sjj.alog.Log
 import sjj.fiction.data.Repository.FictionDataRepository
+import sjj.fiction.data.source.local.LocalFictionDataSource
 import sjj.fiction.data.source.remote.dhzw.DhzwDataSource
 import sjj.fiction.data.source.remote.yunlaige.YunlaigeDataSource
-import sjj.fiction.model.Book
 import sjj.fiction.model.BookGroup
 import sjj.fiction.model.Chapter
 import sjj.fiction.model.Url
 import sjj.fiction.util.def
-import java.util.concurrent.atomic.AtomicReference
-import kotlin.coroutines.experimental.buildSequence
 
 /**
  * Created by SJJ on 2017/9/3.
  */
 class FictionDataRepositoryImpl : FictionDataRepository {
-    private var sources = mutableMapOf<Url, FictionDataRepository.Source>()
+    private val sources = mutableMapOf<Url, FictionDataRepository.RemoteSource>()
+    private val localSource = LocalFictionDataSource()
 
     init {
-        val dh: FictionDataRepository.Source = DhzwDataSource()
+        val dh: FictionDataRepository.RemoteSource = DhzwDataSource()
         sources[dh.domain()] = dh
-        val yu: FictionDataRepository.Source = YunlaigeDataSource()
+        val yu: FictionDataRepository.RemoteSource = YunlaigeDataSource()
         sources[yu.domain()] = yu
     }
 
@@ -55,8 +54,27 @@ class FictionDataRepositoryImpl : FictionDataRepository {
             }
             synchronized(count) { count.wait() }
             map.values.toList()
-        }
+        }.observeOn(
+                Schedulers.io()
+        ).doOnNext {
+            val lock = java.lang.Object()
+            localSource.getSearchHistory().flatMap {
+                val set = it.toMutableSet()
+                set.add(search)
+
+                localSource.setSearchHistory(set.toList())
+            }.subscribe({
+                synchronized(lock) { lock.notify()}
+            }, {
+                synchronized(lock) { lock.notify()}
+            })
+            synchronized(lock) {
+                lock.wait()
+            }
+        }.observeOn(AndroidSchedulers.mainThread())
     }
+
+    override fun getSearchHistory(): Observable<List<String>> = localSource.getSearchHistory()
 
     override fun loadBookDetailsAndChapter(book: BookGroup): Observable<BookGroup> = sources[book.currentBook.url.domain()]?.loadBookDetailsAndChapter(book.currentBook)?.map { book } ?: error("未知源 ${book.currentBook.url}")
 

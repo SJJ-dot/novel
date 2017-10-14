@@ -12,7 +12,7 @@ import sjj.fiction.util.fictionDataRepository
  * Created by SJJ on 2017/10/8.
  */
 class SearchPresenter(private val view: SearchContract.view) : SearchContract.presenter {
-    private val sources = arrayOf<FictionDataRepository.Source>(DhzwDataSource(), YunlaigeDataSource())
+    private val sources = arrayOf<FictionDataRepository.RemoteSource>(DhzwDataSource(), YunlaigeDataSource())
     private var data: FictionDataRepository? = null
     override fun start() {
         data = fictionDataRepository

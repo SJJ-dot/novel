@@ -12,11 +12,10 @@ import sjj.alog.Log
  */
 
 class Configuration(val context: Context) {
-    private val gson = Gson()
     private val generalSp: SharedPreferences = context.getSharedPreferences("General", Context.MODE_PRIVATE)
     private val generalEditor: SharedPreferences.Editor = generalSp.edit()
-    private var userSp: SharedPreferences = generalSp
-    private var userEditor: SharedPreferences.Editor = generalEditor
+    var userSp: SharedPreferences = generalSp
+    var userEditor: SharedPreferences.Editor = generalEditor
     fun initUserConfig(username: String) {
         userSp = context.getSharedPreferences(username, Context.MODE_PRIVATE);
         userEditor = userSp.edit()
@@ -40,6 +39,7 @@ class Configuration(val context: Context) {
         return userSp.getString(builder.toString(), "")
     }
 
+//    fun getUserSp() = userSp
 //    fun set(stringArray: List<String>) {
 //        userEditor.putString(type_string_array, gson.toJson(stringArray)).commit()
 //    }
