@@ -14,17 +14,14 @@ import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_search.*
 import org.jetbrains.anko.find
 import org.jetbrains.anko.linearLayout
-import org.jetbrains.anko.margin
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.indeterminateProgressDialog
-import org.jetbrains.anko.verticalLayout
 import sjj.alog.Log
 import sjj.fiction.BaseFragment
 import sjj.fiction.R
-import sjj.fiction.data.Repository.FictionDataRepository
 import sjj.fiction.details.DetailsActivity
 import sjj.fiction.model.Book
-import sjj.fiction.model.SearchResultBook
+import sjj.fiction.model.BookGroup
 import sjj.fiction.util.cardView
 import sjj.fiction.util.lparams
 import sjj.fiction.util.textView
@@ -62,7 +59,6 @@ class SearchFragment : BaseFragment(), SearchContract.view {
         val dialog = indeterminateProgressDialog("请稍候")
         compDisposable.add(presenter.search(if (text.isNotEmpty()) text else "极道天魔").subscribe({
             dialog.dismiss()
-            Log.e(it)
             showBookList(it)
         }, {
             dialog.dismiss()
@@ -73,7 +69,7 @@ class SearchFragment : BaseFragment(), SearchContract.view {
     override fun setPresenter(presenter: SearchContract.presenter) {
     }
 
-    override fun showBookList(book: List<SearchResultBook>) {
+    override fun showBookList(book: List<BookGroup>) {
         var adapter = searchRecyclerView.adapter;
         adapter = if (adapter !is SearchResultBookAdapter) searchResultBookAdapter else adapter
         searchRecyclerView.adapter = adapter
@@ -81,12 +77,8 @@ class SearchFragment : BaseFragment(), SearchContract.view {
         adapter.notifyDataSetChanged()
     }
 
-    override fun showBookUrls(book: Book) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
     private inner class SearchResultBookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-        var data = listOf<SearchResultBook>()
+        var data = listOf<BookGroup>()
         override fun getItemCount(): Int = data.size
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder {
             return object : RecyclerView.ViewHolder(with(parent!!.context) {
@@ -126,27 +118,28 @@ class SearchFragment : BaseFragment(), SearchContract.view {
         }
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-            holder.itemView.find<TextView>(R.id.searchItemTitle).text = data[position].name
-            holder.itemView.find<TextView>(R.id.searchItemAuthor).text = data[position].author
-            holder.itemView.find<TextView>(R.id.searchItemOrigin).text = data[position].origins.size.toString()
+            val bookGroup = data[position]
+            val book = bookGroup.currentBook
+            holder.itemView.find<TextView>(R.id.searchItemTitle).text = book.name
+            holder.itemView.find<TextView>(R.id.searchItemAuthor).text = book.author
+            holder.itemView.find<TextView>(R.id.searchItemOrigin).text = bookGroup.books.size.toString()
             holder.itemView.setOnClickListener { v ->
-                val book = data[position]
-                if (book.origins.size > 1) {
+                if (bookGroup.books.size > 1) {
                     alert {
-                        items(book.origins.map { it.domain().url }) { d, i ->
+                        items(bookGroup.books.map { it.url.url }) { d, i ->
                             d.dismiss()
-                            book.url = book.origins[i]
-                            startActivity(v.context, book)
+                            bookGroup.currentBook = bookGroup.books[i]
+                            startActivity(v.context, bookGroup)
                         }
                     }.show()
                 } else {
-                    startActivity(v.context, book)
+                    startActivity(v.context, bookGroup)
                 }
 
             }
         }
 
-        fun startActivity(context: Context, book: SearchResultBook) {
+        fun startActivity(context: Context, book: BookGroup) {
             val dialog = indeterminateProgressDialog("请稍候")
             compDisposable.add(presenter.onSelect(book).subscribe({
                 dialog.dismiss()

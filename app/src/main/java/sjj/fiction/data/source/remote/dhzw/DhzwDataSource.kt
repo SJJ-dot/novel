@@ -18,34 +18,25 @@ class DhzwDataSource : HttpDataSource(), FictionDataRepository.Source {
 
     private val service = create<HttpInterface>()
 
-    override fun search(search: String): Observable<List<SearchResultBook>> {
+    override fun search(search: String): Observable<List<Book>> {
         return service.searchForGBK("modules/article/search.php", mapOf(Pair("searchkey", URLEncoder.encode(search, "gbk"))))
                 .map {
                     val elementsByClass = Jsoup.parse(it).body().getElementById("newscontent").getElementsByTag("ul")[0].getElementsByTag("li")
                     val results = List(elementsByClass.size) {
                         val ahref = elementsByClass[it].child(1).select("a[href]")[0]
-                        SearchResultBook(ahref.text(),elementsByClass[it].child(3).child(0).text(), Url(ahref.attr("href")))
+                        Book(Url(ahref.attr("href")), ahref.text(), elementsByClass[it].child(3).child(0).text())
                     }
                     results
                 }
     }
 
-    override fun loadBookDetailsAndChapter(searchResultBook: SearchResultBook): Observable<Book> {
-        return service.loadHtmlForGBK(searchResultBook.url.url).map {
-            val parse = Jsoup.parse(it, searchResultBook.url.url).body()
-            val fmsrc = parse.getElementById("fmimg").select("a[href]")[0].attr("src")
-            val info = parse.getElementById("info")
-            val infoTitle = info.child(0)
-            val name = infoTitle.child(0).text()
-            val author = infoTitle.child(1).text().split("：")[1]
-            val intro = info.child(1).text()
-            val latest = info.child(2).child(0).select("a[href]")[0]
-            val latestUrl = latest.attr("abs:href")
-            val latestName = latest.text()
-            val select = parse.getElementById("list").select("a[href]")
-            val list = select.map { Chapter(it.text(), Url(it.attr("abs:href"))) }
-            val bookContent = BookContent(searchResultBook.url,Url(fmsrc),Chapter(latestName, Url(latestUrl)),searchResultBook.url,list)
-            val book = Book(name, author, intro,bookContent)
+    override fun loadBookDetailsAndChapter(book: Book): Observable<Book> {
+        return service.loadHtmlForGBK(book.url.url).map {
+            val parse = Jsoup.parse(it, book.url.url).body()
+            book.bookCoverImg = Url(parse.getElementById("fmimg").select("a[href]")[0].attr("src"))
+            book.intro = parse.getElementById("info").child(1).text()
+            book.chapterList = parse.getElementById("list").select("a[href]").map { Chapter(it.text(), Url(it.attr("abs:href"))) }
+            book.chapterListUrl = book.url
             book
         }
     }

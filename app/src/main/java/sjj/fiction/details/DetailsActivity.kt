@@ -15,6 +15,7 @@ import sjj.alog.Log
 import sjj.fiction.BaseActivity
 import sjj.fiction.R
 import sjj.fiction.model.Book
+import sjj.fiction.model.BookGroup
 import sjj.fiction.model.Chapter
 import sjj.fiction.read.ReadActivity
 import sjj.fiction.util.cardView
@@ -35,15 +36,15 @@ class DetailsActivity : BaseActivity() {
         val book = intent.getSerializableExtra(data) as Book
         bookName.text = book.name
         author.text = book.author
-        latestChapter.text = book.content.latestChapter.chapterName
+        latestChapter.text = book.chapterList.last().chapterName
         latestChapter.setOnClickListener {
             val intent = Intent(it.context, ReadActivity::class.java)
             intent.putExtra(ReadActivity.DATA_BOOK, book)
-            intent.putExtra(ReadActivity.DATA_CHAPTER_INDEX, book.content.chapterList.size - 1)
+            intent.putExtra(ReadActivity.DATA_CHAPTER_INDEX, book.chapterList.size - 1)
             it.context.startActivity(intent)
         }
         intro.text = book.intro
-        originWebsite.text = book.content.bookOrigin.domain().url
+        originWebsite.text = book.url.domain().url
         chapterList.layoutManager = LinearLayoutManager(this)
         chapterList.adapter = ChapterListAdapter(book)
         chapterListButton.setOnClickListener {
@@ -52,7 +53,7 @@ class DetailsActivity : BaseActivity() {
     }
 
     private class ChapterListAdapter(val book: Book) : RecyclerView.Adapter<ViewHolder>() {
-        val data = book.content.chapterList
+        val data = book.chapterList
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             return object : ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_text_text, parent, false)) {}
         }

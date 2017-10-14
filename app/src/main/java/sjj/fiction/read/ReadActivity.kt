@@ -22,6 +22,7 @@ import sjj.fiction.R
 import sjj.fiction.data.Repository.FictionDataRepository
 import sjj.fiction.data.Repository.impl.FictionDataRepositoryImpl
 import sjj.fiction.model.Book
+import sjj.fiction.model.BookGroup
 import sjj.fiction.model.Chapter
 import sjj.fiction.util.fictionDataRepository
 import sjj.fiction.util.textView
@@ -36,9 +37,9 @@ class ReadActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_read)
-        val book = intent.getSerializableExtra(DATA_BOOK) as Book
+        val book = (intent.getSerializableExtra(DATA_BOOK) as BookGroup).currentBook
         chapterContent.layoutManager = LinearLayoutManager(this)
-        chapterContent.adapter = ChapterContentAdapter(book.content.chapterList)
+        chapterContent.adapter = ChapterContentAdapter(book.chapterList)
         chapterContent.scrollToPosition(intent.getIntExtra(DATA_CHAPTER_INDEX, 0))
         chapterList.layoutManager = LinearLayoutManager(this)
         chapterList.adapter = ChapterListAdapter(book)
@@ -101,7 +102,7 @@ class ReadActivity : BaseActivity() {
     }
 
     private inner class ChapterListAdapter(val book: Book) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-        val data = book.content.chapterList
+        val data = book.chapterList
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             return object : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_text_text, parent, false)) {}
         }

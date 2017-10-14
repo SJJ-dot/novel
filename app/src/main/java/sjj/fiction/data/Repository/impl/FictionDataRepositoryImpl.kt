@@ -6,8 +6,8 @@ import sjj.fiction.data.Repository.FictionDataRepository
 import sjj.fiction.data.source.remote.dhzw.DhzwDataSource
 import sjj.fiction.data.source.remote.yunlaige.YunlaigeDataSource
 import sjj.fiction.model.Book
+import sjj.fiction.model.BookGroup
 import sjj.fiction.model.Chapter
-import sjj.fiction.model.SearchResultBook
 import sjj.fiction.model.Url
 
 /**
@@ -23,19 +23,17 @@ class FictionDataRepositoryImpl : FictionDataRepository {
         sources[yu.domain()] = yu
     }
 
-    override fun search(search: String): Observable<List<SearchResultBook>> {
+    override fun search(search: String): Observable<List<BookGroup>> {
         return Observable.combineLatest(sources.map { it.value.search(search) }) { t ->
-            val list = mutableListOf<SearchResultBook>()
-            t.toList().forEach {s->
-                s as List<SearchResultBook>
-                Log.e(s)
+            val list = mutableListOf<BookGroup>()
+            t.toList().forEach { s ->
+                s as List<Book>
                 s.forEach {
-                    val find = list.find { r -> r.name == it.name && r.author == it.author }
+                    val find = list.find { r -> r.currentBook.name == it.name && r.currentBook.author == it.author }
                     if (find == null) {
-                        list.add(it)
+                        list.add(BookGroup(it, mutableListOf(it)))
                     } else {
-                        find.origins.removeAll(it.origins)
-                        find.origins.addAll(it.origins)
+                        find.books.add(it)
                     }
                 }
             }
@@ -43,7 +41,7 @@ class FictionDataRepositoryImpl : FictionDataRepository {
         }
     }
 
-    override fun loadBookDetailsAndChapter(searchResultBook: SearchResultBook): Observable<Book> = sources[searchResultBook.url.domain()]?.loadBookDetailsAndChapter(searchResultBook) ?: error("未知源 ${searchResultBook.url}")
+    override fun loadBookDetailsAndChapter(book: BookGroup): Observable<BookGroup> = sources[book.currentBook.url.domain()]?.loadBookDetailsAndChapter(book.currentBook)?.map { book } ?: error("未知源 ${book.currentBook.url}")
 
     override fun loadBookChapter(chapter: Chapter): Observable<Chapter> = sources[chapter.url.domain()]?.loadBookChapter(chapter) ?: error("未知源 ${chapter.url}")
 }
