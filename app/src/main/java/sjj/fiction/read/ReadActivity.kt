@@ -22,7 +22,6 @@ import sjj.fiction.R
 import sjj.fiction.data.Repository.FictionDataRepository
 import sjj.fiction.data.Repository.impl.FictionDataRepositoryImpl
 import sjj.fiction.model.Book
-import sjj.fiction.model.BookGroup
 import sjj.fiction.model.Chapter
 import sjj.fiction.util.fictionDataRepository
 import sjj.fiction.util.textView
@@ -37,7 +36,7 @@ class ReadActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_read)
-        val book = (intent.getSerializableExtra(DATA_BOOK) as BookGroup).currentBook
+        val book = intent.getSerializableExtra(DATA_BOOK) as Book
         chapterContent.layoutManager = LinearLayoutManager(this)
         chapterContent.adapter = ChapterContentAdapter(book.chapterList)
         chapterContent.scrollToPosition(intent.getIntExtra(DATA_CHAPTER_INDEX, 0))

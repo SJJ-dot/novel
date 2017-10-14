@@ -33,7 +33,7 @@ class DetailsActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
-        val book = intent.getSerializableExtra(data) as Book
+        val book = (intent.getSerializableExtra(data) as BookGroup).currentBook
         bookName.text = book.name
         author.text = book.author
         latestChapter.text = book.chapterList.last().chapterName

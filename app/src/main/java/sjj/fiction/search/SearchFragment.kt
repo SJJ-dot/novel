@@ -126,7 +126,7 @@ class SearchFragment : BaseFragment(), SearchContract.view {
             holder.itemView.setOnClickListener { v ->
                 if (bookGroup.books.size > 1) {
                     alert {
-                        items(bookGroup.books.map { it.url.url }) { d, i ->
+                        items(bookGroup.books.map { it.url.domain().url }) { d, i ->
                             d.dismiss()
                             bookGroup.currentBook = bookGroup.books[i]
                             startActivity(v.context, bookGroup)
