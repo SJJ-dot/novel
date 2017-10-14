@@ -2,6 +2,8 @@ package sjj.fiction;
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import sjj.alog.Log
 
 /**
@@ -10,11 +12,11 @@ import sjj.alog.Log
  */
 
 class Configuration(val context: Context) {
+    private val gson = Gson()
     private val generalSp: SharedPreferences = context.getSharedPreferences("General", Context.MODE_PRIVATE)
     private val generalEditor: SharedPreferences.Editor = generalSp.edit()
     private var userSp: SharedPreferences = generalSp
     private var userEditor: SharedPreferences.Editor = generalEditor
-
     fun initUserConfig(username: String) {
         userSp = context.getSharedPreferences(username, Context.MODE_PRIVATE);
         userEditor = userSp.edit()
@@ -38,4 +40,15 @@ class Configuration(val context: Context) {
         return userSp.getString(builder.toString(), "")
     }
 
+//    fun set(stringArray: List<String>) {
+//        userEditor.putString(type_string_array, gson.toJson(stringArray)).commit()
+//    }
+//
+//    fun <T> get(): T? {
+//        val string = userSp.getString(type_string_array, "")
+//        val value: TypeToken<T> = object : TypeToken<T>() {}
+//        val type = value.type
+//        Log.e(value.rawType)
+//        return gson.fromJson<T>(string, type)
+//    }
 }

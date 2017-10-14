@@ -50,13 +50,13 @@ abstract class HttpDataSource : DataSourceInterface {
         override fun responseBodyConverter(type: Type?, annotations: Array<out Annotation>?, retrofit: Retrofit?): Converter<ResponseBody, *>? {
             val charset = annotations?.find { it is CHARSET } as? CHARSET
             if (charset != null)
-                if (type == String::class.java) {
-                    return Converter<ResponseBody, String> {
+                return if (type == String::class.java) {
+                    Converter<ResponseBody, String> {
                         responseCharset(it, charset)
                     }
                 } else {
                     val adapter = gson.getAdapter(TypeToken.get(type))
-                    return Converter<ResponseBody, Any> {
+                    Converter<ResponseBody, Any> {
                         adapter.fromJson(responseCharset(it, charset))
                     }
                 }
@@ -68,7 +68,7 @@ abstract class HttpDataSource : DataSourceInterface {
     }
 
     private class ObserveOnMainCallAdapterFactory : CallAdapter.Factory() {
-        val scheduler = AndroidSchedulers.mainThread()
+        val scheduler = AndroidSchedulers.mainThread()!!
         val io = Schedulers.io()
 
         override fun get(returnType: Type, annotations: Array<Annotation>, retrofit: Retrofit): CallAdapter<*, *>? {
