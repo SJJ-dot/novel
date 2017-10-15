@@ -14,18 +14,26 @@ interface FictionDataRepository : DataRepositoryInterface {
     fun getSearchHistory(): Observable<List<String>>
     fun loadBookDetailsAndChapter(book: BookGroup): Observable<BookGroup>
     fun loadBookChapter(chapter: Chapter): Observable<Chapter>
+    fun loadBookGroups(): Observable<List<BookGroup>>
     interface RemoteSource : Base {
         fun domain(): String
+        fun search(search: String): Observable<List<Book>>
+        fun loadBookDetailsAndChapter(book: Book): Observable<Book>
+
     }
 
     interface SourceLocal : Base {
         fun setSearchHistory(value: List<String>): Observable<List<String>>
         fun getSearchHistory(): Observable<List<String>>
+        fun saveBookGroup(book: List<BookGroup>): Observable<List<BookGroup>>
+        fun updateBookGroup(book: BookGroup): Observable<BookGroup>
+        fun updateBook(book: Book): Observable<Book>
+        fun saveChapter(chapter: Chapter): Observable<Chapter>
+        fun loadBookGroups(): Observable<List<BookGroup>>
     }
 
     interface Base : DataSourceInterface {
-        fun search(search: String): Observable<List<Book>>
-        fun loadBookDetailsAndChapter(book: Book): Observable<Book>
         fun loadBookChapter(chapter: Chapter): Observable<Chapter>
+
     }
 }

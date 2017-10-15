@@ -7,5 +7,5 @@ import com.raizlabs.android.dbflow.annotation.Database
  */
 @Database(version = BookDataBase.VERSION)
 object BookDataBase {
-    const val VERSION = 1
+    const val VERSION = 2
 }

@@ -13,7 +13,6 @@ import kotlinx.android.synthetic.main.activity_details.*
 import org.jetbrains.anko.find
 import sjj.fiction.BaseActivity
 import sjj.fiction.R
-import sjj.fiction.model.Book
 import sjj.fiction.model.BookGroup
 import sjj.fiction.read.ReadActivity
 import sjj.fiction.util.domain
@@ -29,27 +28,28 @@ class DetailsActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
-        val book = (intent.getSerializableExtra(data) as BookGroup).currentBook
+        val bookGroup = intent.getSerializableExtra(data) as BookGroup
+        val book = bookGroup.currentBook
         bookName.text = book.name
         author.text = book.author
         latestChapter.text = book.chapterList.last().chapterName
         latestChapter.setOnClickListener {
             val intent = Intent(it.context, ReadActivity::class.java)
-            intent.putExtra(ReadActivity.DATA_BOOK, book)
+            intent.putExtra(ReadActivity.DATA_BOOK, bookGroup)
             intent.putExtra(ReadActivity.DATA_CHAPTER_INDEX, book.chapterList.size - 1)
             it.context.startActivity(intent)
         }
         intro.text = book.intro
         originWebsite.text = book.url.domain()
         chapterList.layoutManager = LinearLayoutManager(this)
-        chapterList.adapter = ChapterListAdapter(book)
+        chapterList.adapter = ChapterListAdapter(bookGroup)
         chapterListButton.setOnClickListener {
             chapterList.visibility = if (chapterList.visibility == View.GONE) View.VISIBLE else View.GONE
         }
     }
 
-    private class ChapterListAdapter(val book: Book) : RecyclerView.Adapter<ViewHolder>() {
-        val data = book.chapterList
+    private class ChapterListAdapter(val book: BookGroup) : RecyclerView.Adapter<ViewHolder>() {
+        val data = book.currentBook.chapterList
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             return object : ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_text_text, parent, false)) {}
         }

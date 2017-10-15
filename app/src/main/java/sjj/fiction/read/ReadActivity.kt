@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.raizlabs.android.dbflow.kotlinextensions.save
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_read.*
 import org.jetbrains.anko.find
@@ -18,6 +19,7 @@ import sjj.fiction.BaseActivity
 import sjj.fiction.R
 import sjj.fiction.data.Repository.FictionDataRepository
 import sjj.fiction.model.Book
+import sjj.fiction.model.BookGroup
 import sjj.fiction.model.Chapter
 import sjj.fiction.util.fictionDataRepository
 import sjj.fiction.util.textView
@@ -32,7 +34,8 @@ class ReadActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_read)
-        val book = intent.getSerializableExtra(DATA_BOOK) as Book
+        val bookGroup = intent.getSerializableExtra(DATA_BOOK) as BookGroup
+        val book = bookGroup.currentBook
         chapterContent.layoutManager = LinearLayoutManager(this)
         chapterContent.adapter = ChapterContentAdapter(book.chapterList)
         chapterContent.scrollToPosition(intent.getIntExtra(DATA_CHAPTER_INDEX, 0))
@@ -44,7 +47,14 @@ class ReadActivity : BaseActivity() {
                 val position = manager.findFirstVisibleItemPosition()
                 chapterList.scrollToPosition(position)
             }
-
+        })
+        chapterContent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
+                val manager = chapterContent.layoutManager as LinearLayoutManager
+                val position = manager.findFirstVisibleItemPosition()
+                bookGroup.readIndex = position
+                bookGroup.save()
+            }
         })
     }
 

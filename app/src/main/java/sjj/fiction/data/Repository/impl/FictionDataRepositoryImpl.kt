@@ -1,5 +1,6 @@
 package sjj.fiction.data.Repository.impl
 
+import com.raizlabs.android.dbflow.kotlinextensions.save
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -18,6 +19,7 @@ import sjj.fiction.util.domain
  */
 class FictionDataRepositoryImpl : FictionDataRepository {
     private val sources = mutableMapOf<String, FictionDataRepository.RemoteSource>()
+
     private val localSource = LocalFictionDataSource()
 
     init {
@@ -56,17 +58,19 @@ class FictionDataRepositoryImpl : FictionDataRepository {
             map.values.toList()
         }.observeOn(
                 Schedulers.io()
-        ).doOnNext {
+        ).doOnNext { bookGroups ->
             val lock = java.lang.Object()
             localSource.getSearchHistory().flatMap {
                 val set = it.toMutableSet()
                 set.add(search)
 
                 localSource.setSearchHistory(set.toList())
+            }.flatMap {
+                localSource.saveBookGroup(bookGroups)
             }.subscribe({
-                synchronized(lock) { lock.notify()}
+                synchronized(lock) { lock.notify() }
             }, {
-                synchronized(lock) { lock.notify()}
+                synchronized(lock) { lock.notify() }
             })
             synchronized(lock) {
                 lock.wait()
@@ -76,7 +80,19 @@ class FictionDataRepositoryImpl : FictionDataRepository {
 
     override fun getSearchHistory(): Observable<List<String>> = localSource.getSearchHistory()
 
-    override fun loadBookDetailsAndChapter(book: BookGroup): Observable<BookGroup> = sources[book.currentBook.url.domain()]?.loadBookDetailsAndChapter(book.currentBook)?.map { book } ?: error("未知源 ${book.currentBook.url}")
+    override fun loadBookDetailsAndChapter(book: BookGroup): Observable<BookGroup> = sources[book.currentBook.url.domain()]
+            ?.loadBookDetailsAndChapter(book.currentBook)
+            ?.flatMap {
+                localSource.updateBook(it)
+            }?.map { book }
+            ?: error("未知源 ${book.currentBook.url}")
 
-    override fun loadBookChapter(chapter: Chapter): Observable<Chapter> = sources[chapter.url.domain()]?.loadBookChapter(chapter) ?: error("未知源 ${chapter.url}")
+    override fun loadBookChapter(chapter: Chapter): Observable<Chapter> = sources[chapter.url.domain()]
+            ?.loadBookChapter(chapter)
+            ?.flatMap {
+                localSource.saveChapter(it)
+            }
+            ?: error("未知源 ${chapter.url}")
+
+    override fun loadBookGroups(): Observable<List<BookGroup>> = localSource.loadBookGroups()
 }
