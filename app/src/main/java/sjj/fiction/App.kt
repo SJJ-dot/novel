@@ -5,7 +5,6 @@ import com.raizlabs.android.dbflow.config.DatabaseConfig
 import com.raizlabs.android.dbflow.config.FlowConfig
 import com.raizlabs.android.dbflow.config.FlowManager
 import sjj.alog.Config
-import sjj.fiction.model.BookDataBase
 
 /**
  * Created by SJJ on 2017/9/3.

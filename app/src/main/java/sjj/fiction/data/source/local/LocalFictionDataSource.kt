@@ -8,7 +8,6 @@ import sjj.fiction.App
 import sjj.fiction.data.Repository.FictionDataRepository
 import sjj.fiction.model.Book
 import sjj.fiction.model.Chapter
-import sjj.fiction.model.Url
 import sjj.fiction.util.def
 
 /**

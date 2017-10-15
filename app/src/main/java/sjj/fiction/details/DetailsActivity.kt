@@ -10,17 +10,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_details.*
-import org.jetbrains.anko.*
-import sjj.alog.Log
+import org.jetbrains.anko.find
 import sjj.fiction.BaseActivity
 import sjj.fiction.R
 import sjj.fiction.model.Book
 import sjj.fiction.model.BookGroup
-import sjj.fiction.model.Chapter
 import sjj.fiction.read.ReadActivity
-import sjj.fiction.util.cardView
-import sjj.fiction.util.textView
-import sjj.fiction.util.toDpx
+import sjj.fiction.util.domain
 
 /**
  * Created by SJJ on 2017/10/10.
@@ -44,7 +40,7 @@ class DetailsActivity : BaseActivity() {
             it.context.startActivity(intent)
         }
         intro.text = book.intro
-        originWebsite.text = book.url.domain().url
+        originWebsite.text = book.url.domain()
         chapterList.layoutManager = LinearLayoutManager(this)
         chapterList.adapter = ChapterListAdapter(book)
         chapterListButton.setOnClickListener {

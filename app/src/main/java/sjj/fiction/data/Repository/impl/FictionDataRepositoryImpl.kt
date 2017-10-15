@@ -10,14 +10,14 @@ import sjj.fiction.data.source.remote.dhzw.DhzwDataSource
 import sjj.fiction.data.source.remote.yunlaige.YunlaigeDataSource
 import sjj.fiction.model.BookGroup
 import sjj.fiction.model.Chapter
-import sjj.fiction.model.Url
 import sjj.fiction.util.def
+import sjj.fiction.util.domain
 
 /**
  * Created by SJJ on 2017/9/3.
  */
 class FictionDataRepositoryImpl : FictionDataRepository {
-    private val sources = mutableMapOf<Url, FictionDataRepository.RemoteSource>()
+    private val sources = mutableMapOf<String, FictionDataRepository.RemoteSource>()
     private val localSource = LocalFictionDataSource()
 
     init {

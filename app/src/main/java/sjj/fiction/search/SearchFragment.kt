@@ -22,10 +22,7 @@ import sjj.fiction.R
 import sjj.fiction.details.DetailsActivity
 import sjj.fiction.model.Book
 import sjj.fiction.model.BookGroup
-import sjj.fiction.util.cardView
-import sjj.fiction.util.lparams
-import sjj.fiction.util.textView
-import sjj.fiction.util.toDpx
+import sjj.fiction.util.*
 
 /**
  * Created by SJJ on 2017/10/7.
@@ -126,7 +123,7 @@ class SearchFragment : BaseFragment(), SearchContract.view {
             holder.itemView.setOnClickListener { v ->
                 if (bookGroup.books.size > 1) {
                     alert {
-                        items(bookGroup.books.map { it.url.domain().url }) { d, i ->
+                        items(bookGroup.books.map { it.url.domain() }) { d, i ->
                             d.dismiss()
                             bookGroup.currentBook = bookGroup.books[i]
                             startActivity(v.context, bookGroup)

@@ -86,12 +86,12 @@ class ReadActivity : BaseActivity() {
             holder.itemView.findViewById<TextView>(R.id.readItemChapterContentTitle).text = chapter.chapterName
             if (chapter.content.isNotEmpty()) {
                 holder.itemView.findViewById<TextView>(R.id.readItemChapterContent).text = Html.fromHtml(chapter.content)
-            } else {
+            }
+            if (!chapter.loadSuccess)
                 compDisposable.add(fiction.loadBookChapter(chapter).subscribe({ notifyDataSetChanged() }, {
                     chapter.content = "章节加载失败：${it.message}"
                     notifyDataSetChanged()
                 }))
-            }
         }
 
         override fun getItemCount(): Int = chapters.size

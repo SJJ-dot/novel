@@ -5,7 +5,6 @@ import sjj.fiction.data.source.DataSourceInterface
 import sjj.fiction.model.Book
 import sjj.fiction.model.BookGroup
 import sjj.fiction.model.Chapter
-import sjj.fiction.model.Url
 
 /**
  * Created by SJJ on 2017/9/2.
@@ -16,7 +15,7 @@ interface FictionDataRepository : DataRepositoryInterface {
     fun loadBookDetailsAndChapter(book: BookGroup): Observable<BookGroup>
     fun loadBookChapter(chapter: Chapter): Observable<Chapter>
     interface RemoteSource : Base {
-        fun domain(): Url
+        fun domain(): String
     }
 
     interface SourceLocal : Base {

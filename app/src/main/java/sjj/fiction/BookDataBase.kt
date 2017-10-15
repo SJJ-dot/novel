@@ -1,4 +1,4 @@
-package sjj.fiction.model
+package sjj.fiction
 
 import com.raizlabs.android.dbflow.annotation.Database
 

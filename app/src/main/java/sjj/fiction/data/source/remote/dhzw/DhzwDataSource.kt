@@ -6,6 +6,7 @@ import sjj.fiction.data.Repository.FictionDataRepository
 import sjj.fiction.data.source.remote.HttpDataSource
 import sjj.fiction.data.source.remote.HttpInterface
 import sjj.fiction.model.*
+import sjj.fiction.util.domain
 import java.net.URLEncoder
 
 /**
@@ -14,7 +15,7 @@ import java.net.URLEncoder
 class DhzwDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
     override fun baseUrl(): String = "http://www.dhzw.org"
 
-    override fun domain(): Url = Url(baseUrl())
+    override fun domain(): String = baseUrl().domain()
 
     private val service = create<HttpInterface>()
 
@@ -24,27 +25,28 @@ class DhzwDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
                     val elementsByClass = Jsoup.parse(it).body().getElementById("newscontent").getElementsByTag("ul")[0].getElementsByTag("li")
                     val results = List(elementsByClass.size) {
                         val ahref = elementsByClass[it].child(1).select("a[href]")[0]
-                        Book(Url(ahref.attr("href")), ahref.text(), elementsByClass[it].child(3).child(0).text())
+                        Book(ahref.attr("href"), ahref.text(), elementsByClass[it].child(3).child(0).text())
                     }
                     results
                 }
     }
 
     override fun loadBookDetailsAndChapter(book: Book): Observable<Book> {
-        return service.loadHtmlForGBK(book.url.url).map {
-            val parse = Jsoup.parse(it, book.url.url).body()
-            book.bookCoverImg = Url(parse.getElementById("fmimg").select("a[href]")[0].attr("src"))
+        return service.loadHtmlForGBK(book.url).map {
+            val parse = Jsoup.parse(it, book.url).body()
+            book.bookCoverImgUrl = parse.getElementById("fmimg").select("a[href]")[0].attr("src")
             book.intro = parse.getElementById("info").child(1).text()
-            book.chapterList = parse.getElementById("list").select("a[href]").map { Chapter(it.text(), Url(it.attr("abs:href"))) }
+            book.chapterList = parse.getElementById("list").select("a[href]").mapIndexed { index, e -> Chapter(e.attr("abs:href"), book.id, index = index, chapterName = e.text()) }
             book.chapterListUrl = book.url
             book
         }
     }
 
     override fun loadBookChapter(chapter: Chapter): Observable<Chapter> {
-        return service.loadHtmlForGBK(chapter.url.url).map {
+        return service.loadHtmlForGBK(chapter.url).map {
             val parse = Jsoup.parse(it).getElementById("BookText")
             chapter.content = parse.html()
+            chapter.loadSuccess = true
             chapter
         }
     }
