@@ -64,7 +64,7 @@ class YunlaigeDataSource : HttpDataSource(), FictionDataRepository.RemoteSource 
         return service.loadHtmlForGBK(chapter.url).map {
             val element = Jsoup.parse(it).getElementById("content")
             chapter.content = element.html()
-            chapter.loadSuccess = true
+            chapter.isLoadSuccess = true
             chapter
         }
     }

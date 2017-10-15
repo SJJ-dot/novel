@@ -17,5 +17,5 @@ data class Chapter(
         @Column var index: Int = 0,
         @Column var chapterName: String = "",
         @Column var content: String = "",
-        @Column var loadSuccess: Boolean = false
+        @Column var isLoadSuccess: Boolean = false
 ) : Serializable

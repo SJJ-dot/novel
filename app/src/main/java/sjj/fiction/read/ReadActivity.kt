@@ -1,7 +1,5 @@
 package sjj.fiction.read
 
-import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.LinearLayoutManager
@@ -16,11 +14,9 @@ import kotlinx.android.synthetic.main.activity_read.*
 import org.jetbrains.anko.find
 import org.jetbrains.anko.textColor
 import org.jetbrains.anko.verticalLayout
-import sjj.alog.Log
 import sjj.fiction.BaseActivity
 import sjj.fiction.R
 import sjj.fiction.data.Repository.FictionDataRepository
-import sjj.fiction.data.Repository.impl.FictionDataRepositoryImpl
 import sjj.fiction.model.Book
 import sjj.fiction.model.Chapter
 import sjj.fiction.util.fictionDataRepository
@@ -87,7 +83,7 @@ class ReadActivity : BaseActivity() {
             if (chapter.content.isNotEmpty()) {
                 holder.itemView.findViewById<TextView>(R.id.readItemChapterContent).text = Html.fromHtml(chapter.content)
             }
-            if (!chapter.loadSuccess)
+            if (!chapter.isLoadSuccess)
                 compDisposable.add(fiction.loadBookChapter(chapter).subscribe({ notifyDataSetChanged() }, {
                     chapter.content = "章节加载失败：${it.message}"
                     notifyDataSetChanged()
