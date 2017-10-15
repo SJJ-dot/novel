@@ -43,6 +43,7 @@ class DetailsActivity : BaseActivity() {
         originWebsite.text = book.url.domain()
         chapterList.layoutManager = LinearLayoutManager(this)
         chapterList.adapter = ChapterListAdapter(bookGroup)
+        chapterList.scrollToPosition(bookGroup.readIndex)
         chapterListButton.setOnClickListener {
             chapterList.visibility = if (chapterList.visibility == View.GONE) View.VISIBLE else View.GONE
         }
