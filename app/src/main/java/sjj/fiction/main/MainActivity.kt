@@ -29,7 +29,6 @@ import sjj.fiction.util.showSoftInput
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
     private val tag_books = "tag_books"
     private val tag_search = "tag_search"
-    private var disposable: Disposable? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -48,15 +47,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                     .show(supportFragmentManager.findFragmentByTag(tag_books))
                     .commit()
         }
-        disposable = fictionDataRepository.getSearchHistory().subscribe({
-            val adapter = ArrayAdapter<String>(this,R.layout.item_text_text,R.id.text1, it)
-            searchInput.setAdapter(adapter)
-            disposable = null
-            Log.e(it)
-        }, {
-            Log.e("getSearchHistory error", it)
-            disposable = null
-        })
+        val adapter = ArrayAdapter<String>(this, R.layout.item_text_text, R.id.text1)
         searchText.setOnClickListener {
             it.visibility = View.GONE
             searchInput.visibility = View.VISIBLE
@@ -71,7 +62,13 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 b.show(supportFragmentManager.findFragmentByTag(tag_search))
             }
             b.commit()
-            searchInput.showDropDown()
+            fictionDataRepository.getSearchHistory().subscribe({
+                adapter.clear()
+                adapter.addAll(it)
+                searchInput.showDropDown()
+            }, {
+                Log.e("getSearchHistory error", it)
+            })
         }
         searchCancel.setOnClickListener {
             if (searchInput.visibility == View.GONE) return@setOnClickListener
@@ -88,6 +85,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                         .commit()
             }
         }
+        searchInput.setAdapter(adapter)
         searchInput.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 val byTag = supportFragmentManager.findFragmentByTag(tag_search) as? SearchFragment
@@ -98,11 +96,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             }
             false
         })
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        disposable?.dispose()
     }
 
     override fun onBackPressed() {
