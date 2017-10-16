@@ -11,11 +11,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_details.*
 import org.jetbrains.anko.find
+import org.jetbrains.anko.toast
 import sjj.fiction.BaseActivity
 import sjj.fiction.R
 import sjj.fiction.model.BookGroup
 import sjj.fiction.read.ReadActivity
 import sjj.fiction.util.domain
+import sjj.fiction.util.fictionDataRepository
 
 /**
  * Created by SJJ on 2017/10/10.
@@ -46,6 +48,15 @@ class DetailsActivity : BaseActivity() {
         chapterList.scrollToPosition(bookGroup.readIndex)
         chapterListButton.setOnClickListener {
             chapterList.visibility = if (chapterList.visibility == View.GONE) View.VISIBLE else View.GONE
+        }
+        refreshBtn.setOnClickListener {
+            fictionDataRepository.loadBookDetailsAndChapter(bookGroup,true).subscribe({
+                intent.putExtra(data, it)
+                finish()
+                startActivity(intent)
+            },{
+                toast("检查更新出错：${it.message}")
+            })
         }
     }
 
