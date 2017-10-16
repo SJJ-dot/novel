@@ -1,5 +1,6 @@
 package sjj.fiction.search
 
+import android.content.Context
 import io.reactivex.Observable
 import sjj.fiction.BasePresenter
 import sjj.fiction.BaseView
@@ -11,7 +12,7 @@ import sjj.fiction.model.BookGroup
 interface SearchContract {
     interface presenter : BasePresenter {
         fun search(text: String): Observable<List<BookGroup>>
-        fun onSelect(book: BookGroup): Observable<BookGroup>
+        fun onSelect(book: BookGroup, context: Context): Observable<BookGroup>
     }
 
     interface view : BaseView<presenter> {

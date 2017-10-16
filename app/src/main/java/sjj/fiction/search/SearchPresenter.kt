@@ -1,5 +1,7 @@
 package sjj.fiction.search
 
+import android.content.Context
+import android.content.Intent
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -7,6 +9,7 @@ import sjj.alog.Log
 import sjj.fiction.data.Repository.FictionDataRepository
 import sjj.fiction.data.source.remote.dhzw.DhzwDataSource
 import sjj.fiction.data.source.remote.yunlaige.YunlaigeDataSource
+import sjj.fiction.details.DetailsActivity
 import sjj.fiction.model.BookGroup
 import sjj.fiction.util.errorObservable
 import sjj.fiction.util.fictionDataRepository
@@ -49,5 +52,10 @@ class SearchPresenter(private val view: SearchContract.view) : SearchContract.pr
                 }
             }.observeOn(AndroidSchedulers.mainThread())
 
-    override fun onSelect(book: BookGroup): Observable<BookGroup> = data?.loadBookDetailsAndChapter(book) ?: errorObservable("this presenter not start")
+    override fun onSelect(book: BookGroup, context: Context): Observable<BookGroup> = (data?.loadBookDetailsAndChapter(book) ?: errorObservable("this presenter not start"))
+            .doOnNext {
+                val intent = Intent(context, DetailsActivity::class.java);
+                intent.putExtra(DetailsActivity.data, it)
+                context.startActivity(intent)
+            }
 }

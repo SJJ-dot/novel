@@ -44,6 +44,7 @@ class FictionDataRepositoryImpl : FictionDataRepository {
                     }
                 }
             }
+            var e: Throwable? = null
             sources.forEach {
                 it.value.search(search).subscribe({
                     it.forEach {
@@ -51,12 +52,17 @@ class FictionDataRepositoryImpl : FictionDataRepository {
                     }
                     count.tryNotify()
                 }, {
+                    e = it
                     Log.e("search error", it)
                     count.tryNotify()
                 })
             }
             synchronized(count) { count.wait() }
-            map.values.toList()
+            val list = map.values.toList()
+            if (list.isEmpty() && e != null) {
+                throw e!!
+            }
+            list
         }
     }
 

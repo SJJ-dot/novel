@@ -145,11 +145,8 @@ class SearchFragment : BaseFragment(), SearchContract.view {
 
         fun startActivity(context: Context, book: BookGroup) {
             val dialog = indeterminateProgressDialog("请稍候")
-            compDisposable.add(presenter.onSelect(book).subscribe({
+            compDisposable.add(presenter.onSelect(book,context).subscribe({
                 dialog.dismiss()
-                val intent = Intent(context, DetailsActivity::class.java);
-                intent.putExtra(DetailsActivity.data, it)
-                startActivity(intent)
             }, {
                 dialog.dismiss()
                 Log.e("error", it)
