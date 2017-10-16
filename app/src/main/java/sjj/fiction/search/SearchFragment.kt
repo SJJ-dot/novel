@@ -31,6 +31,13 @@ class SearchFragment : BaseFragment(), SearchContract.view {
     private val presenter = SearchPresenter(this)
     private val searchResultBookAdapter by lazy { SearchResultBookAdapter() }
     private var compDisposable: CompositeDisposable = CompositeDisposable()
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        if (context !is AutoTextChangeCallback) {
+            throw IllegalArgumentException("activity 必须实现 AutoTextChangeCallback 接口")
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater?.inflate(R.layout.fragment_search, container, false)
     }
@@ -150,4 +157,11 @@ class SearchFragment : BaseFragment(), SearchContract.view {
         }
     }
 
+    override fun notifyAutoTextChange(texts: List<String>) {
+        (context as? AutoTextChangeCallback)?.notifyAutoTextChange(texts)
+    }
+
+    interface AutoTextChangeCallback {
+        fun notifyAutoTextChange(texts: List<String>)
+    }
 }

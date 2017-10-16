@@ -1,6 +1,9 @@
 package sjj.fiction.search
 
 import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+import sjj.alog.Log
 import sjj.fiction.data.Repository.FictionDataRepository
 import sjj.fiction.data.source.remote.dhzw.DhzwDataSource
 import sjj.fiction.data.source.remote.yunlaige.YunlaigeDataSource
@@ -13,16 +16,38 @@ import sjj.fiction.util.fictionDataRepository
  */
 class SearchPresenter(private val view: SearchContract.view) : SearchContract.presenter {
     private val sources = arrayOf<FictionDataRepository.RemoteSource>(DhzwDataSource(), YunlaigeDataSource())
+
     private var data: FictionDataRepository? = null
     override fun start() {
         data = fictionDataRepository
+        fictionDataRepository.getSearchHistory().subscribe({
+            view.notifyAutoTextChange(it)
+        }, {})
     }
 
     override fun stop() {
         data = null
     }
 
-    override fun search(text: String): Observable<List<BookGroup>> = data?.search(text) ?: errorObservable("this presenter not start")
+    override fun search(text: String): Observable<List<BookGroup>> = (data?.search(text) ?: errorObservable("this presenter not start"))
+            .observeOn(Schedulers.io())
+            .doOnNext {
+                val dataRepository = data ?: return@doOnNext
+                val lock = java.lang.Object()
+                dataRepository.getSearchHistory().flatMap({
+                    val set = it.toMutableSet()
+                    set.add(text)
+                    dataRepository.setSearchHistory(set.toList())
+                }).subscribe({
+                    view.notifyAutoTextChange(it)
+                    synchronized(lock) { lock.notify() }
+                }, {
+                    synchronized(lock) { lock.notify() }
+                })
+                synchronized(lock) {
+                    lock.wait()
+                }
+            }.observeOn(AndroidSchedulers.mainThread())
 
     override fun onSelect(book: BookGroup): Observable<BookGroup> = data?.loadBookDetailsAndChapter(book) ?: errorObservable("this presenter not start")
 }

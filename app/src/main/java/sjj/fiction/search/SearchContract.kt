@@ -16,5 +16,6 @@ interface SearchContract {
 
     interface view : BaseView<presenter> {
         fun showBookList(book: List<BookGroup>)
+        fun notifyAutoTextChange(texts: List<String>)
     }
 }

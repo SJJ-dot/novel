@@ -18,6 +18,7 @@ import sjj.fiction.util.domain
  * Created by SJJ on 2017/9/3.
  */
 class FictionDataRepositoryImpl : FictionDataRepository {
+
     private val sources = mutableMapOf<String, FictionDataRepository.RemoteSource>()
 
     private val localSource = LocalFictionDataSource()
@@ -56,30 +57,11 @@ class FictionDataRepositoryImpl : FictionDataRepository {
             }
             synchronized(count) { count.wait() }
             map.values.toList()
-        }.observeOn(
-                Schedulers.io()
-        ).doOnNext { bookGroups ->
-            val lock = java.lang.Object()
-            localSource.getSearchHistory().flatMap {
-                val set = it.toMutableSet()
-                set.add(search)
-
-                localSource.setSearchHistory(set.toList())
-            }.flatMap {
-                localSource.saveBookGroup(bookGroups)
-            }.subscribe({
-                synchronized(lock) { lock.notify() }
-            }, {
-                synchronized(lock) { lock.notify() }
-            })
-            synchronized(lock) {
-                lock.wait()
-            }
-        }.observeOn(AndroidSchedulers.mainThread())
+        }
     }
 
     override fun getSearchHistory(): Observable<List<String>> = localSource.getSearchHistory()
-
+    override fun setSearchHistory(value: List<String>): Observable<List<String>> = localSource.setSearchHistory(value)
     override fun loadBookDetailsAndChapter(book: BookGroup): Observable<BookGroup> = sources[book.currentBook.url.domain()]
             ?.loadBookDetailsAndChapter(book.currentBook)
             ?.flatMap {

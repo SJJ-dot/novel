@@ -11,6 +11,7 @@ import sjj.fiction.model.Chapter
  */
 interface FictionDataRepository : DataRepositoryInterface {
     fun search(search: String): Observable<List<BookGroup>>
+    fun setSearchHistory(value: List<String>): Observable<List<String>>
     fun getSearchHistory(): Observable<List<String>>
     fun loadBookDetailsAndChapter(book: BookGroup): Observable<BookGroup>
     fun loadBookChapter(chapter: Chapter): Observable<Chapter>
