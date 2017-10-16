@@ -1,23 +1,23 @@
 package sjj.fiction.data.source.local
 
+import android.content.res.Resources
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.raizlabs.android.dbflow.config.FlowManager
 import com.raizlabs.android.dbflow.kotlinextensions.*
 import io.reactivex.Observable
 import sjj.alog.Log
 import sjj.fiction.App
 import sjj.fiction.BookDataBase
 import sjj.fiction.data.Repository.FictionDataRepository
-import sjj.fiction.model.Book
-import sjj.fiction.model.BookGroup
-import sjj.fiction.model.Book_Table
-import sjj.fiction.model.Chapter
+import sjj.fiction.model.*
 import sjj.fiction.util.def
 
 /**
  * Created by SJJ on 2017/10/15.
  */
 class LocalFictionDataSource : FictionDataRepository.SourceLocal {
+
     private val KEY_SEARCH_HISTORY = "LOCAL_FICTION_DATA_SOURCE_KEY_SEARCH_HISTORY"
 
     private val config = App.app.config
@@ -72,6 +72,24 @@ class LocalFictionDataSource : FictionDataRepository.SourceLocal {
         return def {
             chapter.update()
             chapter
+        }
+    }
+
+    override fun loadBookDetailsAndChapter(book: Book): Observable<Book> {
+        return def {
+            val book1 = (select from Book::class where (Book_Table.id eq book.id)).result ?: throw Exception("Not Found")
+            book.url = book1.url
+            book.name = book1.name
+            book.author = book1.author
+            book.bookCoverImgUrl = book1.bookCoverImgUrl
+            book.intro = book1.intro
+            book.chapterListUrl = book1.chapterListUrl
+            val list = (select from Chapter::class where (Chapter_Table.bookId eq book.id)).list
+            if (list.isEmpty()) {
+                throw Exception("chapter is null")
+            }
+            book.chapterList = list
+            book
         }
     }
 

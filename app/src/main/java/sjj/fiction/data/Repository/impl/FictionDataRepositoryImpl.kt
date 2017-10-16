@@ -68,12 +68,40 @@ class FictionDataRepositoryImpl : FictionDataRepository {
 
     override fun getSearchHistory(): Observable<List<String>> = localSource.getSearchHistory()
     override fun setSearchHistory(value: List<String>): Observable<List<String>> = localSource.setSearchHistory(value)
-    override fun loadBookDetailsAndChapter(book: BookGroup): Observable<BookGroup> = sources[book.currentBook.url.domain()]
-            ?.loadBookDetailsAndChapter(book.currentBook)
-            ?.flatMap {
-                localSource.updateBook(it)
-            }?.map { book }
-            ?: error("未知源 ${book.currentBook.url}")
+    override fun loadBookDetailsAndChapter(book: BookGroup, force: Boolean): Observable<BookGroup> = def {
+        val lock = java.lang.Object()
+        if (!force) {
+            var localHas = false
+            localSource.loadBookDetailsAndChapter(book.currentBook).subscribe({
+                book.currentBook = it
+                localHas = true
+                synchronized(lock) { lock.notify() }
+            }, {
+                synchronized(lock) { lock.notify() }
+            })
+            synchronized(lock) { lock.wait() }
+            if (localHas) {
+                return@def book
+            }
+        }
+        var e: Throwable? = null
+        (sources[book.currentBook.url.domain()]
+                ?.loadBookDetailsAndChapter(book.currentBook)
+                ?.flatMap { localSource.saveBookGroup(listOf(book)) }
+                ?.map { book }
+                ?: error("未知源 ${book.currentBook.url}"))
+                .subscribe({
+                    synchronized(lock) { lock.notify() }
+                }, {
+                    e = it
+                    synchronized(lock) { lock.notify() }
+                })
+        synchronized(lock) { lock.wait() }
+        if (e != null) {
+            throw e!!
+        }
+        return@def book
+    }
 
     override fun loadBookChapter(chapter: Chapter): Observable<Chapter> = sources[chapter.url.domain()]
             ?.loadBookChapter(chapter)
