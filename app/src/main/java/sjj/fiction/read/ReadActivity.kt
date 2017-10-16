@@ -8,6 +8,7 @@ import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.raizlabs.android.dbflow.kotlinextensions.save
 import io.reactivex.disposables.CompositeDisposable
@@ -22,6 +23,7 @@ import sjj.fiction.model.Book
 import sjj.fiction.model.BookGroup
 import sjj.fiction.model.Chapter
 import sjj.fiction.util.fictionDataRepository
+import sjj.fiction.util.lparams
 import sjj.fiction.util.textView
 import sjj.fiction.util.toDpx
 
@@ -82,7 +84,9 @@ class ReadActivity : BaseActivity() {
                         textSize = 20f
                         textColor = getColor(R.color.material_textBlack_text)
                     }
-                    minimumHeight = parent.height
+                }.lparams<RecyclerView.LayoutParams, LinearLayout>{
+                    width = RecyclerView.LayoutParams.MATCH_PARENT
+                    height = RecyclerView.LayoutParams.MATCH_PARENT
                 }
             }) {}
         }
@@ -93,11 +97,15 @@ class ReadActivity : BaseActivity() {
             if (chapter.content.isNotEmpty()) {
                 holder.itemView.findViewById<TextView>(R.id.readItemChapterContent).text = Html.fromHtml(chapter.content)
             }
-            if (!chapter.isLoadSuccess)
+            if (!chapter.isLoadSuccess) {
                 compDisposable.add(fiction.loadBookChapter(chapter).subscribe({ notifyDataSetChanged() }, {
                     chapter.content = "章节加载失败：${it.message}"
                     notifyDataSetChanged()
                 }))
+                holder.itemView.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+            } else {
+                holder.itemView.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+            }
         }
 
         override fun getItemCount(): Int = chapters.size
