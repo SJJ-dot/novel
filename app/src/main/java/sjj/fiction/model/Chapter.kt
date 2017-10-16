@@ -18,4 +18,6 @@ data class Chapter(
         @Column var chapterName: String = "",
         @Column var content: String = "",
         @Column var isLoadSuccess: Boolean = false
-) : Serializable
+) : Serializable {
+    var isLoading = false
+}

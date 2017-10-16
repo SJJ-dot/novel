@@ -16,6 +16,7 @@ import kotlinx.android.synthetic.main.activity_read.*
 import org.jetbrains.anko.find
 import org.jetbrains.anko.textColor
 import org.jetbrains.anko.verticalLayout
+import sjj.alog.Log
 import sjj.fiction.BaseActivity
 import sjj.fiction.R
 import sjj.fiction.data.Repository.FictionDataRepository
@@ -84,7 +85,7 @@ class ReadActivity : BaseActivity() {
                         textSize = 20f
                         textColor = getColor(R.color.material_textBlack_text)
                     }
-                }.lparams<RecyclerView.LayoutParams, LinearLayout>{
+                }.lparams<RecyclerView.LayoutParams, LinearLayout> {
                     width = RecyclerView.LayoutParams.MATCH_PARENT
                     height = RecyclerView.LayoutParams.MATCH_PARENT
                 }
@@ -98,10 +99,17 @@ class ReadActivity : BaseActivity() {
                 holder.itemView.findViewById<TextView>(R.id.readItemChapterContent).text = Html.fromHtml(chapter.content)
             }
             if (!chapter.isLoadSuccess) {
-                compDisposable.add(fiction.loadBookChapter(chapter).subscribe({ notifyDataSetChanged() }, {
-                    chapter.content = "章节加载失败：${it.message}"
-                    notifyDataSetChanged()
-                }))
+                if (!chapter.isLoading) {
+                    chapter.isLoading = true
+                    compDisposable.add(fiction.loadBookChapter(chapter).subscribe({
+                        it.isLoading = false
+                        notifyDataSetChanged()
+                    }, {
+                        chapter.isLoading = false
+                        chapter.content = "章节加载失败：${it.message}"
+                        notifyDataSetChanged()
+                    }))
+                }
                 holder.itemView.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
             } else {
                 holder.itemView.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
