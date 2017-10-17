@@ -12,6 +12,7 @@ import sjj.fiction.BookDataBase
 import sjj.fiction.data.Repository.FictionDataRepository
 import sjj.fiction.model.*
 import sjj.fiction.util.def
+import sjj.fiction.util.errorObservable
 
 /**
  * Created by SJJ on 2017/10/15.
@@ -109,6 +110,21 @@ class LocalFictionDataSource : FictionDataRepository.SourceLocal {
                 listGroup.addAll(list)
             }
             return@def listGroup
+        }
+    }
+
+    override fun loadBookGroup(bookName: String, author: String): Observable<BookGroup> {
+        return def {
+            val result = (select from BookGroup::class where (BookGroup_Table.bookName eq bookName) and (BookGroup_Table.author eq author)).result!!
+//            result.currentBook = (select from Book::class where (Book_Table.id eq result.bookId)).result!!
+            result.books = (select from Book::class where (Book_Table.name eq result.bookName) and (Book_Table.author eq result.author)).list
+            result.books.forEach {
+                it.chapterList = (select from Chapter::class where (Chapter_Table.bookId eq it.id)).list
+                if (result.bookId== it.id) {
+                    result.currentBook = it
+                }
+            }
+            result
         }
     }
 

@@ -133,6 +133,7 @@ class SearchFragment : BaseFragment(), SearchContract.view {
                         items(bookGroup.books.map { it.url.domain() }) { d, i ->
                             d.dismiss()
                             bookGroup.currentBook = bookGroup.books[i]
+                            bookGroup.bookId = bookGroup.currentBook.id
                             startActivity(v.context, bookGroup)
                         }
                     }.show()

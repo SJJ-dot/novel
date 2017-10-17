@@ -66,7 +66,8 @@ class BookrackFragment : BaseFragment() {
                 compDisposable.add(fictionDataRepository.loadBookDetailsAndChapter(book).subscribe({
                     dialog.dismiss()
                     val intent = Intent(context, DetailsActivity::class.java);
-                    intent.putExtra(DetailsActivity.data, it)
+                    intent.putExtra(DetailsActivity.data_book_name, it.bookName)
+                    intent.putExtra(DetailsActivity.data_book_author, it.author)
                     startActivity(intent)
                 }, {
                     dialog.dismiss()

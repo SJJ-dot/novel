@@ -55,7 +55,8 @@ class SearchPresenter(private val view: SearchContract.view) : SearchContract.pr
     override fun onSelect(book: BookGroup, context: Context): Observable<BookGroup> = (data?.loadBookDetailsAndChapter(book) ?: errorObservable("this presenter not start"))
             .doOnNext {
                 val intent = Intent(context, DetailsActivity::class.java);
-                intent.putExtra(DetailsActivity.data, it)
+                intent.putExtra(DetailsActivity.data_book_name, it.bookName)
+                intent.putExtra(DetailsActivity.data_book_author, it.author)
                 context.startActivity(intent)
             }
 }

@@ -18,7 +18,6 @@ import sjj.fiction.util.domain
  * Created by SJJ on 2017/9/3.
  */
 class FictionDataRepositoryImpl : FictionDataRepository {
-
     private val sources = mutableMapOf<String, FictionDataRepository.RemoteSource>()
 
     private val localSource = LocalFictionDataSource()
@@ -74,6 +73,7 @@ class FictionDataRepositoryImpl : FictionDataRepository {
             var localHas = false
             localSource.loadBookDetailsAndChapter(book.currentBook).subscribe({
                 book.currentBook = it
+                Log.e(book.currentBook)
                 localHas = true
                 synchronized(lock) { lock.notify() }
             }, {
@@ -111,4 +111,9 @@ class FictionDataRepositoryImpl : FictionDataRepository {
             ?: error("未知源 ${chapter.url}")
 
     override fun loadBookGroups(): Observable<List<BookGroup>> = localSource.loadBookGroups()
+
+    override fun loadBookGroup(bookName: String, author: String): Observable<BookGroup> = localSource.loadBookGroup(bookName, author)
+    override fun saveBookGroup(book: List<BookGroup>): Observable<List<BookGroup>> {
+        return localSource.saveBookGroup(book)
+    }
 }
