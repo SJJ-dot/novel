@@ -129,9 +129,9 @@ class DetailsActivity : BaseActivity(), DetailsContract.View {
         alert {
             items(items) { dialog, index ->
                 dialog.dismiss()
-
+                presenter.onSelectBookOriginItem(index)
             }
-        }
+        }.show()
     }
 
     private class ChapterListAdapter(val presenter: DetailsContract.Presenter) : RecyclerView.Adapter<ViewHolder>() {

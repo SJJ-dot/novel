@@ -45,18 +45,7 @@ class BookrackFragment : BaseFragment() {
                 holder.itemView.find<TextView>(R.id.text1).text = bookGroup.bookName
                 holder.itemView.find<TextView>(R.id.text2).text = bookGroup.author
                 holder.itemView.setOnClickListener { v ->
-                    if (bookGroup.books.size > 1) {
-                        alert {
-                            items(bookGroup.books.map { it.url.domain() }) { d, i ->
-                                d.dismiss()
-                                bookGroup.currentBook = bookGroup.books[i]
-                                startActivity(v.context, bookGroup)
-                            }
-                        }.show()
-                    } else {
-                        startActivity(v.context, bookGroup)
-                    }
-
+                    startActivity(v.context, bookGroup)
                 }
             }
 

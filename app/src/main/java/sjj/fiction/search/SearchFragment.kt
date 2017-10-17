@@ -128,25 +128,13 @@ class SearchFragment : BaseFragment(), SearchContract.view {
             holder.itemView.find<TextView>(R.id.searchItemAuthor).text = book.author
             holder.itemView.find<TextView>(R.id.searchItemOrigin).text = bookGroup.books.size.toString()
             holder.itemView.setOnClickListener { v ->
-                if (bookGroup.books.size > 1) {
-                    alert {
-                        items(bookGroup.books.map { it.url.domain() }) { d, i ->
-                            d.dismiss()
-                            bookGroup.currentBook = bookGroup.books[i]
-                            bookGroup.bookId = bookGroup.currentBook.id
-                            startActivity(v.context, bookGroup)
-                        }
-                    }.show()
-                } else {
-                    startActivity(v.context, bookGroup)
-                }
-
+                startActivity(v.context, bookGroup)
             }
         }
 
         fun startActivity(context: Context, book: BookGroup) {
             val dialog = indeterminateProgressDialog("请稍候")
-            compDisposable.add(presenter.onSelect(book,context).subscribe({
+            compDisposable.add(presenter.onSelect(book, context).subscribe({
                 dialog.dismiss()
             }, {
                 dialog.dismiss()
