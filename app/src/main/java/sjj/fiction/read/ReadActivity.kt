@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Html
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
@@ -37,11 +38,17 @@ class ReadActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_read)
+        setSupportActionBar(toolbar)
+        val supportActionBar = supportActionBar!!
+        supportActionBar.setDisplayHomeAsUpEnabled(true)
         val bookGroup = intent.getSerializableExtra(DATA_BOOK) as BookGroup
         val book = bookGroup.currentBook
+        title = book.name
         chapterContent.layoutManager = LinearLayoutManager(this)
         chapterContent.adapter = ChapterContentAdapter(book.chapterList)
-        chapterContent.scrollToPosition(intent.getIntExtra(DATA_CHAPTER_INDEX, 0))
+        val current = Math.min(intent.getIntExtra(DATA_CHAPTER_INDEX, 0), book.chapterList.size - 1)
+        chapterName.text = book.chapterList[current].chapterName
+        chapterContent.scrollToPosition(current)
         chapterList.layoutManager = LinearLayoutManager(this)
         chapterList.adapter = ChapterListAdapter(book)
         drawer_layout.addDrawerListener(object : DrawerLayout.SimpleDrawerListener() {
@@ -52,11 +59,15 @@ class ReadActivity : BaseActivity() {
             }
         })
         chapterContent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 val manager = chapterContent.layoutManager as LinearLayoutManager
                 val position = manager.findFirstVisibleItemPosition()
-                bookGroup.readIndex = position
-                bookGroup.save()
+                if (chapterName.tag != position) {
+                    chapterName.text = book.chapterList[position].chapterName
+                    chapterName.tag = position
+                }
+                if (supportActionBar.isShowing)
+                    supportActionBar.hide()
             }
         })
     }
@@ -65,6 +76,21 @@ class ReadActivity : BaseActivity() {
         super.onDestroy()
         val adapter = chapterContent.adapter as ChapterContentAdapter
         adapter.cancel()
+        val manager = chapterContent.layoutManager as LinearLayoutManager
+        val position = manager.findFirstVisibleItemPosition()
+        val bookGroup = intent.getSerializableExtra(DATA_BOOK) as BookGroup
+        bookGroup.readIndex = position
+        bookGroup.save()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     private class ChapterContentAdapter(val chapters: List<Chapter>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {

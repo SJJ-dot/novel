@@ -73,7 +73,6 @@ class FictionDataRepositoryImpl : FictionDataRepository {
             var localHas = false
             localSource.loadBookDetailsAndChapter(book.currentBook).subscribe({
                 book.currentBook = it
-                Log.e(book.currentBook)
                 localHas = true
                 synchronized(lock) { lock.notify() }
             }, {

@@ -5,6 +5,7 @@ import com.raizlabs.android.dbflow.config.DatabaseConfig
 import com.raizlabs.android.dbflow.config.FlowConfig
 import com.raizlabs.android.dbflow.config.FlowManager
 import sjj.alog.Config
+import sjj.alog.Log
 
 /**
  * Created by SJJ on 2017/9/3.
@@ -17,6 +18,9 @@ class App : Application() {
     lateinit var config: Configuration
     override fun onCreate() {
         super.onCreate()
+        Thread.setDefaultUncaughtExceptionHandler { t, e ->
+            Log.e(t.name, e)
+        }
         app = this
         config = Configuration(this)
         val logConfig = Config()
