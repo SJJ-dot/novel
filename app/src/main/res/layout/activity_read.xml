@@ -20,6 +20,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                app:layout_scrollFlags="scroll|enterAlways|snap"
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
         </android.support.design.widget.AppBarLayout>
 
@@ -34,10 +35,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/translucent"
+            android:paddingBottom="5dp"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
             android:paddingTop="8dp"
-            android:paddingBottom="5dp"
             android:textSize="14sp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             tools:text="@string/app_name" />

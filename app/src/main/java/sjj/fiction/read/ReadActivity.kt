@@ -45,7 +45,7 @@ class ReadActivity : BaseActivity() {
         val book = bookGroup.currentBook
         title = book.name
         chapterContent.layoutManager = LinearLayoutManager(this)
-        chapterContent.adapter = ChapterContentAdapter(book.chapterList){ supportActionBar.show() }
+        chapterContent.adapter = ChapterContentAdapter(book.chapterList)
         val current = Math.min(intent.getIntExtra(DATA_CHAPTER_INDEX, 0), book.chapterList.size - 1)
         chapterName.text = book.chapterList[current].chapterName
         chapterContent.scrollToPosition(current)
@@ -66,8 +66,6 @@ class ReadActivity : BaseActivity() {
                     chapterName.text = book.chapterList[position].chapterName
                     chapterName.tag = position
                 }
-                if (supportActionBar.isShowing)
-                    supportActionBar.hide()
             }
         })
     }
@@ -93,7 +91,7 @@ class ReadActivity : BaseActivity() {
         }
     }
 
-    private class ChapterContentAdapter(val chapters: List<Chapter>,val onItemClick: (View) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private class ChapterContentAdapter(val chapters: List<Chapter>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private val fiction: FictionDataRepository = fictionDataRepository
         private var compDisposable: CompositeDisposable = CompositeDisposable()
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -111,7 +109,6 @@ class ReadActivity : BaseActivity() {
                         textSize = 20f
                         textColor = getColor(R.color.material_textBlack_text)
                     }
-                    setOnClickListener(onItemClick)
                 }.lparams<RecyclerView.LayoutParams, LinearLayout> {
                     width = RecyclerView.LayoutParams.MATCH_PARENT
                     height = RecyclerView.LayoutParams.MATCH_PARENT
