@@ -14,8 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".about.AboutActivity" />
-        <activity
-            android:name=".main.MainActivity">
+        <activity android:name=".main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,6 +23,10 @@
         </activity>
         <activity android:name=".details.DetailsActivity" />
         <activity android:name=".read.ReadActivity" />
+        <activity
+            android:name=".CrashActivity"
+            android:launchMode="singleTask"
+            android:process=":crashInfo" />
     </application>
 
 </manifest>

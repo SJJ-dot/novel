@@ -17,6 +17,7 @@ import sjj.permission.model.Permission
 abstract class BaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        App.app.activitys.add(this)
         val packageInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS)
         val requestedPermissions = packageInfo.requestedPermissions
         PermissionUtil.requestPermissions(this, requestedPermissions, object : PermissionCallback {
@@ -30,5 +31,10 @@ abstract class BaseActivity : AppCompatActivity() {
                 Log.e(s)
             }
         })
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        App.app.activitys.remove(this)
     }
 }

@@ -111,7 +111,7 @@ private val client = OkHttpClient.Builder()
             }
             response
         }
-        .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+        .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS))
         .build()
 
 internal fun isPlaintext(buffer: Buffer): Boolean {

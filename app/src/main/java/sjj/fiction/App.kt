@@ -1,11 +1,14 @@
 package sjj.fiction
 
 import android.app.Application
+import android.content.Intent
 import com.raizlabs.android.dbflow.config.DatabaseConfig
 import com.raizlabs.android.dbflow.config.FlowConfig
 import com.raizlabs.android.dbflow.config.FlowManager
+import org.jetbrains.anko.newTask
 import sjj.alog.Config
 import sjj.alog.Log
+import java.util.*
 
 /**
  * Created by SJJ on 2017/9/3.
@@ -16,9 +19,17 @@ class App : Application() {
     }
 
     lateinit var config: Configuration
+    val activitys = LinkedList<BaseActivity>()
     override fun onCreate() {
         super.onCreate()
-        Thread.setDefaultUncaughtExceptionHandler(Log::e)
+        Thread.setDefaultUncaughtExceptionHandler { t, e ->
+            val intent = Intent(this, CrashActivity::class.java)
+            intent.putExtra(CrashActivity.THREAD_INFO, "线程：${t.name} ID：${t.id}")
+            intent.putExtra(CrashActivity.CRASH_DATA, e)
+            intent.newTask()
+            startActivity(intent)
+            finishAll()
+        }
         app = this
         config = Configuration(this)
         val logConfig = Config()
@@ -33,5 +44,10 @@ class App : Application() {
 
     fun exit() {
         System.exit(0)
+    }
+
+    fun finishAll() {
+        activitys.forEach { it.finish() }
+        activitys.clear()
     }
 }
