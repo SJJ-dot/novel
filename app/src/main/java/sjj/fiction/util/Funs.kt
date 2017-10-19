@@ -15,3 +15,18 @@ fun String.domain(): String {
     }
     return "error"
 }
+
+fun Throwable.stackTraceString(): String {
+    val buffer = StringBuilder()
+    buffer.append(this::class.java).append(", ").append(message).append("\n")
+    var throwable: Throwable? = this
+    while (throwable != null) {
+        for (element in throwable.stackTrace) {
+            buffer.append(element.toString()).append("\n")
+        }
+        throwable = throwable.cause
+        if (throwable != null)
+            buffer.append("caused by ")
+    }
+    return buffer.toString()
+}
