@@ -77,7 +77,6 @@ class BookrackFragment : BaseFragment() {
 
     override fun onStop() {
         super.onStop()
-        compDisposable.dispose()
-        compDisposable = CompositeDisposable()
+        compDisposable.clear()
     }
 }

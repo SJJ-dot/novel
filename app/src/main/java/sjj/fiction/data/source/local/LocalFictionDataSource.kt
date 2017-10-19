@@ -72,6 +72,7 @@ class LocalFictionDataSource : FictionDataRepository.SourceLocal {
     override fun saveChapter(chapter: Chapter): Observable<Chapter> {
         return def {
             chapter.update()
+            chapter.content.save()
             chapter
         }
     }
@@ -100,8 +101,8 @@ class LocalFictionDataSource : FictionDataRepository.SourceLocal {
         chapter.bookId = chapter1.bookId
         chapter.index = chapter1.index
         chapter.chapterName = chapter1.chapterName
-        chapter.content = chapter1.chapterName
         chapter.isLoadSuccess = chapter1.isLoadSuccess
+        chapter.content = (select from ChapterContent::class where (ChapterContent_Table.url eq chapter.url)).result ?: throw Exception("not found ChapterContent ${chapter.chapterName}")
         chapter
     }
 

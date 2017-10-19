@@ -55,8 +55,7 @@ class SearchFragment : BaseFragment(), SearchContract.view {
     override fun onStop() {
         super.onStop()
         presenter.stop()
-        compDisposable.dispose()
-        compDisposable = CompositeDisposable()
+        compDisposable.clear()
     }
 
     fun search(text: String) {

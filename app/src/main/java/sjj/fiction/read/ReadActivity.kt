@@ -133,10 +133,10 @@ class ReadActivity : BaseActivity() {
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val chapter = chapters[position]
             holder.itemView.findViewById<TextView>(R.id.readItemChapterContentTitle).text = chapter.chapterName
-            if (chapter.content.isNotEmpty()) {
-                holder.itemView.findViewById<TextView>(R.id.readItemChapterContent).text = Html.fromHtml(chapter.content)
+            if (chapter.content.content.isNotEmpty()) {
+                holder.itemView.findViewById<TextView>(R.id.readItemChapterContent).text = Html.fromHtml(chapter.content.content)
             }
-            if (!chapter.isLoadSuccess) {
+            if (!chapter.isLoadSuccess||chapter.content.content.isEmpty()) {
                 if (!chapter.isLoading) {
                     chapter.isLoading = true
                     compDisposable.add(fiction.loadBookChapter(chapter).subscribe({
@@ -144,7 +144,7 @@ class ReadActivity : BaseActivity() {
                         notifyDataSetChanged()
                     }, {
                         chapter.isLoading = false
-                        chapter.content = "章节加载失败：${it.message}"
+                        chapter.content.content = "章节加载失败：${it.message}"
                         notifyDataSetChanged()
                     }))
                 }

@@ -16,7 +16,7 @@ data class Chapter(
         @Column var bookId: String = "",
         @Column var index: Int = 0,
         @Column var chapterName: String = "",
-        @Column var content: String = "",
+        var content: ChapterContent = ChapterContent.def,
         @Column var isLoadSuccess: Boolean = false
 ) : Serializable {
     var isLoading = false
