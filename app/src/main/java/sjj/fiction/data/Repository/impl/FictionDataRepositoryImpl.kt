@@ -54,7 +54,6 @@ class FictionDataRepositoryImpl : FictionDataRepository {
                     count.tryNotify()
                 }, {
                     e = it
-                    Log.e("search error", it)
                     count.tryNotify()
                 })
             }
@@ -156,7 +155,6 @@ class FictionDataRepositoryImpl : FictionDataRepository {
         }
         book.chapterList.forEach {
             loadBookChapter(it).subscribe({
-                Log.e(it)
                 emitter.onNext(book)
             }, {
                 count.error(it)
