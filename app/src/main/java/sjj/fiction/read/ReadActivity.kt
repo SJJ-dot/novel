@@ -5,18 +5,13 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Html
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.raizlabs.android.dbflow.kotlinextensions.save
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_read.*
-import org.jetbrains.anko.find
-import org.jetbrains.anko.textColor
-import org.jetbrains.anko.verticalLayout
+import org.jetbrains.anko.*
 import sjj.alog.Log
 import sjj.fiction.BaseActivity
 import sjj.fiction.R
@@ -81,10 +76,29 @@ class ReadActivity : BaseActivity() {
         bookGroup.save()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.activity_read_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
                 finish()
+                true
+            }
+            R.id.menu_cached -> {
+                val book = (intent.getSerializableExtra(DATA_BOOK) as BookGroup).currentBook
+                val dialog = progressDialog("正在缓存章节列表") {
+                    max = book.chapterList.size
+                }
+                fictionDataRepository.cachedBookChapter(book)
+                        .subscribe({
+                            dialog.progress = dialog.progress + 1
+                        }, { toast("缓存出错") }, {
+                            dialog.dismiss()
+                            toast("加载完成：${dialog.progress}")
+                        })
                 true
             }
             else -> super.onOptionsItemSelected(item)

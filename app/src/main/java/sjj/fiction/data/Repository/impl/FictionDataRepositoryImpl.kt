@@ -9,6 +9,7 @@ import sjj.fiction.data.Repository.FictionDataRepository
 import sjj.fiction.data.source.local.LocalFictionDataSource
 import sjj.fiction.data.source.remote.dhzw.DhzwDataSource
 import sjj.fiction.data.source.remote.yunlaige.YunlaigeDataSource
+import sjj.fiction.model.Book
 import sjj.fiction.model.BookGroup
 import sjj.fiction.model.Chapter
 import sjj.fiction.util.def
@@ -18,6 +19,7 @@ import sjj.fiction.util.domain
  * Created by SJJ on 2017/9/3.
  */
 class FictionDataRepositoryImpl : FictionDataRepository {
+
     private val sources = mutableMapOf<String, FictionDataRepository.RemoteSource>()
 
     private val localSource = LocalFictionDataSource()
@@ -102,17 +104,65 @@ class FictionDataRepositoryImpl : FictionDataRepository {
         return@def book
     }
 
-    override fun loadBookChapter(chapter: Chapter): Observable<Chapter> = sources[chapter.url.domain()]
-            ?.loadBookChapter(chapter)
-            ?.flatMap {
-                localSource.saveChapter(it)
-            }
-            ?: error("未知源 ${chapter.url}")
+    override fun loadBookChapter(chapter: Chapter): Observable<Chapter> = Observable.create<Chapter> { emitter ->
+        localSource.loadBookChapter(chapter).subscribe({
+            if (!it.isLoadSuccess) throw Exception("not load")
+            emitter.onNext(it)
+            emitter.onComplete()
+            Log.e("加载本地数据：${it.chapterName}")
+        }, {
+            (sources[chapter.url.domain()]
+                    ?.loadBookChapter(chapter)
+                    ?.flatMap {
+                        localSource.saveChapter(it)
+                    }
+                    ?: error("未知源 ${chapter.url}"))
+                    .subscribe({
+                        emitter.onNext(it)
+                        emitter.onComplete()
+                    }, {
+                        emitter.onError(it)
+                    })
+        })
+    }
 
     override fun loadBookGroups(): Observable<List<BookGroup>> = localSource.loadBookGroups()
 
     override fun loadBookGroup(bookName: String, author: String): Observable<BookGroup> = localSource.loadBookGroup(bookName, author)
     override fun saveBookGroup(book: List<BookGroup>): Observable<List<BookGroup>> {
         return localSource.saveBookGroup(book)
+    }
+
+    override fun cachedBookChapter(book: Book): Observable<Book> = Observable.create<Book> { emitter ->
+        val count = object {
+            var count = book.chapterList.size
+            var complete = false
+            @Synchronized
+            fun complete() {
+                count--
+                complete = true
+                if (count == 0) emitter.onComplete()
+            }
+
+            @Synchronized
+            fun error(throwable: Throwable) {
+                count--
+                if (count == 0) {
+                    if (complete) emitter.onComplete()
+                    else emitter.onError(throwable)
+                }
+            }
+
+        }
+        book.chapterList.forEach {
+            loadBookChapter(it).subscribe({
+                Log.e(it)
+                emitter.onNext(book)
+            }, {
+                count.error(it)
+            }, {
+                count.complete()
+            })
+        }
     }
 }

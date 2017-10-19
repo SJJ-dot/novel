@@ -94,8 +94,15 @@ class LocalFictionDataSource : FictionDataRepository.SourceLocal {
         }
     }
 
-    override fun loadBookChapter(chapter: Chapter): Observable<Chapter> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun loadBookChapter(chapter: Chapter): Observable<Chapter> = def {
+        val chapter1 = (select from Chapter::class where (Chapter_Table.url eq chapter.url)).result ?: throw Exception("not found chapter ${chapter.chapterName}")
+        chapter.url = chapter1.url
+        chapter.bookId = chapter1.bookId
+        chapter.index = chapter1.index
+        chapter.chapterName = chapter1.chapterName
+        chapter.content = chapter1.chapterName
+        chapter.isLoadSuccess = chapter1.isLoadSuccess
+        chapter
     }
 
     override fun loadBookGroups(): Observable<List<BookGroup>> {
@@ -120,7 +127,7 @@ class LocalFictionDataSource : FictionDataRepository.SourceLocal {
             result.books = (select from Book::class where (Book_Table.name eq result.bookName) and (Book_Table.author eq result.author)).list
             result.books.forEach {
                 it.chapterList = (select from Chapter::class where (Chapter_Table.bookId eq it.id)).list
-                if (result.bookId== it.id) {
+                if (result.bookId == it.id) {
                     result.currentBook = it
                 }
             }
