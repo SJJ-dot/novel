@@ -18,15 +18,14 @@ class App : Application() {
     lateinit var config: Configuration
     override fun onCreate() {
         super.onCreate()
-        Thread.setDefaultUncaughtExceptionHandler { t, e ->
-            Log.e(t.name, e)
-        }
+        Thread.setDefaultUncaughtExceptionHandler(Log::e)
         app = this
         config = Configuration(this)
         val logConfig = Config()
         logConfig.hold = true
         logConfig.holdMultiple = false
         logConfig.holdLev = Config.ERROR
+        Config.init(logConfig)
         FlowManager.init(FlowConfig.builder(this)
                 .addDatabaseConfig(DatabaseConfig.builder(BookDataBase::class.java).build())
                 .build())
