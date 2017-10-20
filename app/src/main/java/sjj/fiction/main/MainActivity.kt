@@ -3,6 +3,7 @@ package sjj.fiction.main
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.NavigationView
+import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.view.MenuItem
@@ -19,6 +20,7 @@ import sjj.fiction.about.AboutActivity
 import sjj.fiction.books.BookrackFragment
 import sjj.fiction.search.SearchFragment
 import sjj.fiction.util.fictionDataRepository
+import sjj.fiction.util.getFragment
 import sjj.fiction.util.hideSoftInput
 import sjj.fiction.util.showSoftInput
 
@@ -36,28 +38,13 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         nav_view.setNavigationItemSelectedListener(this)
 
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction().add(R.id.contentMain, BookrackFragment(), tag_books).commit()
-        } else {
-            supportFragmentManager.beginTransaction()
-                    .hide(supportFragmentManager.findFragmentByTag(tag_search))
-                    .show(supportFragmentManager.findFragmentByTag(tag_books))
-                    .commit()
-        }
         searchText.setOnClickListener {
             it.visibility = View.GONE
             searchInput.visibility = View.VISIBLE
             searchInput.requestFocus()
             showSoftInput(searchInput)
             toggle.isDrawerIndicatorEnabled = false
-            val b = supportFragmentManager.beginTransaction()
-            b.hide(supportFragmentManager.findFragmentByTag(tag_books))
-            if (supportFragmentManager.findFragmentByTag(tag_search) == null) {
-                b.add(R.id.contentMain, SearchFragment(), tag_search)
-            } else {
-                b.show(supportFragmentManager.findFragmentByTag(tag_search))
-            }
-            b.commit()
+            shoBooks(false)
             searchInput.showDropDown()
         }
         searchCancel.setOnClickListener {
@@ -69,10 +56,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 searchInput.visibility = View.GONE
                 searchText.visibility = View.VISIBLE
                 toggle.isDrawerIndicatorEnabled = true
-                supportFragmentManager.beginTransaction()
-                        .hide(supportFragmentManager.findFragmentByTag(tag_search))
-                        .show(supportFragmentManager.findFragmentByTag(tag_books))
-                        .commit()
+                shoBooks(true)
             }
         }
         searchInput.setAdapter(ArrayAdapter<String>(this, R.layout.item_text_text, R.id.text1))
@@ -113,5 +97,14 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         val arrayAdapter = searchInput.adapter as? ArrayAdapter<String> ?: return
         arrayAdapter.clear()
         arrayAdapter.addAll(texts)
+    }
+
+    private fun shoBooks(show: Boolean) {
+        val books: Fragment = getFragment(R.id.contentMain, tag_books)
+        val search: Fragment = getFragment(R.id.contentMain, tag_search)
+        supportFragmentManager.beginTransaction()
+                .hide(if (show) search else books)
+                .show(if (show) books else search)
+                .commit()
     }
 }

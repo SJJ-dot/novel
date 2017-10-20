@@ -4,6 +4,8 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+def shortHash = 'git log -1 --pretty=%h'.execute([], project.rootDir).text.trim().toUpperCase()
+def commitCont = 'git rev-list HEAD --count'.execute([], project.rootDir).text.trim().toInteger()
 android {
     compileSdkVersion 26
     buildToolsVersion '26.0.2'
@@ -11,8 +13,8 @@ android {
         applicationId "sjj.fiction"
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 1
-        versionName "1.0"
+        versionCode commitCont
+        versionName "1.0-(" + shortHash + ")"
         multiDexEnabled true
     }
     buildTypes {
