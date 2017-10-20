@@ -11,6 +11,7 @@ import android.widget.TextView
 import com.raizlabs.android.dbflow.kotlinextensions.save
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_read.*
 import org.jetbrains.anko.*
 import sjj.alog.Log
@@ -31,6 +32,7 @@ class ReadActivity : BaseActivity() {
         val DATA_CHAPTER_INDEX = "DATA_CHAPTER_INDEX"
     }
 
+    private val com = CompositeDisposable()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_read)
@@ -69,12 +71,13 @@ class ReadActivity : BaseActivity() {
     override fun onDestroy() {
         super.onDestroy()
         val adapter = chapterContent.adapter as ChapterContentAdapter
-        adapter.cancel()
+        adapter.clear()
         val manager = chapterContent.layoutManager as LinearLayoutManager
         val position = manager.findFirstVisibleItemPosition()
         val bookGroup = intent.getSerializableExtra(DATA_BOOK) as BookGroup
         bookGroup.readIndex = position
         bookGroup.save()
+        com.clear()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -93,14 +96,17 @@ class ReadActivity : BaseActivity() {
                 val dialog = progressDialog("正在缓存章节列表") {
                     max = book.chapterList.size
                 }
-                fictionDataRepository.cachedBookChapter(book)
+                com.add(fictionDataRepository.cachedBookChapter(book)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
                             dialog.progress = dialog.progress + 1
-                        }, { toast("缓存出错") }, {
+                        }, {
+                            toast("缓存出错")
+
+                        }, {
                             dialog.dismiss()
                             toast("加载完成：${dialog.progress}")
-                        })
+                        }))
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -159,8 +165,8 @@ class ReadActivity : BaseActivity() {
         }
 
         override fun getItemCount(): Int = chapters.size
-        fun cancel() {
-            compDisposable.dispose()
+        fun clear() {
+            compDisposable.clear()
         }
     }
 

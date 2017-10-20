@@ -3,6 +3,8 @@ package sjj.fiction.data.Repository.impl
 import com.raizlabs.android.dbflow.kotlinextensions.save
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import sjj.alog.Log
 import sjj.fiction.data.Repository.FictionDataRepository
@@ -41,8 +43,8 @@ class FictionDataRepositoryImpl : FictionDataRepository {
             fun complete() {
                 count--
                 complete = true
+                emitter.onNext(map.values.toList())
                 if (count == 0) {
-                    emitter.onNext(map.values.toList())
                     emitter.onComplete()
                 }
             }
@@ -50,78 +52,81 @@ class FictionDataRepositoryImpl : FictionDataRepository {
             @Synchronized
             fun error(throwable: Throwable) {
                 count--
+                emitter.onNext(map.values.toList())
                 if (count == 0) {
                     if (complete) {
-                        emitter.onNext(map.values.toList())
                         emitter.onComplete()
-                    }
-                    else emitter.onError(throwable)
+                    } else emitter.onError(throwable)
                 }
             }
 
         }
-        var e: Throwable? = null
+        val com = CompositeDisposable()
         sources.forEach {
-            it.value.search(search).subscribe({
+            com.add(it.value.search(search).subscribe({
                 it.forEach {
                     map.getOrPut(it.name + it.author, { BookGroup(it) }).books.add(it)
                 }
-                count.complete()
+                if (emitter.isDisposed) com.dispose() else count.complete()
             }, {
-                count.error(it)
-            })
+                if (emitter.isDisposed) com.dispose() else count.error(it)
+            }))
         }
     }
 
     override fun getSearchHistory(): Observable<List<String>> = localSource.getSearchHistory()
     override fun setSearchHistory(value: List<String>): Observable<List<String>> = localSource.setSearchHistory(value)
     override fun loadBookDetailsAndChapter(book: BookGroup, force: Boolean): Observable<BookGroup> = observableCreate { emitter ->
+        val com = CompositeDisposable()
         val remote: () -> Unit = {
-            (sources[book.currentBook.url.domain()]
+            com.add((sources[book.currentBook.url.domain()]
                     ?.loadBookDetailsAndChapter(book.currentBook)
                     ?.flatMap { localSource.saveBookGroup(listOf(book)) }
                     ?.map { book }
                     ?: error("未知源 ${book.currentBook.url}"))
                     .subscribe({
-                        emitter.onNext(book)
-                        emitter.onComplete()
+                        if (emitter.isDisposed) com.dispose() else emitter.onNext(book)
+                        if (emitter.isDisposed) com.dispose() else emitter.onComplete()
                     }, {
-                        emitter.onError(it)
-                    })
+                        if (emitter.isDisposed) com.dispose() else emitter.onError(it)
+                    }))
         }
 
         if (!force) {
-            localSource.loadBookDetailsAndChapter(book.currentBook).subscribe({
+            com.add(localSource.loadBookDetailsAndChapter(book.currentBook).subscribe({
                 book.currentBook = it
-                emitter.onNext(book)
-                emitter.onComplete()
+                if (emitter.isDisposed) com.dispose() else emitter.onNext(book)
+                if (emitter.isDisposed) com.dispose() else emitter.onComplete()
             }, {
                 remote()
-            })
+            }))
         } else {
             remote()
         }
     }
 
     override fun loadBookChapter(chapter: Chapter): Observable<Chapter> = Observable.create<Chapter> { emitter ->
-        localSource.loadBookChapter(chapter).subscribe({
+        val com = CompositeDisposable()
+        com.add(localSource.loadBookChapter(chapter).subscribe({
             if (!it.isLoadSuccess) throw Exception("not load")
-            emitter.onNext(it)
-            emitter.onComplete()
+            if (emitter.isDisposed) com.dispose() else emitter.onNext(it)
+            if (emitter.isDisposed) com.dispose() else emitter.onComplete()
         }, {
-            (sources[chapter.url.domain()]
-                    ?.loadBookChapter(chapter)
-                    ?.flatMap {
-                        localSource.saveChapter(it)
-                    }
-                    ?: error("未知源 ${chapter.url}"))
-                    .subscribe({
-                        emitter.onNext(it)
-                        emitter.onComplete()
-                    }, {
-                        emitter.onError(it)
-                    })
-        })
+            if (emitter.isDisposed) com.dispose()
+            else
+                com.add((sources[chapter.url.domain()]
+                        ?.loadBookChapter(chapter)
+                        ?.flatMap {
+                            localSource.saveChapter(it)
+                        }
+                        ?: error("未知源 ${chapter.url}"))
+                        .subscribe({
+                            if (emitter.isDisposed) com.dispose() else emitter.onNext(it)
+                            if (emitter.isDisposed) com.dispose() else emitter.onComplete()
+                        }, {
+                            if (emitter.isDisposed) com.dispose() else emitter.onError(it)
+                        }))
+        }))
     }
 
     override fun loadBookGroups(): Observable<List<BookGroup>> = localSource.loadBookGroups()
@@ -152,14 +157,15 @@ class FictionDataRepositoryImpl : FictionDataRepository {
             }
 
         }
+        val com = CompositeDisposable()
         book.chapterList.forEach {
-            loadBookChapter(it).subscribe({
-                emitter.onNext(book)
+            com.add(loadBookChapter(it).subscribe({
+                if (emitter.isDisposed) com.dispose() else emitter.onNext(book)
             }, {
-                count.error(it)
+                if (emitter.isDisposed) com.dispose() else count.error(it)
             }, {
-                count.complete()
-            })
+                if (emitter.isDisposed) com.dispose() else count.complete()
+            }))
         }
     }
 }
