@@ -13,9 +13,11 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import sjj.alog.Log
 import sjj.fiction.BaseActivity
 import sjj.fiction.R
 import sjj.fiction.about.AboutActivity
+import sjj.fiction.books.BookrackFragment
 import sjj.fiction.search.SearchFragment
 import sjj.fiction.util.getFragment
 import sjj.fiction.util.hideSoftInput
@@ -59,10 +61,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         searchInput.setAdapter(ArrayAdapter<String>(this, R.layout.item_text_text, R.id.text1))
         searchInput.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                val byTag = supportFragmentManager.findFragmentByTag(tag_search) as? SearchFragment
-                if (byTag != null) {
-                    byTag.search(searchInput.text.toString())
-                }
+                getFragment<SearchFragment>(tag_search).search(searchInput.text.toString())
                 return@OnEditorActionListener true
             }
             false
@@ -97,11 +96,13 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     private fun showBooks(show: Boolean) {
-        val books: Fragment = getFragment(R.id.contentMain, tag_books)
-        val search: Fragment = getFragment(R.id.contentMain, tag_search)
+        val books = getFragment<BookrackFragment>(tag_books)
+        val search = getFragment<SearchFragment>(tag_search)
         supportFragmentManager.beginTransaction()
                 .hide(if (show) search else books)
                 .show(if (show) books else search)
                 .commit()
     }
+
+    private inline fun <reified T : Fragment> getFragment(tag: String): T = getFragment<T>(R.id.contentMain, tag)
 }
