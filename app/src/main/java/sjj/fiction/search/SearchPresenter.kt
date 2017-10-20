@@ -29,10 +29,8 @@ class SearchPresenter(private val view: SearchContract.view) : SearchContract.pr
 
     override fun search(text: String): Observable<List<BookGroup>> = observableCreate { emitter ->
         data.search(text).subscribe({ listBook ->
-            val complete: () -> Unit = {
-                emitter.onNext(listBook)
-                emitter.onComplete()
-            }
+            emitter.onNext(listBook)
+        }, emitter::onError, {
             data.getSearchHistory().flatMap({
                 val set = it.toMutableSet()
                 set.add(text)
@@ -40,11 +38,11 @@ class SearchPresenter(private val view: SearchContract.view) : SearchContract.pr
             }).observeOn(AndroidSchedulers.mainThread()).doOnNext {
                 view.notifyAutoTextChange(it)
             }.observeOn(Schedulers.computation()).subscribe({ }, {
-                complete()
+                emitter.onComplete()
             }, {
-                complete()
+                emitter.onComplete()
             })
-        }, emitter::onError)
+        })
     }
 
     override fun onSelect(book: BookGroup, context: Context): Observable<BookGroup> = data.loadBookDetailsAndChapter(book)

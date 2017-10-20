@@ -64,12 +64,11 @@ class SearchFragment : BaseFragment(), SearchContract.view {
         compDisposable.add(presenter.search(if (text.isNotEmpty()) text else "极道天魔")
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    dialog.dismiss()
                     showBookList(it)
                 }, {
                     dialog.dismiss()
                     Log.e("error", it)
-                }))
+                }, dialog::dismiss))
     }
 
     override fun setPresenter(presenter: SearchContract.presenter) {
