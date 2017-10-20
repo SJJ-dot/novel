@@ -29,8 +29,9 @@ import java.util.concurrent.TimeUnit
  */
 abstract class HttpDataSource : DataSourceInterface {
     abstract fun baseUrl(): String
-    protected fun retrofit(): Retrofit {
-        return Retrofit.Builder()
+
+    protected val retrofit: Retrofit by lazy {
+        Retrofit.Builder()
                 .client(client)
                 .baseUrl(baseUrl())
                 .addConverterFactory(CharsetStringConverterFactory())
@@ -40,9 +41,8 @@ abstract class HttpDataSource : DataSourceInterface {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build()
     }
-
     protected inline fun <reified T> create(): T {
-        return retrofit().create(T::class.java)
+        return retrofit.create(T::class.java)
     }
 
     private class CharsetStringConverterFactory : Converter.Factory() {
@@ -95,24 +95,26 @@ abstract class HttpDataSource : DataSourceInterface {
     }
 }
 
-private val client = OkHttpClient.Builder()
-        .connectTimeout(10, TimeUnit.SECONDS)
-        .writeTimeout(10, TimeUnit.SECONDS)
-        .readTimeout(10, TimeUnit.SECONDS)
-        .addNetworkInterceptor {
-            val response = it.proceed(it.request())
-            if (response.code() == HttpURLConnection.HTTP_MOVED_TEMP) {
-                val buffer = Buffer()
-                it.request().body()?.writeTo(buffer)
-                val utf8 = Charset.forName("UTF-8")
-                val charset: Charset = it.request().body()?.contentType()?.charset(utf8) ?: utf8
-                val body = if (isPlaintext(buffer)) buffer.readString(charset) else ""
-                App.app.config.setHttp302Url(it.request().url().toString(), response.header("Location") ?: "",body)
+private val client by lazy {
+    OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(10, TimeUnit.SECONDS)
+            .addNetworkInterceptor {
+                val response = it.proceed(it.request())
+                if (response.code() == HttpURLConnection.HTTP_MOVED_TEMP) {
+                    val buffer = Buffer()
+                    it.request().body()?.writeTo(buffer)
+                    val utf8 = Charset.forName("UTF-8")
+                    val charset: Charset = it.request().body()?.contentType()?.charset(utf8) ?: utf8
+                    val body = if (isPlaintext(buffer)) buffer.readString(charset) else ""
+                    App.app.config.setHttp302Url(it.request().url().toString(), response.header("Location") ?: "", body)
+                }
+                response
             }
-            response
-        }
-        .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS))
-        .build()
+            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS))
+            .build()
+}
 
 internal fun isPlaintext(buffer: Buffer): Boolean {
     try {

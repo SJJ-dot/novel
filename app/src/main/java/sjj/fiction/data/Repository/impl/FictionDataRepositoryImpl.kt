@@ -14,6 +14,7 @@ import sjj.fiction.model.BookGroup
 import sjj.fiction.model.Chapter
 import sjj.fiction.util.def
 import sjj.fiction.util.domain
+import sjj.fiction.util.observableCreate
 
 /**
  * Created by SJJ on 2017/9/3.
@@ -31,76 +32,75 @@ class FictionDataRepositoryImpl : FictionDataRepository {
         sources[yu.domain()] = yu
     }
 
-    override fun search(search: String): Observable<List<BookGroup>> {
-
-        return def(Schedulers.io()) {
-            val map = mutableMapOf<String, BookGroup>()
-            val count = object : Object() {
-                var count = sources.size
-                @Synchronized
-                fun tryNotify() {
-                    count--
-                    if (count == 0) {
-                        notify()
-                    }
+    override fun search(search: String): Observable<List<BookGroup>> = observableCreate { emitter ->
+        val map = mutableMapOf<String, BookGroup>()
+        val count = object {
+            var count = sources.size
+            var complete = false
+            @Synchronized
+            fun complete() {
+                count--
+                complete = true
+                if (count == 0) {
+                    emitter.onNext(map.values.toList())
+                    emitter.onComplete()
                 }
             }
-            var e: Throwable? = null
-            sources.forEach {
-                it.value.search(search).subscribe({
-                    it.forEach {
-                        map.getOrPut(it.name + it.author, { BookGroup(it) }).books.add(it)
+
+            @Synchronized
+            fun error(throwable: Throwable) {
+                count--
+                if (count == 0) {
+                    if (complete) {
+                        emitter.onNext(map.values.toList())
+                        emitter.onComplete()
                     }
-                    count.tryNotify()
-                }, {
-                    e = it
-                    count.tryNotify()
-                })
+                    else emitter.onError(throwable)
+                }
             }
-            synchronized(count) { count.wait() }
-            val list = map.values.toList()
-            if (list.isEmpty() && e != null) {
-                throw e!!
-            }
-            list
+
+        }
+        var e: Throwable? = null
+        sources.forEach {
+            it.value.search(search).subscribe({
+                it.forEach {
+                    map.getOrPut(it.name + it.author, { BookGroup(it) }).books.add(it)
+                }
+                count.complete()
+            }, {
+                count.error(it)
+            })
         }
     }
 
     override fun getSearchHistory(): Observable<List<String>> = localSource.getSearchHistory()
     override fun setSearchHistory(value: List<String>): Observable<List<String>> = localSource.setSearchHistory(value)
-    override fun loadBookDetailsAndChapter(book: BookGroup, force: Boolean): Observable<BookGroup> = def {
-        val lock = java.lang.Object()
+    override fun loadBookDetailsAndChapter(book: BookGroup, force: Boolean): Observable<BookGroup> = observableCreate { emitter ->
+        val remote: () -> Unit = {
+            (sources[book.currentBook.url.domain()]
+                    ?.loadBookDetailsAndChapter(book.currentBook)
+                    ?.flatMap { localSource.saveBookGroup(listOf(book)) }
+                    ?.map { book }
+                    ?: error("未知源 ${book.currentBook.url}"))
+                    .subscribe({
+                        emitter.onNext(book)
+                        emitter.onComplete()
+                    }, {
+                        emitter.onError(it)
+                    })
+        }
+
         if (!force) {
-            var localHas = false
             localSource.loadBookDetailsAndChapter(book.currentBook).subscribe({
                 book.currentBook = it
-                localHas = true
-                synchronized(lock) { lock.notify() }
+                emitter.onNext(book)
+                emitter.onComplete()
             }, {
-                synchronized(lock) { lock.notify() }
+                remote()
             })
-            synchronized(lock) { lock.wait() }
-            if (localHas) {
-                return@def book
-            }
+        } else {
+            remote()
         }
-        var e: Throwable? = null
-        (sources[book.currentBook.url.domain()]
-                ?.loadBookDetailsAndChapter(book.currentBook)
-                ?.flatMap { localSource.saveBookGroup(listOf(book)) }
-                ?.map { book }
-                ?: error("未知源 ${book.currentBook.url}"))
-                .subscribe({
-                    synchronized(lock) { lock.notify() }
-                }, {
-                    e = it
-                    synchronized(lock) { lock.notify() }
-                })
-        synchronized(lock) { lock.wait() }
-        if (e != null) {
-            throw e!!
-        }
-        return@def book
     }
 
     override fun loadBookChapter(chapter: Chapter): Observable<Chapter> = Observable.create<Chapter> { emitter ->

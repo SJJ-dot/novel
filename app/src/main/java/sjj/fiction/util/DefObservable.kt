@@ -1,9 +1,11 @@
 package sjj.fiction.util
 
 import io.reactivex.Observable
+import io.reactivex.ObservableEmitter
 import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import sjj.fiction.App
 import java.util.concurrent.Callable
 
 
@@ -17,3 +19,8 @@ fun <T> def(scheduler: Scheduler = Schedulers.computation(), supplier: () -> T):
 }
 
 fun <T> errorObservable(message: String) = def<T> { throw Exception(message) }
+fun <T> observableCreate(run: (ObservableEmitter<T>) -> Unit): Observable<T> = Observable.create<T>(run)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribeOn(Schedulers.computation())
+
+fun Int.resStr() = App.app.resources.getString(this)!!
