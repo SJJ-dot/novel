@@ -13,43 +13,41 @@ import sjj.fiction.details.DetailsActivity
 import sjj.fiction.model.BookGroup
 import sjj.fiction.util.errorObservable
 import sjj.fiction.util.fictionDataRepository
+import sjj.fiction.util.observableCreate
 
 /**
  * Created by SJJ on 2017/10/8.
  */
 class SearchPresenter(private val view: SearchContract.view) : SearchContract.presenter {
 
-    private var data: FictionDataRepository? = null
+    private var data: FictionDataRepository = fictionDataRepository
     override fun start() {
-        data = fictionDataRepository
     }
 
     override fun stop() {
-        data = null
     }
 
-    override fun search(text: String): Observable<List<BookGroup>> = (data?.search(text) ?: errorObservable("this presenter not start"))
-            .doOnNext {
-                val dataRepository = data ?: return@doOnNext
-                val lock = java.lang.Object()
-                //todo wait
-                dataRepository.getSearchHistory().flatMap({
-                    val set = it.toMutableSet()
-                    set.add(text)
-                    dataRepository.setSearchHistory(set.toList())
-                }).observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({
-                            view.notifyAutoTextChange(it)
-                            synchronized(lock) { lock.notify() }
-                        }, {
-                            synchronized(lock) { lock.notify() }
-                        })
-                synchronized(lock) {
-                    lock.wait()
-                }
-            }.observeOn(AndroidSchedulers.mainThread())
+    override fun search(text: String): Observable<List<BookGroup>> = observableCreate { emitter ->
+        data.search(text).subscribe({ listBook ->
+            val complete: () -> Unit = {
+                emitter.onNext(listBook)
+                emitter.onComplete()
+            }
+            data.getSearchHistory().flatMap({
+                val set = it.toMutableSet()
+                set.add(text)
+                data.setSearchHistory(set.toList())
+            }).observeOn(AndroidSchedulers.mainThread()).doOnNext {
+                view.notifyAutoTextChange(it)
+            }.observeOn(Schedulers.computation()).subscribe({ }, {
+                complete()
+            }, {
+                complete()
+            })
+        }, emitter::onError)
+    }
 
-    override fun onSelect(book: BookGroup, context: Context): Observable<BookGroup> = (data?.loadBookDetailsAndChapter(book) ?: errorObservable("this presenter not start"))
+    override fun onSelect(book: BookGroup, context: Context): Observable<BookGroup> = data.loadBookDetailsAndChapter(book)
             .observeOn(AndroidSchedulers.mainThread())
             .doOnNext {
                 val intent = Intent(context, DetailsActivity::class.java);
