@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_books.*
 import org.jetbrains.anko.find
@@ -52,27 +53,31 @@ class BookrackFragment : BaseFragment() {
             override fun getItemCount(): Int = data.size
             fun startActivity(context: Context, book: BookGroup) {
                 val dialog = indeterminateProgressDialog("请稍候")
-                compDisposable.add(fictionDataRepository.loadBookDetailsAndChapter(book).subscribe({
-                    dialog.dismiss()
-                    val intent = Intent(context, DetailsActivity::class.java);
-                    intent.putExtra(DetailsActivity.data_book_name, it.bookName)
-                    intent.putExtra(DetailsActivity.data_book_author, it.author)
-                    startActivity(intent)
-                }, {
-                    dialog.dismiss()
-                    Log.e("error", it)
-                }))
+                compDisposable.add(fictionDataRepository.loadBookDetailsAndChapter(book)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({
+                            dialog.dismiss()
+                            val intent = Intent(context, DetailsActivity::class.java);
+                            intent.putExtra(DetailsActivity.data_book_name, it.bookName)
+                            intent.putExtra(DetailsActivity.data_book_author, it.author)
+                            startActivity(intent)
+                        }, {
+                            dialog.dismiss()
+                            Log.e("error", it)
+                        }))
             }
         }
     }
 
     override fun onResume() {
         super.onResume()
-        fictionDataRepository.loadBookGroups().subscribe({
-            data.clear()
-            data.addAll(it)
-            bookList.adapter.notifyDataSetChanged()
-        }, {})
+        fictionDataRepository.loadBookGroups()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    data.clear()
+                    data.addAll(it)
+                    bookList.adapter.notifyDataSetChanged()
+                }, {})
     }
 
     override fun onStop() {

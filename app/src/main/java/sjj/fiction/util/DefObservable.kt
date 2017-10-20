@@ -15,12 +15,10 @@ import java.util.concurrent.Callable
 fun <T> def(scheduler: Scheduler = Schedulers.computation(), supplier: () -> T): io.reactivex.Observable<T> {
     return Observable.fromCallable(supplier)
             .subscribeOn(scheduler)
-            .observeOn(AndroidSchedulers.mainThread())
 }
 
 fun <T> errorObservable(message: String) = def<T> { throw Exception(message) }
 fun <T> observableCreate(run: (ObservableEmitter<T>) -> Unit): Observable<T> = Observable.create<T>(run)
-        .observeOn(AndroidSchedulers.mainThread())
         .subscribeOn(Schedulers.computation())
 
 fun Int.resStr() = App.app.resources.getString(this)!!

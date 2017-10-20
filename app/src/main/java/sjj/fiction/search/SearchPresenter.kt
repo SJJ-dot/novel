@@ -29,26 +29,28 @@ class SearchPresenter(private val view: SearchContract.view) : SearchContract.pr
     }
 
     override fun search(text: String): Observable<List<BookGroup>> = (data?.search(text) ?: errorObservable("this presenter not start"))
-            .observeOn(Schedulers.io())
             .doOnNext {
                 val dataRepository = data ?: return@doOnNext
                 val lock = java.lang.Object()
+                //todo wait
                 dataRepository.getSearchHistory().flatMap({
                     val set = it.toMutableSet()
                     set.add(text)
                     dataRepository.setSearchHistory(set.toList())
-                }).subscribe({
-                    view.notifyAutoTextChange(it)
-                    synchronized(lock) { lock.notify() }
-                }, {
-                    synchronized(lock) { lock.notify() }
-                })
+                }).observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({
+                            view.notifyAutoTextChange(it)
+                            synchronized(lock) { lock.notify() }
+                        }, {
+                            synchronized(lock) { lock.notify() }
+                        })
                 synchronized(lock) {
                     lock.wait()
                 }
             }.observeOn(AndroidSchedulers.mainThread())
 
     override fun onSelect(book: BookGroup, context: Context): Observable<BookGroup> = (data?.loadBookDetailsAndChapter(book) ?: errorObservable("this presenter not start"))
+            .observeOn(AndroidSchedulers.mainThread())
             .doOnNext {
                 val intent = Intent(context, DetailsActivity::class.java);
                 intent.putExtra(DetailsActivity.data_book_name, it.bookName)

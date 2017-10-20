@@ -32,7 +32,7 @@ class FictionDataRepositoryImpl : FictionDataRepository {
         sources[yu.domain()] = yu
     }
 
-    override fun search(search: String): Observable<List<BookGroup>> = observableCreate { emitter ->
+    override fun search(search: String): Observable<List<BookGroup>> = observableCreate<List<BookGroup>> { emitter ->
         val map = mutableMapOf<String, BookGroup>()
         val count = object {
             var count = sources.size
@@ -108,7 +108,6 @@ class FictionDataRepositoryImpl : FictionDataRepository {
             if (!it.isLoadSuccess) throw Exception("not load")
             emitter.onNext(it)
             emitter.onComplete()
-            Log.e("加载本地数据：${it.chapterName}")
         }, {
             (sources[chapter.url.domain()]
                     ?.loadBookChapter(chapter)

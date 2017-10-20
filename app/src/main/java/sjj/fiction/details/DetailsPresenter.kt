@@ -1,5 +1,6 @@
 package sjj.fiction.details
 
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import sjj.alog.Log
 import sjj.fiction.model.BookGroup
@@ -17,6 +18,7 @@ class DetailsPresenter(private val bookName: String, private val author: String,
     override fun start() {
         view.setLoadBookIndicator(true)
         fictionData.loadBookGroup(bookName, author)
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     bookGroup = it
                     view.showBookDetails(it.currentBook)
@@ -58,13 +60,15 @@ class DetailsPresenter(private val bookName: String, private val author: String,
             currentBook = group.books[index]
             bookId = currentBook.id
         }
-        fictionData.saveBookGroup(arrayListOf(group)).subscribe({
-            loadBookDetailsAndChapter(false)
-        }, {
-            view.showErrorMessage("切换源出错：${it.message}")
-            group.currentBook = lastBook
-            group.bookId = lastBook.id
-        })
+        fictionData.saveBookGroup(arrayListOf(group))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    loadBookDetailsAndChapter(false)
+                }, {
+                    view.showErrorMessage("切换源出错：${it.message}")
+                    group.currentBook = lastBook
+                    group.bookId = lastBook.id
+                })
 
     }
 

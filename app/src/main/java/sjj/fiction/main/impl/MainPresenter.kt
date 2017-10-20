@@ -2,6 +2,7 @@ package sjj.fiction.main.impl
 
 import android.support.v4.app.FragmentManager
 import android.view.View
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.app_bar_main.*
 import sjj.fiction.R
 import sjj.fiction.data.Repository.FictionDataRepository
@@ -15,9 +16,11 @@ import sjj.fiction.util.showSoftInput
  */
 class MainPresenter(private val view: MainContract.View) : MainContract.Presenter {
     val fiction: FictionDataRepository = fictionDataRepository
+
     init {
         view.setPresenter(this)
     }
+
     override fun start() {
     }
 
@@ -25,9 +28,11 @@ class MainPresenter(private val view: MainContract.View) : MainContract.Presente
     }
 
     override fun showAutoText() {
-        fiction.getSearchHistory().subscribe({
-            view.showAutoText(it)
-        }, {})
+        fiction.getSearchHistory()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    view.showAutoText(it)
+                }, {})
     }
 
 }

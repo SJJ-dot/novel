@@ -9,6 +9,7 @@ import android.view.*
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.raizlabs.android.dbflow.kotlinextensions.save
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_read.*
 import org.jetbrains.anko.*
@@ -93,6 +94,7 @@ class ReadActivity : BaseActivity() {
                     max = book.chapterList.size
                 }
                 fictionDataRepository.cachedBookChapter(book)
+                        .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
                             dialog.progress = dialog.progress + 1
                         }, { toast("缓存出错") }, {
@@ -136,17 +138,19 @@ class ReadActivity : BaseActivity() {
             if (chapter.content.content.isNotEmpty()) {
                 holder.itemView.findViewById<TextView>(R.id.readItemChapterContent).text = Html.fromHtml(chapter.content.content)
             }
-            if (!chapter.isLoadSuccess||chapter.content.content.isEmpty()) {
+            if (!chapter.isLoadSuccess || chapter.content.content.isEmpty()) {
                 if (!chapter.isLoading) {
                     chapter.isLoading = true
-                    compDisposable.add(fiction.loadBookChapter(chapter).subscribe({
-                        it.isLoading = false
-                        notifyDataSetChanged()
-                    }, {
-                        chapter.isLoading = false
-                        chapter.content.content = "章节加载失败：${it.message}"
-                        notifyDataSetChanged()
-                    }))
+                    compDisposable.add(fiction.loadBookChapter(chapter)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe({
+                                it.isLoading = false
+                                notifyDataSetChanged()
+                            }, {
+                                chapter.isLoading = false
+                                chapter.content.content = "章节加载失败：${it.message}"
+                                notifyDataSetChanged()
+                            }))
                 }
                 holder.itemView.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
             } else {

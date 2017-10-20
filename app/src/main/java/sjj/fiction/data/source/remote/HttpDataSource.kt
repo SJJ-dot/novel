@@ -84,7 +84,7 @@ abstract class HttpDataSource : DataSourceInterface {
                     // Delegate to get the normal Observable...
                     val o = delegate.adapt(call)
                     // ...and change it to send notifications to the observer on the specified scheduler.
-                    return o.subscribeOn(io).unsubscribeOn(io).observeOn(scheduler)
+                    return o.subscribeOn(io)
                 }
 
                 override fun responseType(): Type {
