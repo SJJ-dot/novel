@@ -9,9 +9,11 @@ import sjj.fiction.BaseView
  * Created by SJJ on 2017/10/7.
  */
 interface MainContract {
-    interface presenter : BasePresenter {
+    interface Presenter : BasePresenter {
+        fun showAutoText()
     }
 
-    interface view : BaseView<presenter> {
+    interface View : BaseView<Presenter> {
+        fun showAutoText(texts: List<String>)
     }
 }

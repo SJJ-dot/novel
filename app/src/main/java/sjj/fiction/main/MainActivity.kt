@@ -18,15 +18,17 @@ import sjj.fiction.BaseActivity
 import sjj.fiction.R
 import sjj.fiction.about.AboutActivity
 import sjj.fiction.books.BookrackFragment
+import sjj.fiction.main.impl.MainPresenter
 import sjj.fiction.search.SearchFragment
 import sjj.fiction.util.getFragment
 import sjj.fiction.util.hideSoftInput
 import sjj.fiction.util.showSoftInput
 
 
-class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, SearchFragment.AutoTextChangeCallback {
+class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, SearchFragment.AutoTextChangeCallback, MainContract.View {
     private val tag_books = "tag_books"
     private val tag_search = "tag_search"
+    private lateinit var presenter: MainContract.Presenter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -66,7 +68,18 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             }
             false
         })
-        searchInput.setOnClickListener { searchInput.showDropDown() }
+        searchInput.setOnClickListener { presenter.showAutoText() }
+        MainPresenter(this)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        presenter.start()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        presenter.stop()
     }
 
     override fun onBackPressed() {
@@ -87,6 +100,15 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    override fun setPresenter(presenter: MainContract.Presenter) {
+        this.presenter = presenter
+    }
+
+    override fun showAutoText(texts: List<String>) {
+        notifyAutoTextChange(texts)
+        searchInput.showDropDown()
     }
 
     override fun notifyAutoTextChange(texts: List<String>) {
