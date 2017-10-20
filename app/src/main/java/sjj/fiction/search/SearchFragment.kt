@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_search.*
 import org.jetbrains.anko.find
@@ -60,13 +61,15 @@ class SearchFragment : BaseFragment(), SearchContract.view {
 
     fun search(text: String) {
         val dialog = indeterminateProgressDialog("请稍候")
-        compDisposable.add(presenter.search(if (text.isNotEmpty()) text else "极道天魔").subscribe({
-            dialog.dismiss()
-            showBookList(it)
-        }, {
-            dialog.dismiss()
-            Log.e("error", it)
-        }))
+        compDisposable.add(presenter.search(if (text.isNotEmpty()) text else "极道天魔")
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    dialog.dismiss()
+                    showBookList(it)
+                }, {
+                    dialog.dismiss()
+                    Log.e("error", it)
+                }))
     }
 
     override fun setPresenter(presenter: SearchContract.presenter) {
