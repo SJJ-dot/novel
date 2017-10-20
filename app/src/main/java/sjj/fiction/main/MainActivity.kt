@@ -13,13 +13,10 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-import sjj.alog.Log
 import sjj.fiction.BaseActivity
 import sjj.fiction.R
 import sjj.fiction.about.AboutActivity
-import sjj.fiction.books.BookrackFragment
 import sjj.fiction.search.SearchFragment
-import sjj.fiction.util.fictionDataRepository
 import sjj.fiction.util.getFragment
 import sjj.fiction.util.hideSoftInput
 import sjj.fiction.util.showSoftInput
@@ -37,14 +34,14 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
-
+        showBooks(true)
         searchText.setOnClickListener {
             it.visibility = View.GONE
             searchInput.visibility = View.VISIBLE
             searchInput.requestFocus()
             showSoftInput(searchInput)
             toggle.isDrawerIndicatorEnabled = false
-            shoBooks(false)
+            showBooks(false)
             searchInput.showDropDown()
         }
         searchCancel.setOnClickListener {
@@ -56,7 +53,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 searchInput.visibility = View.GONE
                 searchText.visibility = View.VISIBLE
                 toggle.isDrawerIndicatorEnabled = true
-                shoBooks(true)
+                showBooks(true)
             }
         }
         searchInput.setAdapter(ArrayAdapter<String>(this, R.layout.item_text_text, R.id.text1))
@@ -99,7 +96,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         arrayAdapter.addAll(texts)
     }
 
-    private fun shoBooks(show: Boolean) {
+    private fun showBooks(show: Boolean) {
         val books: Fragment = getFragment(R.id.contentMain, tag_books)
         val search: Fragment = getFragment(R.id.contentMain, tag_search)
         supportFragmentManager.beginTransaction()
