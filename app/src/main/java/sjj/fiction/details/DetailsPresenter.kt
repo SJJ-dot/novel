@@ -75,12 +75,14 @@ class DetailsPresenter(private val bookName: String, private val author: String,
     private fun loadBookDetailsAndChapter(force: Boolean) {
         val group = bookGroup ?: return
         view.setCheckUpdateIndicator(true)
-        fictionDataRepository.loadBookDetailsAndChapter(group, force).subscribe({
-            view.setCheckUpdateIndicator(false)
-            start()
-        }, {
-            view.setCheckUpdateIndicator(false)
-            view.showErrorMessage("检查更新出错：${it.message}")
-        })
+        fictionDataRepository.loadBookDetailsAndChapter(group, force)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    view.setCheckUpdateIndicator(false)
+                    start()
+                }, {
+                    view.setCheckUpdateIndicator(false)
+                    view.showErrorMessage("检查更新出错：${it.message}")
+                })
     }
 }
