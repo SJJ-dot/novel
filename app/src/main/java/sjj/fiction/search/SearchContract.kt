@@ -11,12 +11,11 @@ import sjj.fiction.model.BookGroup
  */
 interface SearchContract {
     interface presenter : BasePresenter {
-        fun search(text: String): Observable<List<BookGroup>>
-        fun onSelect(book: BookGroup, context: Context): Observable<BookGroup>
+        fun onSelect(book: BookGroup, context: Context)
     }
 
     interface view : BaseView<presenter> {
-        fun showBookList(book: List<BookGroup>)
-        fun notifyAutoTextChange(texts: List<String>)
+        fun setLoadBookDetailsErrorHint(it: Throwable)
+        fun setLoadBookDetailsHint(active: Boolean)
     }
 }

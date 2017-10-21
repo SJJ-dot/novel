@@ -64,6 +64,7 @@ class DetailsActivity : BaseActivity(), DetailsContract.View {
         super.onStop()
         presenter.stop()
     }
+
     override fun setPresenter(presenter: DetailsContract.Presenter) {
         this.presenter = presenter
     }
@@ -95,8 +96,7 @@ class DetailsActivity : BaseActivity(), DetailsContract.View {
 
     override fun setCheckUpdateIndicator(active: Boolean) {
         update = if (active) {
-            update?.dismiss()
-            indeterminateProgressDialog("正在检查更新请稍候……")
+            update ?: indeterminateProgressDialog("正在检查更新请稍候……")
         } else {
             update?.dismiss()
             null
@@ -105,8 +105,7 @@ class DetailsActivity : BaseActivity(), DetailsContract.View {
 
     override fun setLoadBookIndicator(active: Boolean) {
         dialog = if (active) {
-            dialog?.dismiss()
-            indeterminateProgressDialog("正在加载书籍请稍候……")
+            dialog ?: indeterminateProgressDialog("正在加载书籍请稍候……")
         } else {
             dialog?.dismiss()
             null

@@ -1,5 +1,6 @@
 package sjj.fiction.main
 
+import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.NavigationView
@@ -13,22 +14,27 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-import sjj.alog.Log
+import org.jetbrains.anko.horizontalProgressBar
+import org.jetbrains.anko.indeterminateProgressDialog
+import org.jetbrains.anko.progressDialog
+import org.jetbrains.anko.toast
 import sjj.fiction.BaseActivity
 import sjj.fiction.R
 import sjj.fiction.about.AboutActivity
 import sjj.fiction.books.BookrackFragment
 import sjj.fiction.main.impl.MainPresenter
+import sjj.fiction.model.BookGroup
 import sjj.fiction.search.SearchFragment
 import sjj.fiction.util.getFragment
 import sjj.fiction.util.hideSoftInput
 import sjj.fiction.util.showSoftInput
 
 
-class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, SearchFragment.AutoTextChangeCallback, MainContract.View {
+class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, MainContract.View {
     private val tag_books = "tag_books"
     private val tag_search = "tag_search"
     private lateinit var presenter: MainContract.Presenter
+    private var searchDialog: ProgressDialog? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -38,14 +44,14 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
-        showBooks(true)
+        showBooksFragment(true)
         searchText.setOnClickListener {
             it.visibility = View.GONE
             searchInput.visibility = View.VISIBLE
             searchInput.requestFocus()
             showSoftInput(searchInput)
             toggle.isDrawerIndicatorEnabled = false
-            showBooks(false)
+            showBooksFragment(false)
             searchInput.showDropDown()
         }
         searchCancel.setOnClickListener {
@@ -57,13 +63,13 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 searchInput.visibility = View.GONE
                 searchText.visibility = View.VISIBLE
                 toggle.isDrawerIndicatorEnabled = true
-                showBooks(true)
+                showBooksFragment(true)
             }
         }
         searchInput.setAdapter(ArrayAdapter<String>(this, R.layout.item_text_text, R.id.text1))
         searchInput.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                getFragment<SearchFragment>(tag_search).search(searchInput.text.toString())
+                presenter.search(searchInput.text.toString())
                 return@OnEditorActionListener true
             }
             false
@@ -106,18 +112,34 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         this.presenter = presenter
     }
 
-    override fun showAutoText(texts: List<String>) {
-        notifyAutoTextChange(texts)
-        searchInput.showDropDown()
-    }
-
-    override fun notifyAutoTextChange(texts: List<String>) {
+    override fun setAutoText(texts: List<String>) {
         val arrayAdapter = searchInput.adapter as? ArrayAdapter<String> ?: return
         arrayAdapter.clear()
         arrayAdapter.addAll(texts)
+        searchInput.showDropDown()
     }
 
-    private fun showBooks(show: Boolean) {
+    override fun setSearchBookList(book: List<BookGroup>) {
+        getFragment<SearchFragment>(tag_search).showBookList(book)
+    }
+
+    override fun setSearchErrorHint(throwable: Throwable) {
+        toast("搜索出错：${throwable.message}")
+    }
+
+    override fun setSearchProgressHint(active: Boolean) {
+        if (active) {
+            val searchDialog = searchDialog ?: indeterminateProgressDialog("请稍候……")
+            if (!searchDialog.isShowing)
+                searchDialog.show()
+            this.searchDialog = searchDialog
+        } else {
+            searchDialog?.dismiss()
+            searchDialog == null
+        }
+    }
+
+    private fun showBooksFragment(show: Boolean) {
         val books = getFragment<BookrackFragment>(tag_books)
         val search = getFragment<SearchFragment>(tag_search)
         supportFragmentManager.beginTransaction()

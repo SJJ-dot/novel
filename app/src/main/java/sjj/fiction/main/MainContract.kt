@@ -4,6 +4,7 @@ import android.support.v4.app.FragmentManager
 import android.view.View
 import sjj.fiction.BasePresenter
 import sjj.fiction.BaseView
+import sjj.fiction.model.BookGroup
 
 /**
  * Created by SJJ on 2017/10/7.
@@ -11,9 +12,13 @@ import sjj.fiction.BaseView
 interface MainContract {
     interface Presenter : BasePresenter {
         fun showAutoText()
+        fun search(text: String)
     }
 
     interface View : BaseView<Presenter> {
-        fun showAutoText(texts: List<String>)
+        fun setAutoText(texts: List<String>)
+        fun setSearchBookList(book: List<BookGroup>)
+        fun setSearchProgressHint(active:Boolean)
+        fun setSearchErrorHint(throwable: Throwable)
     }
 }

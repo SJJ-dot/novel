@@ -1,20 +1,19 @@
 package sjj.fiction.main.impl
 
-import android.support.v4.app.FragmentManager
-import android.view.View
+import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
-import kotlinx.android.synthetic.main.app_bar_main.*
-import sjj.fiction.R
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import sjj.fiction.data.Repository.FictionDataRepository
 import sjj.fiction.main.MainContract
-import sjj.fiction.search.SearchFragment
+import sjj.fiction.model.BookGroup
 import sjj.fiction.util.fictionDataRepository
-import sjj.fiction.util.showSoftInput
 
 /**
  * Created by SJJ on 2017/10/7.
  */
 class MainPresenter(private val view: MainContract.View) : MainContract.Presenter {
+    private val com = CompositeDisposable()
     val fiction: FictionDataRepository = fictionDataRepository
 
     init {
@@ -25,14 +24,42 @@ class MainPresenter(private val view: MainContract.View) : MainContract.Presente
     }
 
     override fun stop() {
+        com.clear()
     }
 
     override fun showAutoText() {
         fiction.getSearchHistory()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    view.showAutoText(it)
-                }, {})
+                .subscribe(view::setAutoText, {})
+                .also { com.add(it) }
     }
 
+    override fun search(text: String) {
+        fiction.search(text).doOnNext {
+            fiction.getSearchHistory().flatMap {
+                val set = it.toMutableSet()
+                set.add(text)
+                fiction.setSearchHistory(set.toList())
+            }.subscribe({}, {}).also { com.add(it) }
+        }.observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : Observer<List<BookGroup>> {
+                    override fun onSubscribe(d: Disposable) {
+                        com.add(d)
+                        view.setSearchProgressHint(true)
+                    }
+
+                    override fun onError(e: Throwable) {
+                        view.setSearchProgressHint(false)
+                        view.setSearchErrorHint(e)
+                    }
+
+                    override fun onComplete() {
+                        view.setSearchProgressHint(false)
+                    }
+
+                    override fun onNext(t: List<BookGroup>) {
+                        view.setSearchBookList(t)
+                    }
+                })
+    }
 }

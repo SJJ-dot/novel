@@ -35,6 +35,9 @@ class FictionDataRepositoryImpl : FictionDataRepository {
     }
 
     override fun search(search: String): Observable<List<BookGroup>> = observableCreate<List<BookGroup>> { emitter ->
+        if (search.isEmpty()) {
+            throw IllegalArgumentException("搜索内容不能为空")
+        }
         val map = mutableMapOf<String, BookGroup>()
         val count = object {
             var count = sources.size

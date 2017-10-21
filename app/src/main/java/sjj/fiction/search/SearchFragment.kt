@@ -1,7 +1,7 @@
 package sjj.fiction.search
 
+import android.app.ProgressDialog
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
@@ -10,18 +10,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_search.*
 import org.jetbrains.anko.find
 import org.jetbrains.anko.linearLayout
-import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.indeterminateProgressDialog
-import sjj.alog.Log
+import org.jetbrains.anko.support.v4.progressDialog
+import org.jetbrains.anko.support.v4.toast
 import sjj.fiction.BaseFragment
 import sjj.fiction.R
-import sjj.fiction.details.DetailsActivity
-import sjj.fiction.model.Book
 import sjj.fiction.model.BookGroup
 import sjj.fiction.util.*
 
@@ -29,14 +25,12 @@ import sjj.fiction.util.*
  * Created by SJJ on 2017/10/7.
  */
 class SearchFragment : BaseFragment(), SearchContract.view {
-    private val presenter = SearchPresenter(this)
+    private lateinit var presenter: SearchContract.presenter
     private val searchResultBookAdapter by lazy { SearchResultBookAdapter() }
-    private var compDisposable: CompositeDisposable = CompositeDisposable()
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-        if (context !is AutoTextChangeCallback) {
-            throw IllegalArgumentException("activity 必须实现 AutoTextChangeCallback 接口")
-        }
+    private var progressDialog: ProgressDialog? = null
+
+    init {
+        SearchPresenter(this)
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -56,30 +50,31 @@ class SearchFragment : BaseFragment(), SearchContract.view {
     override fun onStop() {
         super.onStop()
         presenter.stop()
-        compDisposable.clear()
     }
 
-    fun search(text: String) {
-        val dialog = indeterminateProgressDialog("请稍候")
-        compDisposable.add(presenter.search(if (text.isNotEmpty()) text else "极道天魔")
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    showBookList(it)
-                }, {
-                    dialog.dismiss()
-                    Log.e("error", it)
-                }, dialog::dismiss))
-    }
-
-    override fun setPresenter(presenter: SearchContract.presenter) {
-    }
-
-    override fun showBookList(book: List<BookGroup>) {
-        var adapter = searchRecyclerView.adapter;
+    fun showBookList(book: List<BookGroup>) {
+        var adapter = searchRecyclerView?.adapter ?: return
         adapter = if (adapter !is SearchResultBookAdapter) searchResultBookAdapter else adapter
         searchRecyclerView.adapter = adapter
         adapter.data = book
         adapter.notifyDataSetChanged()
+    }
+
+    override fun setPresenter(presenter: SearchContract.presenter) {
+        this.presenter = presenter
+    }
+
+    override fun setLoadBookDetailsErrorHint(it: Throwable) {
+        toast("加载书籍详情出错：${it.message}")
+    }
+
+    override fun setLoadBookDetailsHint(active: Boolean) {
+        progressDialog = if (active) {
+            progressDialog ?: indeterminateProgressDialog("正在加载书籍请稍候……")
+        } else {
+            progressDialog?.dismiss()
+            null
+        }
     }
 
     private inner class SearchResultBookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -129,26 +124,9 @@ class SearchFragment : BaseFragment(), SearchContract.view {
             holder.itemView.find<TextView>(R.id.searchItemAuthor).text = book.author
             holder.itemView.find<TextView>(R.id.searchItemOrigin).text = bookGroup.books.size.toString()
             holder.itemView.setOnClickListener { v ->
-                startActivity(v.context, bookGroup)
+                presenter.onSelect(bookGroup, context)
             }
         }
 
-        fun startActivity(context: Context, book: BookGroup) {
-            val dialog = indeterminateProgressDialog("请稍候")
-            compDisposable.add(presenter.onSelect(book, context).subscribe({
-                dialog.dismiss()
-            }, {
-                dialog.dismiss()
-                Log.e("error", it)
-            }))
-        }
-    }
-
-    override fun notifyAutoTextChange(texts: List<String>) {
-        (context as? AutoTextChangeCallback)?.notifyAutoTextChange(texts)
-    }
-
-    interface AutoTextChangeCallback {
-        fun notifyAutoTextChange(texts: List<String>)
     }
 }
