@@ -9,6 +9,7 @@ import android.view.*
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.raizlabs.android.dbflow.kotlinextensions.save
+import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -28,27 +29,47 @@ import sjj.fiction.util.toDpx
 
 class ReadActivity : BaseActivity() {
     companion object {
-        val DATA_BOOK = "DATA_BOOK"
+        val DATA_BOOK_NAME = "DATA_BOOK_NAME"
+        val DATA_BOOK_AUTHOR = "DATA_BOOK_AUTHOR"
         val DATA_CHAPTER_INDEX = "DATA_CHAPTER_INDEX"
     }
 
     private val com = CompositeDisposable()
+
+    private val bookName by lazy { intent.getStringExtra(DATA_BOOK_NAME) }
+    private val bookAuthor by lazy { intent.getStringExtra(DATA_BOOK_AUTHOR) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_read)
         setSupportActionBar(toolbar)
         val supportActionBar = supportActionBar!!
         supportActionBar.setDisplayHomeAsUpEnabled(true)
-        val bookGroup = intent.getSerializableExtra(DATA_BOOK) as BookGroup
-        val book = bookGroup.currentBook
-        title = book.name
-        chapterContent.layoutManager = LinearLayoutManager(this)
-        chapterContent.adapter = ChapterContentAdapter(book.chapterList)
-        val current = Math.min(intent.getIntExtra(DATA_CHAPTER_INDEX, 0), book.chapterList.size - 1)
-        chapterName.text = book.chapterList[current].chapterName
-        chapterContent.scrollToPosition(current)
-        chapterList.layoutManager = LinearLayoutManager(this)
-        chapterList.adapter = ChapterListAdapter(book)
+
+
+        fictionDataRepository.loadBookGroup(bookName, bookAuthor).observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    val book = it.currentBook
+                    title = book.name
+                    chapterContent.layoutManager = LinearLayoutManager(this)
+                    chapterContent.adapter = ChapterContentAdapter(book.chapterList)
+                    val current = Math.min(intent.getIntExtra(DATA_CHAPTER_INDEX, 0), book.chapterList.size - 1)
+                    chapterName.text = book.chapterList[current].chapterName
+                    chapterContent.scrollToPosition(current)
+                    chapterList.layoutManager = LinearLayoutManager(this)
+                    chapterList.adapter = ChapterListAdapter(book)
+                    chapterContent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                            val manager = chapterContent.layoutManager as LinearLayoutManager
+                            val position = manager.findFirstVisibleItemPosition()
+                            if (chapterName.tag != position) {
+                                chapterName.text = book.chapterList[position].chapterName
+                                chapterName.tag = position
+                            }
+                        }
+                    })
+                }, {})
+
         drawer_layout.addDrawerListener(object : DrawerLayout.SimpleDrawerListener() {
             override fun onDrawerOpened(drawerView: View?) {
                 val manager = chapterContent.layoutManager as LinearLayoutManager
@@ -56,27 +77,25 @@ class ReadActivity : BaseActivity() {
                 chapterList.scrollToPosition(position)
             }
         })
-        chapterContent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                val manager = chapterContent.layoutManager as LinearLayoutManager
-                val position = manager.findFirstVisibleItemPosition()
-                if (chapterName.tag != position) {
-                    chapterName.text = book.chapterList[position].chapterName
-                    chapterName.tag = position
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        val manager = chapterContent.layoutManager as LinearLayoutManager
+        val position = manager.findFirstVisibleItemPosition()
+        fictionDataRepository.loadBookGroup(bookName, bookAuthor)
+                .flatMap {
+                    it.readIndex = position
+                    fictionDataRepository.saveBookGroup(listOf(it))
                 }
-            }
-        })
+                .subscribe({}, {})
     }
 
     override fun onDestroy() {
         super.onDestroy()
         val adapter = chapterContent.adapter as ChapterContentAdapter
         adapter.clear()
-        val manager = chapterContent.layoutManager as LinearLayoutManager
-        val position = manager.findFirstVisibleItemPosition()
-        val bookGroup = intent.getSerializableExtra(DATA_BOOK) as BookGroup
-        bookGroup.readIndex = position
-        bookGroup.save()
         com.clear()
     }
 
@@ -92,28 +111,32 @@ class ReadActivity : BaseActivity() {
                 true
             }
             R.id.menu_cached -> {
-                val book = (intent.getSerializableExtra(DATA_BOOK) as BookGroup).currentBook
-                val dialog = progressDialog("正在缓存章节列表") {
-                    max = book.chapterList.size
-                }
-                com.add(fictionDataRepository.cachedBookChapter(book)
-                        .observeOn(AndroidSchedulers.mainThread())
+                val dialog = progressDialog("正在加载书籍信息")
+                fictionDataRepository.loadBookGroup(bookName, bookAuthor).observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
-                            dialog.progress = dialog.progress + 1
-                        }, {
-                            toast("缓存出错")
-
+                            dialog.max = it.currentBook.chapterList.size
+                            dialog.setMessage("正在缓存章节类容……")
+                            fictionDataRepository.cachedBookChapter(it.currentBook)
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe({
+                                        dialog.progress = dialog.progress + 1
+                                    }, {
+                                        toast("缓存出错")
+                                    }, {
+                                        dialog.dismiss()
+                                        toast("加载完成：${dialog.progress}")
+                                    }).also { com.add(it) }
                         }, {
                             dialog.dismiss()
-                            toast("加载完成：${dialog.progress}")
-                        }))
+                            toast("书籍信息加载失败：${it.message}")
+                        }).also { com.add(it) }
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
-    private class ChapterContentAdapter(val chapters: List<Chapter>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private class ChapterContentAdapter(val chapters: List<Chapter> = listOf()) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private val fiction: FictionDataRepository = fictionDataRepository
         private var compDisposable: CompositeDisposable = CompositeDisposable()
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

@@ -118,7 +118,8 @@ class DetailsActivity : BaseActivity(), DetailsContract.View {
 
     override fun showBookContent(bookGroup: BookGroup, index: Int) {
         with(Intent(this, ReadActivity::class.java)) {
-            putExtra(ReadActivity.DATA_BOOK, bookGroup)
+            putExtra(ReadActivity.DATA_BOOK_NAME, bookGroup.bookName)
+            putExtra(ReadActivity.DATA_BOOK_AUTHOR, bookGroup.author)
             putExtra(ReadActivity.DATA_CHAPTER_INDEX, index)
             startActivity(this)
         }
