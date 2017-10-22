@@ -6,4 +6,6 @@
     <item name="detailItemChapter" type="id"/>
     <item name="readItemChapterContentTitle" type="id"/>
     <item name="readItemChapterContent" type="id"/>
+    <item name="click_tag" type="id"/>
+    <item name="click_count_tag" type="id"/>
 </resources>

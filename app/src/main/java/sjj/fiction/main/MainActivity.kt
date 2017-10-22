@@ -27,6 +27,7 @@ import sjj.fiction.model.BookGroup
 import sjj.fiction.search.SearchFragment
 import sjj.fiction.util.getFragment
 import sjj.fiction.util.hideSoftInput
+import sjj.fiction.util.isDoubleClick
 import sjj.fiction.util.showSoftInput
 
 
@@ -35,7 +36,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private val tag_search = "tag_search"
     private lateinit var presenter: MainContract.Presenter
     private var searchDialog: ProgressDialog? = null
-    private val toggle by lazy {  ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) }
+    private val toggle by lazy { ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -84,7 +85,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         } else if (!getFragment<SearchFragment>(tag_search).isHidden) {
             showBooksFragment(true)
         } else {
-            super.onBackPressed()
+            if (isDoubleClick(nav_view))
+                super.onBackPressed()
         }
     }
 
