@@ -35,34 +35,24 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private val tag_search = "tag_search"
     private lateinit var presenter: MainContract.Presenter
     private var searchDialog: ProgressDialog? = null
+    private val toggle by lazy {  ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
         showBooksFragment(true)
         searchText.setOnClickListener {
-            it.visibility = View.GONE
-            searchInput.visibility = View.VISIBLE
-            searchInput.requestFocus()
-            showSoftInput(searchInput)
-            toggle.isDrawerIndicatorEnabled = false
             showBooksFragment(false)
-            searchInput.showDropDown()
         }
         searchCancel.setOnClickListener {
             if (searchInput.visibility == View.GONE) return@setOnClickListener
             if (searchInput.text.isNotEmpty()) {
                 searchInput.setText("")
             } else {
-                hideSoftInput(searchInput)
-                searchInput.visibility = View.GONE
-                searchText.visibility = View.VISIBLE
-                toggle.isDrawerIndicatorEnabled = true
                 showBooksFragment(true)
             }
         }
@@ -91,6 +81,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     override fun onBackPressed() {
         if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
             drawer_layout.closeDrawer(GravityCompat.START)
+        } else if (!getFragment<SearchFragment>(tag_search).isHidden) {
+            showBooksFragment(true)
         } else {
             super.onBackPressed()
         }
@@ -140,6 +132,22 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     private fun showBooksFragment(show: Boolean) {
+
+        if (show) {
+            hideSoftInput(searchInput)
+            searchInput.visibility = View.GONE
+            searchText.visibility = View.VISIBLE
+            toggle.isDrawerIndicatorEnabled = true
+        } else {
+            searchText.visibility = View.GONE
+            searchInput.visibility = View.VISIBLE
+            searchInput.requestFocus()
+            showSoftInput(searchInput)
+            toggle.isDrawerIndicatorEnabled = false
+            searchInput.showDropDown()
+        }
+
+
         val books = getFragment<BookrackFragment>(tag_books)
         val search = getFragment<SearchFragment>(tag_search)
         supportFragmentManager.beginTransaction()
