@@ -15,6 +15,7 @@ import kotlinx.android.synthetic.main.fragment_books.*
 import org.jetbrains.anko.find
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.indeterminateProgressDialog
+import org.jetbrains.anko.support.v4.toast
 import sjj.alog.Log
 import sjj.fiction.BaseFragment
 import sjj.fiction.R
@@ -48,6 +49,23 @@ class BookrackFragment : BaseFragment() {
                 holder.itemView.setOnClickListener { v ->
                     startActivity(v.context, bookGroup)
                 }
+                holder.itemView.setOnLongClickListener {
+                    alert {
+                        title = "确认删除？"
+                        message = "确认删除书籍：${bookGroup.bookName}？"
+                        negativeButton("取消", {})
+                        positiveButton("删除") {
+                            fictionDataRepository.deleteBookGroup(bookGroup.bookName, bookGroup.author)
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe({
+                                        toast("删除成功")
+                                    }, {
+                                        toast("删除失败：${it.message}")
+                                    })
+                        }
+                    }.show()
+                    true
+                }
             }
 
             override fun getItemCount(): Int = data.size
@@ -69,8 +87,8 @@ class BookrackFragment : BaseFragment() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
         fictionDataRepository.loadBookGroups()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({

@@ -19,6 +19,7 @@ interface FictionDataRepository : DataRepositoryInterface {
     fun loadBookGroup(bookName: String, author: String): Observable<BookGroup>
     fun saveBookGroup(book: List<BookGroup>): Observable<List<BookGroup>>
     fun cachedBookChapter(book: Book):Observable<Book>
+    fun deleteBookGroup(bookName: String,author: String):Observable<String>
     interface RemoteSource : Base {
         fun domain(): String
         fun search(search: String): Observable<List<Book>>
@@ -34,7 +35,7 @@ interface FictionDataRepository : DataRepositoryInterface {
         fun saveChapter(chapter: Chapter): Observable<Chapter>
         fun loadBookGroups(): Observable<List<BookGroup>>
         fun loadBookGroup(bookName: String, author: String): Observable<BookGroup>
-
+        fun deleteBookGroup(bookName: String,author: String):Observable<String>
     }
 
     interface Base : DataSourceInterface {
