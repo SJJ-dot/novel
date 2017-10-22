@@ -63,7 +63,7 @@ class YunlaigeDataSource : HttpDataSource(), FictionDataRepository.RemoteSource 
     override fun loadBookChapter(chapter: Chapter): Observable<Chapter> {
         return service.loadHtmlForGBK(chapter.url).map {
             val element = Jsoup.parse(it).getElementById("content")
-            chapter.content = ChapterContent(chapter.url, element.html())
+            chapter.content =element.html()
             chapter.isLoadSuccess = true
             chapter
         }

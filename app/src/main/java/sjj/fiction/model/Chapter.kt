@@ -16,8 +16,11 @@ data class Chapter(
         @Column var bookId: String = "",
         @Column var index: Int = 0,
         @Column var chapterName: String = "",
-        var content: ChapterContent = ChapterContent.def,
+        @Column var content: String = "",
         @Column var isLoadSuccess: Boolean = false
 ) : Serializable {
+    companion object {
+        val noContent = arrayOf(Chapter_Table.url,Chapter_Table.bookId,Chapter_Table.index,Chapter_Table.chapterName,Chapter_Table.isLoadSuccess)
+    }
     var isLoading = false
 }

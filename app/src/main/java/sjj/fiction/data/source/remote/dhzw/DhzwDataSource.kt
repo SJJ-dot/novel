@@ -45,7 +45,7 @@ class DhzwDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
     override fun loadBookChapter(chapter: Chapter): Observable<Chapter> {
         return service.loadHtmlForGBK(chapter.url).map {
             val parse = Jsoup.parse(it).getElementById("BookText")
-            chapter.content = ChapterContent(chapter.url, parse.html())
+            chapter.content = parse.html()
             chapter.isLoadSuccess = true
             chapter
         }

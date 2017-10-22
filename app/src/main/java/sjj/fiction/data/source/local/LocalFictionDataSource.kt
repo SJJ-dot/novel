@@ -72,7 +72,6 @@ class LocalFictionDataSource : FictionDataRepository.SourceLocal {
     override fun saveChapter(chapter: Chapter): Observable<Chapter> {
         return def {
             chapter.update()
-            chapter.content.save()
             chapter
         }
     }
@@ -86,7 +85,7 @@ class LocalFictionDataSource : FictionDataRepository.SourceLocal {
             book.bookCoverImgUrl = book1.bookCoverImgUrl
             book.intro = book1.intro
             book.chapterListUrl = book1.chapterListUrl
-            val list = (select from Chapter::class where (Chapter_Table.bookId eq book.id)).list
+            val list = (sjj.fiction.util.select(*Chapter.noContent) from Chapter::class where (Chapter_Table.bookId eq book.id)).list
             if (list.isEmpty()) {
                 throw Exception("chapter is null")
             }
@@ -102,7 +101,7 @@ class LocalFictionDataSource : FictionDataRepository.SourceLocal {
         chapter.index = chapter1.index
         chapter.chapterName = chapter1.chapterName
         chapter.isLoadSuccess = chapter1.isLoadSuccess
-        chapter.content = (select from ChapterContent::class where (ChapterContent_Table.url eq chapter.url)).result ?: throw Exception("not found ChapterContent ${chapter.chapterName}")
+        chapter.content = chapter1.content
         chapter
     }
 
@@ -127,7 +126,7 @@ class LocalFictionDataSource : FictionDataRepository.SourceLocal {
 //            result.currentBook = (select from Book::class where (Book_Table.id eq result.bookId)).result!!
             result.books = (select from Book::class where (Book_Table.name eq result.bookName) and (Book_Table.author eq result.author)).list
             result.books.forEach {
-                it.chapterList = (select from Chapter::class where (Chapter_Table.bookId eq it.id)).list
+                it.chapterList = (sjj.fiction.util.select(*Chapter.noContent) from Chapter::class where (Chapter_Table.bookId eq it.id)).list
                 if (result.bookId == it.id) {
                     result.currentBook = it
                 }
@@ -136,19 +135,15 @@ class LocalFictionDataSource : FictionDataRepository.SourceLocal {
         }
     }
 
-    override fun deleteBookGroup(bookName: String, author: String): Observable<String>  {
+    override fun deleteBookGroup(bookName: String, author: String): Observable<String> {
         return def {
 
-            val bookGroup = (select from BookGroup::class where (BookGroup_Table.bookName eq bookName) and (BookGroup_Table.author eq author)).result?:throw Exception("not found book $bookName")
+            val bookGroup = (select from BookGroup::class where (BookGroup_Table.bookName eq bookName) and (BookGroup_Table.author eq author)).result ?: throw Exception("not found book $bookName")
             val list = (select from Book::class where (Book_Table.name eq bookName) and (Book_Table.author eq author)).list
             val chapter = list.flatMap {
-                (select from Chapter::class where (Chapter_Table.bookId eq it.id)).list
+                (sjj.fiction.util.select(*Chapter.noContent) from Chapter::class where (Chapter_Table.bookId eq it.id)).list
             }
-            val chapterContent = chapter.flatMap {
-                (select from ChapterContent::class where (ChapterContent_Table.url eq it.url)).list
-            }
-            database<BookDataBase>().executeTransaction { wd->
-                chapterContent.forEach { it.delete(wd) }
+            database<BookDataBase>().executeTransaction { wd ->
                 chapter.forEach { it.delete(wd) }
                 list.forEach { it.delete(wd) }
                 bookGroup.delete(wd)

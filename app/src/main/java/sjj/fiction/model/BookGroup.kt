@@ -22,4 +22,9 @@ data class BookGroup(var currentBook: Book = Book.def, var books: MutableList<Bo
     var bookId = currentBook.id
     @Column
     var readIndex: Int = 0
+
+    override fun toString(): String {
+        return "BookGroup(currentBook=$currentBook, books=$books, bookName='$bookName', author='$author', bookId='$bookId', readIndex=$readIndex)"
+    }
+
 }

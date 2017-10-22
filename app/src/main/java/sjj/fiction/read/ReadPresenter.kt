@@ -3,6 +3,7 @@ package sjj.fiction.read
 import com.raizlabs.android.dbflow.kotlinextensions.save
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import sjj.alog.Log
 import sjj.fiction.model.BookGroup
 import sjj.fiction.util.fictionDataRepository
 
@@ -42,7 +43,8 @@ class ReadPresenter(private val bookName: String, private val author: String, pr
                     view.notifyChapterContentChange()
                     chapter.isLoading = false
                 }, {
-                    chapter.content.content = "章节内容加载失败：${it.message}"
+                    chapter.content = "章节内容加载失败：${it.message}"
+                    Log.e("aaa",it)
                     view.notifyChapterContentChange()
                     chapter.isLoading = false
                 }).also { com.add(it) }
