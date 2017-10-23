@@ -65,10 +65,6 @@ class ReadActivity : BaseActivity(), ReadContract.View {
                 presenter.onContentScrolled(position)
             }
         })
-    }
-
-    override fun onStart() {
-        super.onStart()
         presenter.start()
     }
 

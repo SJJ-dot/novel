@@ -40,10 +40,6 @@ class SearchFragment : BaseFragment(), SearchContract.view {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         searchRecyclerView.layoutManager = LinearLayoutManager(context)
         searchRecyclerView.adapter = searchResultBookAdapter
-    }
-
-    override fun onStart() {
-        super.onStart()
         presenter.start()
     }
 

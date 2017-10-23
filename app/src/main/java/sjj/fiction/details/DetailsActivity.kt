@@ -53,10 +53,6 @@ class DetailsActivity : BaseActivity(), DetailsContract.View {
             presenter.onClickChapterListBtn()
         }
         refreshBtn.setOnClickListener { presenter.checkUpdate() }
-    }
-
-    override fun onStart() {
-        super.onStart()
         presenter.start()
     }
 

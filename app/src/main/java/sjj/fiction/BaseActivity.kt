@@ -1,10 +1,12 @@
 package sjj.fiction
 
+import android.app.Fragment
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import sjj.permission.util.PermissionUtil
 import android.content.pm.PackageManager
 import android.content.pm.PackageInfo
+import android.os.PersistableBundle
 import org.jetbrains.anko.toast
 import sjj.alog.Log
 import sjj.permission.PermissionCallback
@@ -31,10 +33,61 @@ abstract class BaseActivity : AppCompatActivity() {
                 Log.e(s)
             }
         })
+        Log.e("onCreate $this")
     }
 
+    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
+        super.onCreate(savedInstanceState, persistentState)
+        Log.e("onCreate 2 $this")
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        Log.e("onAttachedToWindow $this")
+    }
+
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        Log.e("onTrimMemory $this")
+    }
+
+    override fun onAttachFragment(fragment: Fragment?) {
+        super.onAttachFragment(fragment)
+        Log.e("onAttachFragment $this")
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
+        super.onSaveInstanceState(outState, outPersistentState)
+        Log.e("onSaveInstanceState $this")
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        Log.e("onRestart $this")
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+        super.onRestoreInstanceState(savedInstanceState)
+        Log.e("onRestoreInstanceState $this")
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
+        super.onRestoreInstanceState(savedInstanceState, persistentState)
+        Log.e("onRestoreInstanceState $this")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.e("onStart $this")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.e("onStop $this")
+    }
     override fun onDestroy() {
         super.onDestroy()
         App.app.activitys.remove(this)
+        Log.e("onDestroy $this")
     }
 }
