@@ -1,6 +1,8 @@
 package sjj.fiction.data.Repository.impl
 
 import com.raizlabs.android.dbflow.kotlinextensions.*
+import io.reactivex.BackpressureStrategy
+import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -142,7 +144,7 @@ class FictionDataRepositoryImpl : FictionDataRepository {
         return localSource.saveBookGroup(book)
     }
 
-    override fun cachedBookChapter(book: Book): Observable<Book> = Observable.create<Book> { emitter ->
+    override fun cachedBookChapter(book: Book): Flowable<Book> = Flowable.create({ emitter ->
         val count = object {
             var count = book.chapterList.size
             var complete = false
@@ -166,14 +168,14 @@ class FictionDataRepositoryImpl : FictionDataRepository {
         val com = CompositeDisposable()
         book.chapterList.forEach {
             com.add(loadBookChapter(it).subscribe({
-                if (emitter.isDisposed) com.dispose() else emitter.onNext(book)
+                if (emitter.isCancelled) com.dispose() else emitter.onNext(book)
             }, {
-                if (emitter.isDisposed) com.dispose() else count.error(it)
+                if (emitter.isCancelled) com.dispose() else count.error(it)
             }, {
-                if (emitter.isDisposed) com.dispose() else count.complete()
+                if (emitter.isCancelled) com.dispose() else count.complete()
             }))
         }
-    }
+    }, BackpressureStrategy.LATEST)
 
     override fun deleteBookGroup(bookName: String, author: String) = localSource.deleteBookGroup(bookName, author)
 }

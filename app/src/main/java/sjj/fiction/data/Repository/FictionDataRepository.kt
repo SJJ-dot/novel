@@ -1,5 +1,6 @@
 package sjj.fiction.data.Repository
 
+import io.reactivex.Flowable
 import io.reactivex.Observable
 import sjj.fiction.data.source.DataSourceInterface
 import sjj.fiction.model.Book
@@ -18,7 +19,7 @@ interface FictionDataRepository : DataRepositoryInterface {
     fun loadBookGroups(): Observable<List<BookGroup>>
     fun loadBookGroup(bookName: String, author: String): Observable<BookGroup>
     fun saveBookGroup(book: List<BookGroup>): Observable<List<BookGroup>>
-    fun cachedBookChapter(book: Book):Observable<Book>
+    fun cachedBookChapter(book: Book): Flowable<Book>
     fun deleteBookGroup(bookName: String,author: String):Observable<String>
     interface RemoteSource : Base {
         fun domain(): String
