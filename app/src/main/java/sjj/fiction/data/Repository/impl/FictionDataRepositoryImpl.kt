@@ -9,6 +9,7 @@ import io.reactivex.schedulers.Schedulers
 import sjj.alog.Log
 import sjj.fiction.data.Repository.FictionDataRepository
 import sjj.fiction.data.source.local.LocalFictionDataSource
+import sjj.fiction.data.source.remote.aszw.AszwFictionDataSource
 import sjj.fiction.data.source.remote.dhzw.DhzwDataSource
 import sjj.fiction.data.source.remote.yunlaige.YunlaigeDataSource
 import sjj.fiction.model.Book
@@ -28,10 +29,10 @@ class FictionDataRepositoryImpl : FictionDataRepository {
     private val localSource = LocalFictionDataSource()
 
     init {
-        val dh: FictionDataRepository.RemoteSource = DhzwDataSource()
-        sources[dh.domain()] = dh
-        val yu: FictionDataRepository.RemoteSource = YunlaigeDataSource()
-        sources[yu.domain()] = yu
+        val input: (FictionDataRepository.RemoteSource) -> Unit = { sources[it.domain()] = it }
+        input(DhzwDataSource())
+        input(YunlaigeDataSource())
+        input(AszwFictionDataSource())
     }
 
     override fun search(search: String): Observable<List<BookGroup>> = observableCreate<List<BookGroup>> { emitter ->
@@ -82,7 +83,7 @@ class FictionDataRepositoryImpl : FictionDataRepository {
     override fun setSearchHistory(value: List<String>): Observable<List<String>> = localSource.setSearchHistory(value)
     override fun loadBookDetailsAndChapter(book: BookGroup, force: Boolean): Observable<BookGroup> = observableCreate { emitter ->
         val com = CompositeDisposable()
-        val remote= {
+        val remote = {
             com.add((sources[book.currentBook.url.domain()]
                     ?.loadBookDetailsAndChapter(book.currentBook)
                     ?.flatMap { localSource.saveBookGroup(listOf(book)) }
@@ -108,6 +109,7 @@ class FictionDataRepositoryImpl : FictionDataRepository {
             remote()
         }
     }
+
     override fun loadBookChapter(chapter: Chapter): Observable<Chapter> = Observable.create<Chapter> { emitter ->
         val com = CompositeDisposable()
         com.add(localSource.loadBookChapter(chapter).subscribe({
@@ -139,6 +141,7 @@ class FictionDataRepositoryImpl : FictionDataRepository {
     override fun saveBookGroup(book: List<BookGroup>): Observable<List<BookGroup>> {
         return localSource.saveBookGroup(book)
     }
+
     override fun cachedBookChapter(book: Book): Observable<Book> = Observable.create<Book> { emitter ->
         val count = object {
             var count = book.chapterList.size
