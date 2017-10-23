@@ -37,10 +37,24 @@ class AszwFictionDataSource : HttpDataSource(), FictionDataRepository.RemoteSour
     }
 
     override fun loadBookChapter(chapter: Chapter): Observable<Chapter> {
-        return errorObservable("not implemented")
+        return service.loadHtmlForGBK(chapter.url).map {
+            val parse = Jsoup.parse(it).getElementById("contents")
+            chapter.content = parse.html()
+            chapter.isLoadSuccess = true
+            chapter
+        }
     }
 
     override fun loadBookDetailsAndChapter(book: Book): Observable<Book> {
-        return errorObservable("not implemented")
+        return service.loadHtmlForGBK(book.url).map {
+            val body = Jsoup.parse(it, book.url).body()
+            val parse = body.getElementsByClass("info")[0]
+            book.bookCoverImgUrl = parse.select("[src]")[0].attr("src")
+            book.intro = parse.getElementsByClass("book")[0].getElementsByClass("js")[0].text()
+            book.chapterList = body.getElementById("at").select("a[href]").mapIndexed { index, e -> Chapter(e.attr("abs:href"), book.id, index = index, chapterName = e.text()) }
+            book.chapterListUrl = book.url
+            Log.e(book)
+            book
+        }
     }
 }
