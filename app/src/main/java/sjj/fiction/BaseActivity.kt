@@ -53,12 +53,12 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onAttachFragment(fragment: Fragment?) {
         super.onAttachFragment(fragment)
-        Log.e("onAttachFragment $this")
+        Log.e("onAttachFragment $this  $fragment")
     }
 
     override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
         super.onSaveInstanceState(outState, outPersistentState)
-        Log.e("onSaveInstanceState $this")
+        Log.e("onSaveInstanceState 2 $this")
     }
 
     override fun onRestart() {
@@ -73,7 +73,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
         super.onRestoreInstanceState(savedInstanceState, persistentState)
-        Log.e("onRestoreInstanceState $this")
+        Log.e("onRestoreInstanceState 2 $this")
     }
 
     override fun onStart() {
@@ -81,6 +81,15 @@ abstract class BaseActivity : AppCompatActivity() {
         Log.e("onStart $this")
     }
 
+    override fun onResume() {
+        super.onResume()
+        Log.e("onResume $this")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.e("onPause $this")
+    }
     override fun onStop() {
         super.onStop()
         Log.e("onStop $this")
