@@ -1,6 +1,8 @@
 package sjj.fiction.data.Repository.impl
 
 import com.raizlabs.android.dbflow.kotlinextensions.*
+import io.reactivex.BackpressureStrategy
+import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -9,6 +11,7 @@ import io.reactivex.schedulers.Schedulers
 import sjj.alog.Log
 import sjj.fiction.data.Repository.FictionDataRepository
 import sjj.fiction.data.source.local.LocalFictionDataSource
+import sjj.fiction.data.source.remote.aszw.AszwFictionDataSource
 import sjj.fiction.data.source.remote.dhzw.DhzwDataSource
 import sjj.fiction.data.source.remote.yunlaige.YunlaigeDataSource
 import sjj.fiction.model.Book
@@ -28,10 +31,10 @@ class FictionDataRepositoryImpl : FictionDataRepository {
     private val localSource = LocalFictionDataSource()
 
     init {
-        val dh: FictionDataRepository.RemoteSource = DhzwDataSource()
-        sources[dh.domain()] = dh
-        val yu: FictionDataRepository.RemoteSource = YunlaigeDataSource()
-        sources[yu.domain()] = yu
+        val input: (FictionDataRepository.RemoteSource) -> Unit = { sources[it.domain()] = it }
+        input(DhzwDataSource())
+        input(YunlaigeDataSource())
+        input(AszwFictionDataSource())
     }
 
     override fun search(search: String): Observable<List<BookGroup>> = observableCreate<List<BookGroup>> { emitter ->
@@ -82,7 +85,7 @@ class FictionDataRepositoryImpl : FictionDataRepository {
     override fun setSearchHistory(value: List<String>): Observable<List<String>> = localSource.setSearchHistory(value)
     override fun loadBookDetailsAndChapter(book: BookGroup, force: Boolean): Observable<BookGroup> = observableCreate { emitter ->
         val com = CompositeDisposable()
-        val remote= {
+        val remote = {
             com.add((sources[book.currentBook.url.domain()]
                     ?.loadBookDetailsAndChapter(book.currentBook)
                     ?.flatMap { localSource.saveBookGroup(listOf(book)) }
@@ -108,6 +111,7 @@ class FictionDataRepositoryImpl : FictionDataRepository {
             remote()
         }
     }
+
     override fun loadBookChapter(chapter: Chapter): Observable<Chapter> = Observable.create<Chapter> { emitter ->
         val com = CompositeDisposable()
         com.add(localSource.loadBookChapter(chapter).subscribe({
@@ -139,7 +143,8 @@ class FictionDataRepositoryImpl : FictionDataRepository {
     override fun saveBookGroup(book: List<BookGroup>): Observable<List<BookGroup>> {
         return localSource.saveBookGroup(book)
     }
-    override fun cachedBookChapter(book: Book): Observable<Book> = Observable.create<Book> { emitter ->
+
+    override fun cachedBookChapter(book: Book): Flowable<Book> = Flowable.create({ emitter ->
         val count = object {
             var count = book.chapterList.size
             var complete = false
@@ -163,14 +168,14 @@ class FictionDataRepositoryImpl : FictionDataRepository {
         val com = CompositeDisposable()
         book.chapterList.forEach {
             com.add(loadBookChapter(it).subscribe({
-                if (emitter.isDisposed) com.dispose() else emitter.onNext(book)
+                if (emitter.isCancelled) com.dispose() else emitter.onNext(book)
             }, {
-                if (emitter.isDisposed) com.dispose() else count.error(it)
+                if (emitter.isCancelled) com.dispose() else count.error(it)
             }, {
-                if (emitter.isDisposed) com.dispose() else count.complete()
+                if (emitter.isCancelled) com.dispose() else count.complete()
             }))
         }
-    }
+    }, BackpressureStrategy.LATEST)
 
     override fun deleteBookGroup(bookName: String, author: String) = localSource.deleteBookGroup(bookName, author)
 }
