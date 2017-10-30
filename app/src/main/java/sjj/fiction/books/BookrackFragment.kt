@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.facebook.drawee.view.SimpleDraweeView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_books.*
@@ -99,13 +100,16 @@ class BookrackFragment : BaseFragment(), BookrackContract.View {
     private inner class Adapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         var data: List<BookGroup>? = null
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            return object : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_text_text, parent, false)) {}
+            return object : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_book_list, parent, false)) {}
         }
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val bookGroup = data!![position]
-            holder.itemView.find<TextView>(R.id.text1).text = bookGroup.bookName
-            holder.itemView.find<TextView>(R.id.text2).text = bookGroup.author
+            holder.itemView.find<TextView>(R.id.bookName).text = bookGroup.bookName
+            holder.itemView.find<TextView>(R.id.author).text = bookGroup.author
+            holder.itemView.find<TextView>(R.id.originWebsite).text = bookGroup.currentBook.url.domain()
+            holder.itemView.find<TextView>(R.id.lastChapter).text = bookGroup.currentBook.chapterList.last().chapterName
+            holder.itemView.find<SimpleDraweeView>(R.id.bookCover).setImageURI(bookGroup.currentBook.bookCoverImgUrl)
             holder.itemView.setOnClickListener { v ->
                 presenter.onSelectBook(bookGroup, context)
             }

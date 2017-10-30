@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp">
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:layout_width="100dp"
+        android:id="@+id/bookCover"
+        android:layout_margin="8dp"
+        android:layout_height="150dp" />
+    <TextView
+        android:id="@+id/bookName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textSize="20sp"
+        android:layout_marginLeft="124dp"
+        android:layout_marginStart="124dp"
+        tools:text="标题" />
+
+    <TextView
+        android:id="@+id/author"
+        android:layout_width="wrap_content"
+        android:textSize="16sp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="56dp"
+        android:layout_marginLeft="124dp"
+        android:layout_marginStart="124dp"
+        tools:text="标题" />
+    <TextView
+        android:id="@+id/lastChapter"
+        android:layout_width="wrap_content"
+        android:textSize="16sp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="96dp"
+        android:layout_marginLeft="124dp"
+        android:layout_marginStart="124dp"
+        tools:text="标题" />
+    <TextView
+        android:id="@+id/originWebsite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="56dp"
+        android:textSize="16sp"
+        tools:text="标题" />
+</android.support.v7.widget.CardView>

@@ -55,5 +55,6 @@ dependencies {
     compile 'com.sjianjun:aLog:1.1.3'
     implementation 'org.jsoup:jsoup:1.10.3'
     compile 'com.sjianjun:permissionUtil:1.0.0'
+    compile 'com.facebook.fresco:fresco:0.12.0'
 //    compile "org.jetbrains.kotlin:kotlin-reflect:'*.jar'], dir: 'libs'"
 }

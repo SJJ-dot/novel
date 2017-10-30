@@ -111,8 +111,14 @@ class LocalFictionDataSource : FictionDataRepository.SourceLocal {
             database<BookDataBase>().executeTransaction {
                 val list = (select from BookGroup::class).list
                 list.forEach {
-                    it.currentBook = (select from Book::class where (Book_Table.id eq it.bookId)).result ?: it.currentBook
+//                    it.currentBook = (select from Book::class where (Book_Table.id eq it.bookId)).result ?: it.currentBook
                     it.books = (select from Book::class where (Book_Table.name eq it.bookName) and (Book_Table.author eq it.author)).list
+                    it.books.forEach {b->
+                        b.chapterList = (sjj.fiction.util.select(*Chapter.noContent) from Chapter::class where (Chapter_Table.bookId eq b.id)).list
+                        if (it.bookId== b.id) {
+                            it.currentBook = b
+                        }
+                    }
                 }
                 listGroup.addAll(list)
             }
