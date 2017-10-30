@@ -72,6 +72,7 @@ class DetailsActivity : BaseActivity(), DetailsContract.View {
         latestChapter.tag = book.chapterList.size - 1
         intro.text = book.intro
         originWebsite.text = book.url.domain()
+        bookCover.setImageURI(book.bookCoverImgUrl)
     }
 
     override fun showChapters(chapter: List<Chapter>, index: Int, active: Boolean) {

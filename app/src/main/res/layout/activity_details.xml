@@ -5,6 +5,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/bookCover"
+        android:layout_width="100dp"
+        android:layout_height="150dp"
+        android:layout_margin="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
     <TextView
         android:id="@+id/bookName"
         android:layout_width="wrap_content"
@@ -17,7 +33,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/bookCover"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
         tools:text="极道天魔" />
@@ -68,7 +84,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/bookCover"
         app:layout_constraintTop_toBottomOf="@+id/bookName"
         app:layout_constraintVertical_bias="0.0" />
 
@@ -86,7 +102,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/latestChapterTitle"
+        app:layout_constraintTop_toBottomOf="@+id/bookCover"
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
@@ -101,7 +117,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/introTitle"
-        app:layout_constraintTop_toBottomOf="@+id/latestChapter"
+        app:layout_constraintTop_toBottomOf="@+id/bookCover"
         app:layout_constraintVertical_bias="0.0"
         tools:text="www.baidu.com" />
 
@@ -118,7 +134,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/bookCover"
         app:layout_constraintTop_toBottomOf="@+id/authorTitle"
         app:layout_constraintVertical_bias="0.0" />
 
@@ -133,9 +149,9 @@
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/latestChapterTitle"
-        app:layout_constraintTop_toBottomOf="@+id/author"
+        app:layout_constraintHorizontal_bias="0.916"
+        app:layout_constraintStart_toEndOf="@+id/bookCover"
+        app:layout_constraintTop_toBottomOf="@+id/latestChapterTitle"
         app:layout_constraintVertical_bias="0.0"
         tools:text="最新章节" />
 
