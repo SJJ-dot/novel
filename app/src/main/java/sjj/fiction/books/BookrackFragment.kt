@@ -110,6 +110,7 @@ class BookrackFragment : BaseFragment(), BookrackContract.View {
             holder.itemView.find<TextView>(R.id.originWebsite).text = bookGroup.currentBook.url.domain()
             holder.itemView.find<TextView>(R.id.lastChapter).text = bookGroup.currentBook.chapterList.last().chapterName
             holder.itemView.find<SimpleDraweeView>(R.id.bookCover).setImageURI(bookGroup.currentBook.bookCoverImgUrl)
+//            holder.itemView.find<SimpleDraweeView>(R.id.bookCover).
             holder.itemView.setOnClickListener { v ->
                 presenter.onSelectBook(bookGroup, context)
             }

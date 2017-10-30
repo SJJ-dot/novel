@@ -8,6 +8,8 @@
     <com.facebook.drawee.view.SimpleDraweeView
         android:layout_width="100dp"
         android:id="@+id/bookCover"
+        fresco:failureImage="@drawable/ic_laokuoteng"
+        fresco:progressBarImage="@drawable/ic_wait"
         android:layout_margin="8dp"
         android:layout_height="150dp" />
     <TextView
