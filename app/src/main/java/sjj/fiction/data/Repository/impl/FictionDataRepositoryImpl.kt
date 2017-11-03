@@ -12,6 +12,7 @@ import sjj.alog.Log
 import sjj.fiction.data.Repository.FictionDataRepository
 import sjj.fiction.data.source.local.LocalFictionDataSource
 import sjj.fiction.data.source.remote.aszw.AszwFictionDataSource
+import sjj.fiction.data.source.remote.biquge.BiqugeDataSource
 import sjj.fiction.data.source.remote.dhzw.DhzwDataSource
 import sjj.fiction.data.source.remote.yunlaige.YunlaigeDataSource
 import sjj.fiction.model.Book
@@ -35,6 +36,7 @@ class FictionDataRepositoryImpl : FictionDataRepository {
         input(DhzwDataSource())
         input(YunlaigeDataSource())
         input(AszwFictionDataSource())
+        input(BiqugeDataSource())
     }
 
     override fun search(search: String): Observable<List<BookGroup>> = observableCreate<List<BookGroup>> { emitter ->

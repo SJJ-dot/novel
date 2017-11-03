@@ -44,7 +44,6 @@ class ReadPresenter(private val bookName: String, private val author: String, pr
                     chapter.isLoading = false
                 }, {
                     chapter.content = "章节内容加载失败：${it.message}"
-                    Log.e("aaa",it)
                     view.notifyChapterContentChange()
                     chapter.isLoading = false
                 }).also { com.add(it) }

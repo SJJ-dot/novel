@@ -12,7 +12,9 @@ interface HttpInterface {
     @CHARSET("gbk")
     @POST
     fun searchForGBK(@Url url: String, @FieldMap(encoded = true) map: Map<String, String>): Observable<String>
-
+    @CHARSET("gbk")
+    @GET
+    fun searchForGBKGET(@Url url: String, @QueryMap map: Map<String, String>): Observable<String>
     @GET
     @CHARSET("gbk")
     fun loadHtmlForGBK(@Url url: String): Observable<String>
