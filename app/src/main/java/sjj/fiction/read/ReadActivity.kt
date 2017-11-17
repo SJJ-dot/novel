@@ -192,12 +192,7 @@ class ReadActivity : BaseActivity(), ReadContract.View {
                         textSize = 24f
                         textColor = getColor(R.color.material_textBlack_text)
                     }
-                    textView {
-                        id = R.id.readItemChapterContent
-                        setPadding(16.toDpx(), 8.toDpx(), 16.toDpx(), 8.toDpx())
-                        textSize = 20f
-                        textColor = getColor(R.color.material_textBlack_text)
-                    }
+                    include<TextView>(R.layout.item_read_chapter_content)
                 }.lparams<RecyclerView.LayoutParams, LinearLayout> {
                     width = RecyclerView.LayoutParams.MATCH_PARENT
                     height = RecyclerView.LayoutParams.MATCH_PARENT
@@ -215,6 +210,8 @@ class ReadActivity : BaseActivity(), ReadContract.View {
                 presenter.setChapterContent(position)
                 holder.itemView.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
             } else {
+
+                Log.e(holder.itemView.findViewById<TextView>(R.id.readItemChapterContent).text)
                 holder.itemView.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
             }
         }

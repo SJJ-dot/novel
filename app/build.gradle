@@ -11,7 +11,7 @@ android {
     buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "sjj.fiction"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 26
         versionCode commitCont
         versionName "1.0-(" + shortHash + ")"
