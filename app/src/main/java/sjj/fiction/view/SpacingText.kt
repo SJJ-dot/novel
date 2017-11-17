@@ -66,7 +66,7 @@ class SpacingText : AppCompatTextView {
             var i = 1
             while (i < builder.toString().length) { // 小demo：100  1 0 0
                 // 按照x轴等比例进行缩放 通过我们设置的字间距+1除以10进行等比缩放
-                finalText.setSpan(ScaleXSpan((0.5).toFloat()), i, i + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                finalText.setSpan(ScaleXSpan(0.4f), i, i + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                 i += 2
             }
         }
