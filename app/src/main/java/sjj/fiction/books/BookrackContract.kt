@@ -17,6 +17,8 @@ interface BookrackContract {
 
     interface View : BaseView<Presenter> {
         fun setBookList(book: List<BookGroup>)
+        fun removeBook(book: BookGroup)
+        fun refreshBook(book: BookGroup)
         fun setBookListLoadingHint(active: Boolean)
         fun setBookListLoadingError(e: Throwable)
         fun setDeleteBookError(e: Throwable)

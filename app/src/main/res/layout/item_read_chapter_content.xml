@@ -8,4 +8,5 @@
     android:lineSpacingExtra="5dp"
     android:paddingRight="16dp"
     android:paddingTop="8dp"
+    android:textColor="@color/material_textBlack_text"
     android:textSize="24sp" />

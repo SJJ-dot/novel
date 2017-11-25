@@ -141,9 +141,8 @@ class LocalFictionDataSource : FictionDataRepository.SourceLocal {
         }
     }
 
-    override fun deleteBookGroup(bookName: String, author: String): Observable<String> {
+    override fun deleteBookGroup(bookName: String, author: String): Observable<BookGroup> {
         return def {
-
             val bookGroup = (select from BookGroup::class where (BookGroup_Table.bookName eq bookName) and (BookGroup_Table.author eq author)).result ?: throw Exception("not found book $bookName")
             val list = (select from Book::class where (Book_Table.name eq bookName) and (Book_Table.author eq author)).list
             val chapter = list.flatMap {
@@ -154,7 +153,7 @@ class LocalFictionDataSource : FictionDataRepository.SourceLocal {
                 list.forEach { it.delete(wd) }
                 bookGroup.delete(wd)
             }
-            bookName
+            bookGroup
         }
     }
 

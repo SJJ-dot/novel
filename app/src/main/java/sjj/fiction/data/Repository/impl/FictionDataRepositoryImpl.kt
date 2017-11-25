@@ -15,10 +15,8 @@ import sjj.fiction.data.source.remote.aszw.AszwFictionDataSource
 import sjj.fiction.data.source.remote.biquge.BiqugeDataSource
 import sjj.fiction.data.source.remote.dhzw.DhzwDataSource
 import sjj.fiction.data.source.remote.yunlaige.YunlaigeDataSource
-import sjj.fiction.model.Book
-import sjj.fiction.model.BookGroup
-import sjj.fiction.model.BookGroup_Table
-import sjj.fiction.model.Chapter
+import sjj.fiction.model.*
+import sjj.fiction.util.bus
 import sjj.fiction.util.def
 import sjj.fiction.util.domain
 import sjj.fiction.util.observableCreate
@@ -90,7 +88,10 @@ class FictionDataRepositoryImpl : FictionDataRepository {
         val remote = {
             com.add((sources[book.currentBook.url.domain()]
                     ?.loadBookDetailsAndChapter(book.currentBook)
-                    ?.flatMap { localSource.saveBookGroup(listOf(book)) }
+                    ?.flatMap {
+                        bus.onNext(Event(Event.NEW_BOOK, book))
+                        localSource.saveBookGroup(listOf(book))
+                    }
                     ?.map { book }
                     ?: error("未知源 ${book.currentBook.url}"))
                     .subscribe({
