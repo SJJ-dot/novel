@@ -48,12 +48,6 @@ class BookrackFragment : BaseFragment(), BookrackContract.View {
         BooksPresenter(this).start()
 
     }
-
-    override fun onStop() {
-        super.onStop()
-
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         presenter.stop()
@@ -76,7 +70,7 @@ class BookrackFragment : BaseFragment(), BookrackContract.View {
     }
 
     override fun refreshBook(book: BookGroup) {
-        val list = adapter.data?.toMutableList()?:return
+        val list = adapter.data?.toMutableList()?: mutableListOf()
         val group = list.indexOfFirst { it.bookName == book.bookName && it.author == book.author }
         if (group >= 0) {
             list.removeAt(group)
@@ -84,6 +78,8 @@ class BookrackFragment : BaseFragment(), BookrackContract.View {
         } else {
             list.add(book)
         }
+        adapter.data = list
+        adapter.notifyDataSetChanged()
     }
 
     override fun setBookListLoadingHint(active: Boolean) {

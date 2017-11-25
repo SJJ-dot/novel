@@ -39,7 +39,6 @@ class BiqugeDataSource():HttpDataSource(),FictionDataRepository.RemoteSource {
     override fun loadBookDetailsAndChapter(book: Book): Observable<Book> {
         return service.loadHtmlForGBK(book.url).map {
             val parse = Jsoup.parse(it, book.url).body()
-            Log.e( parse.getElementById("fmimg"))
             book.bookCoverImgUrl = parse.getElementById("fmimg").select("[src]")[0].attr("src")
             book.intro = parse.getElementById("intro").child(0).text()
             val children = parse.getElementById("list").child(0).children()
