@@ -47,7 +47,7 @@ class BooksPresenter(private val view: BookrackContract.View) : BookrackContract
                     }
 
                 })
-        bus.filter { it.id == Event.NEW_BOOK }.subscribe {
+        bus.filter { it.id == Event.NEW_BOOK }.observeOn(AndroidSchedulers.mainThread()).subscribe {
             when (it.id) {
                 Event.NEW_BOOK -> view.refreshBook(it.value as BookGroup)
             }
