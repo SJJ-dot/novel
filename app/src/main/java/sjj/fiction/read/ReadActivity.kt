@@ -55,7 +55,6 @@ class ReadActivity : BaseActivity(), ReadContract.View {
 
         chapterContent.layoutManager = LinearLayoutManager(this)
         chapterContent.adapter = contentAdapter
-
         chapterList.layoutManager = LinearLayoutManager(this)
         chapterList.adapter = chapterListAdapter
         chapterContent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -116,6 +115,7 @@ class ReadActivity : BaseActivity(), ReadContract.View {
     }
 
     override fun setChapterList(chapter: List<Chapter>) {
+        seekBar.max = chapter.size
         chapterListAdapter.data = chapter
         contentAdapter.chapters = chapter
         chapterListAdapter.notifyDataSetChanged()
@@ -124,10 +124,12 @@ class ReadActivity : BaseActivity(), ReadContract.View {
 
     override fun setChapterListPosition(position: Int) {
         chapterList.scrollToPosition(position)
+        seekBar.progress = position
     }
 
     override fun setChapterContentPosition(position: Int) {
         chapterContent.scrollToPosition(position)
+        seekBar.progress = position
     }
 
     override fun setTitle(title: String) {

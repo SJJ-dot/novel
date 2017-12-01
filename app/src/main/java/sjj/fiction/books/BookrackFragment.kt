@@ -83,12 +83,12 @@ class BookrackFragment : BaseFragment(), BookrackContract.View {
     }
 
     override fun setBookListLoadingHint(active: Boolean) {
-        loadingHint = if (active) {
-            loadingHint ?: indeterminateProgressDialog("正在加载书籍列表请稍候……")
-        } else {
-            loadingHint?.dismiss()
-            null
-        }
+//        loadingHint = if (active) {
+//            loadingHint ?: indeterminateProgressDialog("正在加载书籍列表请稍候……")
+//        } else {
+//            loadingHint?.dismiss()
+//            null
+//        }
     }
 
     override fun setBookListLoadingError(e: Throwable) {
