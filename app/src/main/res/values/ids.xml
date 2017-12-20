@@ -8,4 +8,5 @@
     <item name="readItemChapterContent" type="id"/>
     <item name="click_tag" type="id"/>
     <item name="click_count_tag" type="id"/>
+    <item name="progressBar" type="id"/>
 </resources>

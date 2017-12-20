@@ -9,7 +9,6 @@ import sjj.fiction.data.source.remote.HttpInterface
 import sjj.fiction.model.Book
 import sjj.fiction.model.Chapter
 import sjj.fiction.util.domain
-import sjj.fiction.util.errorObservable
 import java.net.URLEncoder
 
 /**

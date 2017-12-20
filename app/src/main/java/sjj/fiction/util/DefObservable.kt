@@ -17,8 +17,5 @@ fun <T> def(scheduler: Scheduler = Schedulers.computation(), supplier: () -> T):
             .subscribeOn(scheduler)
 }
 
-fun <T> errorObservable(message: String) = def<T> { throw Exception(message) }
 fun <T> observableCreate(run: (ObservableEmitter<T>) -> Unit): Observable<T> = Observable.create<T>(run)
         .subscribeOn(Schedulers.computation())
-
-fun Int.resStr() = App.app.resources.getString(this)!!
