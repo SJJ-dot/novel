@@ -10,6 +10,8 @@ import android.view.*
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.raizlabs.android.dbflow.kotlinextensions.save
+import io.reactivex.Flowable
+import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
