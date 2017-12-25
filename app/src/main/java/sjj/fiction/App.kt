@@ -2,6 +2,7 @@ package sjj.fiction
 
 import android.app.Application
 import android.content.Intent
+import android.os.StrictMode
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.raizlabs.android.dbflow.config.DatabaseConfig
 import com.raizlabs.android.dbflow.config.FlowConfig
@@ -43,6 +44,27 @@ class App : Application() {
                 .addDatabaseConfig(DatabaseConfig.builder(BookDataBase::class.java).build())
                 .build())
         Fresco.initialize(this);
+
+        // 分别为MainThread和VM设置Strict Mode
+        if (BuildConfig.DEBUG) {
+            StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder()
+                    .detectDiskReads()
+                    .detectDiskWrites()
+                    .detectNetwork()
+                    //                    .detectResourceMismatches()
+                    .detectCustomSlowCalls().detectAll()
+                    .penaltyDeath()
+                    .build())
+
+            StrictMode.setVmPolicy(StrictMode.VmPolicy.Builder()
+                    .detectLeakedSqlLiteObjects()
+                    .detectLeakedClosableObjects()
+                    .detectLeakedRegistrationObjects()
+                    .detectActivityLeaks().detectAll()
+                    .penaltyDeath()
+                    .build())
+        }
+
     }
 
     fun exit() {

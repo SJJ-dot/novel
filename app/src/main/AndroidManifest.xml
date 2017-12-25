@@ -27,6 +27,7 @@
             android:name=".CrashActivity"
             android:launchMode="singleTask"
             android:process=":crashInfo" />
+        <activity android:name=".binding.DataBindingTest" />
     </application>
 
 </manifest>

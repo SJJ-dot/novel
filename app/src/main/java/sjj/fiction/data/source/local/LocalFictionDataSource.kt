@@ -12,8 +12,6 @@ import sjj.fiction.BookDataBase
 import sjj.fiction.data.Repository.FictionDataRepository
 import sjj.fiction.model.*
 import sjj.fiction.util.def
-import sjj.fiction.util.errorObservable
-
 /**
  * Created by SJJ on 2017/10/15.
  */

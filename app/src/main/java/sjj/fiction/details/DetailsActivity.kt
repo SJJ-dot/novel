@@ -2,6 +2,7 @@ package sjj.fiction.details
 
 import android.app.ProgressDialog
 import android.content.Intent
+import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -16,6 +17,7 @@ import org.jetbrains.anko.find
 import org.jetbrains.anko.indeterminateProgressDialog
 import org.jetbrains.anko.toast
 import sjj.fiction.BaseActivity
+import sjj.fiction.Details
 import sjj.fiction.R
 import sjj.fiction.model.Book
 import sjj.fiction.model.BookGroup
@@ -37,14 +39,16 @@ class DetailsActivity : BaseActivity(), DetailsContract.View {
     private var dialog: ProgressDialog? = null
     private var update: ProgressDialog? = null
     private lateinit var adapter: ChapterListAdapter
+    private lateinit var bind: Details;
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_details)
+        bind =DataBindingUtil.setContentView<Details>(this,R.layout.activity_details)
+//        setContentView(R.layout.activity_details)
         presenter = DetailsPresenter(intent.getStringExtra(data_book_name), intent.getStringExtra(data_book_author), this)
-
-        latestChapter.setOnClickListener {
-            presenter.onSelectChapter(it.tag.toString().toInt())
-        }
+        bind.detailsPresenter = presenter
+//        latestChapter.setOnClickListener {
+//            presenter.onSelectChapter(it.tag.toString().toInt())
+//        }
         originWebsite.setOnClickListener { presenter.onClickOrigin() }
         chapterList.layoutManager = LinearLayoutManager(this)
         adapter = ChapterListAdapter(presenter)
@@ -66,8 +70,9 @@ class DetailsActivity : BaseActivity(), DetailsContract.View {
     }
 
     override fun showBookDetails(book: Book) {
-        bookName.text = book.name
-        author.text = book.author
+        bind.book = book
+//        bookName.text = book.name
+//        author.text = book.author
         latestChapter.text = book.chapterList.last().chapterName
         latestChapter.tag = book.chapterList.size - 1
         intro.text = book.intro
