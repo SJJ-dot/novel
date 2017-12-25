@@ -7,8 +7,11 @@ import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import sjj.alog.Log
 import sjj.fiction.details.DetailsActivity
 import sjj.fiction.model.BookGroup
+import sjj.fiction.model.Event
+import sjj.fiction.util.bus
 import sjj.fiction.util.fictionDataRepository
 
 /**
@@ -44,6 +47,11 @@ class BooksPresenter(private val view: BookrackContract.View) : BookrackContract
                     }
 
                 })
+        bus.filter { it.id == Event.NEW_BOOK }.observeOn(AndroidSchedulers.mainThread()).subscribe {
+            when (it.id) {
+                Event.NEW_BOOK -> view.refreshBook(it.value as BookGroup)
+            }
+        }.also { com.add(it) }
     }
 
     override fun stop() {
@@ -78,6 +86,6 @@ class BooksPresenter(private val view: BookrackContract.View) : BookrackContract
 
     override fun deleteBook(book: BookGroup) {
         data.deleteBookGroup(book.bookName, book.author).observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ start() }, { view.setDeleteBookError(it) }).also { com.add(it) }
+                .subscribe({ view.removeBook(it) }, { view.setDeleteBookError(it) }).also { com.add(it) }
     }
 }

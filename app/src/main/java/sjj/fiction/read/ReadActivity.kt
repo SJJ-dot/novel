@@ -10,6 +10,8 @@ import android.view.*
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.raizlabs.android.dbflow.kotlinextensions.save
+import io.reactivex.Flowable
+import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -55,7 +57,6 @@ class ReadActivity : BaseActivity(), ReadContract.View {
 
         chapterContent.layoutManager = LinearLayoutManager(this)
         chapterContent.adapter = contentAdapter
-
         chapterList.layoutManager = LinearLayoutManager(this)
         chapterList.adapter = chapterListAdapter
         chapterContent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -116,6 +117,7 @@ class ReadActivity : BaseActivity(), ReadContract.View {
     }
 
     override fun setChapterList(chapter: List<Chapter>) {
+        seekBar.max = chapter.size
         chapterListAdapter.data = chapter
         contentAdapter.chapters = chapter
         chapterListAdapter.notifyDataSetChanged()
@@ -124,10 +126,12 @@ class ReadActivity : BaseActivity(), ReadContract.View {
 
     override fun setChapterListPosition(position: Int) {
         chapterList.scrollToPosition(position)
+        seekBar.progress = position
     }
 
     override fun setChapterContentPosition(position: Int) {
         chapterContent.scrollToPosition(position)
+        seekBar.progress = position
     }
 
     override fun setTitle(title: String) {
@@ -192,12 +196,7 @@ class ReadActivity : BaseActivity(), ReadContract.View {
                         textSize = 24f
                         textColor = getColor(R.color.material_textBlack_text)
                     }
-                    textView {
-                        id = R.id.readItemChapterContent
-                        setPadding(16.toDpx(), 8.toDpx(), 16.toDpx(), 8.toDpx())
-                        textSize = 20f
-                        textColor = getColor(R.color.material_textBlack_text)
-                    }
+                    include<TextView>(R.layout.item_read_chapter_content)
                 }.lparams<RecyclerView.LayoutParams, LinearLayout> {
                     width = RecyclerView.LayoutParams.MATCH_PARENT
                     height = RecyclerView.LayoutParams.MATCH_PARENT
@@ -215,6 +214,8 @@ class ReadActivity : BaseActivity(), ReadContract.View {
                 presenter.setChapterContent(position)
                 holder.itemView.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
             } else {
+
+                Log.e(holder.itemView.findViewById<TextView>(R.id.readItemChapterContent).text)
                 holder.itemView.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
             }
         }

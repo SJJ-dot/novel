@@ -25,6 +25,7 @@ import sjj.fiction.R
 import sjj.fiction.details.DetailsActivity
 import sjj.fiction.model.Book
 import sjj.fiction.model.BookGroup
+import sjj.fiction.util.bus
 import sjj.fiction.util.domain
 import sjj.fiction.util.fictionDataRepository
 
@@ -32,7 +33,6 @@ import sjj.fiction.util.fictionDataRepository
  * Created by SJJ on 2017/10/7.
  */
 class BookrackFragment : BaseFragment(), BookrackContract.View {
-    private val data: MutableList<BookGroup> = mutableListOf()
     private lateinit var presenter: BookrackContract.Presenter
     private val adapter by lazy { Adapter() }
     private var loadingHint: ProgressDialog? = null
@@ -45,16 +45,11 @@ class BookrackFragment : BaseFragment(), BookrackContract.View {
         super.onViewCreated(view, savedInstanceState)
         bookList.layoutManager = LinearLayoutManager(context)
         bookList.adapter = adapter
-        BooksPresenter(this)
-    }
+        BooksPresenter(this).start()
 
-    override fun onStart() {
-        super.onStart()
-        presenter.start()
     }
-
-    override fun onStop() {
-        super.onStop()
+    override fun onDestroyView() {
+        super.onDestroyView()
         presenter.stop()
     }
 
@@ -67,13 +62,33 @@ class BookrackFragment : BaseFragment(), BookrackContract.View {
         adapter.notifyDataSetChanged()
     }
 
-    override fun setBookListLoadingHint(active: Boolean) {
-        loadingHint = if (active) {
-            loadingHint ?: indeterminateProgressDialog("正在加载书籍列表请稍候……")
+    override fun removeBook(book: BookGroup) {
+        val list = adapter.data?.toMutableList()?:return
+        list.removeAll { it.bookName == book.bookName && it.author == book.author }
+        adapter.data = list
+        adapter.notifyDataSetChanged()
+    }
+
+    override fun refreshBook(book: BookGroup) {
+        val list = adapter.data?.toMutableList()?: mutableListOf()
+        val group = list.indexOfFirst { it.bookName == book.bookName && it.author == book.author }
+        if (group >= 0) {
+            list.removeAt(group)
+            list.add(group,book)
         } else {
-            loadingHint?.dismiss()
-            null
+            list.add(book)
         }
+        adapter.data = list
+        adapter.notifyDataSetChanged()
+    }
+
+    override fun setBookListLoadingHint(active: Boolean) {
+//        loadingHint = if (active) {
+//            loadingHint ?: indeterminateProgressDialog("正在加载书籍列表请稍候……")
+//        } else {
+//            loadingHint?.dismiss()
+//            null
+//        }
     }
 
     override fun setBookListLoadingError(e: Throwable) {

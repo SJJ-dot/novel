@@ -16,6 +16,7 @@ import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.support.v4.indeterminateProgressDialog
 import org.jetbrains.anko.support.v4.progressDialog
 import org.jetbrains.anko.support.v4.toast
+import sjj.alog.Log
 import sjj.fiction.BaseFragment
 import sjj.fiction.R
 import sjj.fiction.model.BookGroup
@@ -62,6 +63,7 @@ class SearchFragment : BaseFragment(), SearchContract.view {
 
     override fun setLoadBookDetailsErrorHint(it: Throwable) {
         toast("加载书籍详情出错：${it.message}")
+        Log.e("",it)
     }
 
     override fun setLoadBookDetailsHint(active: Boolean) {
