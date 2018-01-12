@@ -1,8 +1,10 @@
 package sjj.fiction.read
 
 import android.app.ProgressDialog
+import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v4.widget.DrawerLayout
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Html
@@ -19,6 +21,7 @@ import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_read.*
 import org.jetbrains.anko.*
 import sjj.alog.Log
+import sjj.fiction.App
 import sjj.fiction.BaseActivity
 import sjj.fiction.R
 import sjj.fiction.data.Repository.FictionDataRepository
@@ -26,8 +29,8 @@ import sjj.fiction.model.Book
 import sjj.fiction.model.BookGroup
 import sjj.fiction.model.Chapter
 import sjj.fiction.util.fictionDataRepository
+import sjj.fiction.util.log
 import sjj.fiction.util.lparams
-import sjj.fiction.util.textView
 import sjj.fiction.util.toDpx
 
 class ReadActivity : BaseActivity(), ReadContract.View {
@@ -37,12 +40,15 @@ class ReadActivity : BaseActivity(), ReadContract.View {
         val DATA_CHAPTER_INDEX = "DATA_CHAPTER_INDEX"
     }
 
+    private val ttfs = arrayOf<String>("Roboto-Black.ttf", "Roboto-BlackItalic.ttf", "Roboto-Bold.ttf", "Roboto-BoldItalic.ttf", "Roboto-Italic.ttf", "Roboto-Light.ttf", "Roboto-LightItalic.ttf", "Roboto-Medium.ttf", "Roboto-MediumItalic.ttf", "Roboto-Regular.ttf", "Roboto-Thin.ttf",
+            "Roboto-ThinItalic.ttf", "RobotoCondensed-Bold.ttf", "RobotoCondensed-BoldItalic.ttf", "RobotoCondensed-Italic.ttf", "RobotoCondensed-Light.ttf",
+            "RobotoCondensed-LightItalic.ttf",
+            "RobotoCondensed-Regular.ttf")
     private lateinit var presenter: ReadContract.Presenter
-
     private val bookName by lazy { intent.getStringExtra(DATA_BOOK_NAME) }
     private val bookAuthor by lazy { intent.getStringExtra(DATA_BOOK_AUTHOR) }
     private val index by lazy { intent.getIntExtra(DATA_CHAPTER_INDEX, 0) }
-    private val contentAdapter by lazy { ChapterContentAdapter(presenter) }
+    private val contentAdapter by lazy { ChapterContentAdapter(presenter, Typeface.createFromAsset(assets, "fonts/${App.app.config.ttf}")) }
     private val chapterListAdapter by lazy { ChapterListAdapter(presenter) }
     private var loadBookHint: ProgressDialog? = null
     private var cached: ProgressDialog? = null
@@ -52,7 +58,6 @@ class ReadActivity : BaseActivity(), ReadContract.View {
         setSupportActionBar(toolbar)
         val supportActionBar = supportActionBar!!
         supportActionBar.setDisplayHomeAsUpEnabled(true)
-
         ReadPresenter(bookName, bookAuthor, index, this)
 
         chapterContent.layoutManager = LinearLayoutManager(this)
@@ -106,6 +111,15 @@ class ReadActivity : BaseActivity(), ReadContract.View {
 //                            dialog.dismiss()
 //                            toast("书籍信息加载失败：${it.message}")
 //                        }).also { com.add(it) }
+                true
+            }
+            R.id.menu_ttf -> {
+                AlertDialog.Builder(this).setSingleChoiceItems(ttfs,ttfs.indexOf(App.app.config.ttf)){dialog, which ->
+                    dialog.dismiss()
+                    App.app.config.ttf = ttfs[which]
+                    contentAdapter.ttf = Typeface.createFromAsset(assets, "fonts/${ttfs[which]}")
+                    contentAdapter.notifyDataSetChanged()
+                }.show()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -184,9 +198,10 @@ class ReadActivity : BaseActivity(), ReadContract.View {
         toast("缓存章节出错：${e.message}")
     }
 
-    private class ChapterContentAdapter(val presenter: ReadContract.Presenter) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private class ChapterContentAdapter(val presenter: ReadContract.Presenter, var ttf: Typeface) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         var chapters: List<Chapter>? = null
         private val fiction: FictionDataRepository = fictionDataRepository
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             return object : RecyclerView.ViewHolder(with(parent.context) {
                 verticalLayout {
@@ -195,6 +210,7 @@ class ReadActivity : BaseActivity(), ReadContract.View {
                         setPadding(16.toDpx(), 8.toDpx(), 16.toDpx(), 8.toDpx())
                         textSize = 24f
                         textColor = getColor(R.color.material_textBlack_text)
+                        setBackgroundColor(getColor(R.color.chapter_background))
                     }
                     include<TextView>(R.layout.item_read_chapter_content)
                 }.lparams<RecyclerView.LayoutParams, LinearLayout> {
@@ -208,14 +224,14 @@ class ReadActivity : BaseActivity(), ReadContract.View {
             val chapter = chapters!![position]
             holder.itemView.findViewById<TextView>(R.id.readItemChapterContentTitle).text = chapter.chapterName
             if (chapter.content.isNotEmpty()) {
-                holder.itemView.findViewById<TextView>(R.id.readItemChapterContent).text = Html.fromHtml(chapter.content)
+                val content = holder.itemView.findViewById<TextView>(R.id.readItemChapterContent)
+                content.typeface = ttf
+                content.text = Html.fromHtml(chapter.content)
             }
-            if (!chapter.isLoadSuccess||chapter.content.isEmpty()) {
+            if (!chapter.isLoadSuccess || chapter.content.isEmpty()) {
                 presenter.setChapterContent(position)
                 holder.itemView.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
             } else {
-
-                Log.e(holder.itemView.findViewById<TextView>(R.id.readItemChapterContent).text)
                 holder.itemView.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
             }
         }

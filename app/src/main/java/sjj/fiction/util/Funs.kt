@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import com.raizlabs.android.dbflow.sql.language.Select
 import com.raizlabs.android.dbflow.sql.language.property.IProperty
+import sjj.alog.Log
 import java.util.regex.Pattern
 
 /**
@@ -19,6 +20,11 @@ fun String.domain(): String {
         return m.group(1)
     }
     return "error"
+}
+
+fun <T> T.log():T {
+    Log.e(this)
+    return this
 }
 
 fun Throwable.stackTraceString(): String {

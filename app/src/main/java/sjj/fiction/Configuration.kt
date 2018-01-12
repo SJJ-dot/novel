@@ -2,6 +2,7 @@ package sjj.fiction;
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.Typeface
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import sjj.alog.Log
@@ -38,6 +39,13 @@ class Configuration(val context: Context) {
         builder.deleteCharAt(builder.length - 1)
         return userSp.getString(builder.toString(), "")
     }
+
+    var ttf: String
+        get() = userSp.getString("key_ttf", "Roboto-Black.ttf")
+        set(value) {
+            userEditor.putString("key_ttf", value).commit()
+        }
+
 
 //    fun getUserSp() = userSp
 //    fun set(stringArray: List<String>) {

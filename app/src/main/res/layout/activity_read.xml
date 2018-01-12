@@ -38,7 +38,7 @@
             android:id="@+id/chapterName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/translucent"
+            android:background="@color/chapter_background_translucent"
             android:paddingBottom="5dp"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
