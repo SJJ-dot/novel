@@ -211,9 +211,10 @@ class ReadActivity : BaseActivity(), ReadContract.View {
     private class ChapterContentAdapter(val presenter: ReadContract.Presenter, var ttf: Typeface) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         var chapters: List<Chapter>? = null
         private val fiction: FictionDataRepository = fictionDataRepository
-        private var contentTextSize = 24f
+        private var contentTextSize = App.app.config.readChapterTextSize
         fun textSize(dif: Int) {
             this.contentTextSize += dif
+            App.app.config.readChapterTextSize = contentTextSize
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

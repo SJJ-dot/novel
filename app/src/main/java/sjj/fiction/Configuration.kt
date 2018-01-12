@@ -45,7 +45,11 @@ class Configuration(val context: Context) {
         set(value) {
             userEditor.putString("key_ttf", value).commit()
         }
-
+    var readChapterTextSize: Float
+        get() = userSp.getFloat("key_readChapterTextSize", 24f)
+        set(value) {
+            userEditor.putFloat("key_readChapterTextSize", value).commit()
+        }
 
 //    fun getUserSp() = userSp
 //    fun set(stringArray: List<String>) {
