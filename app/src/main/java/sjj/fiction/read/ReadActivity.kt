@@ -114,12 +114,22 @@ class ReadActivity : BaseActivity(), ReadContract.View {
                 true
             }
             R.id.menu_ttf -> {
-                AlertDialog.Builder(this).setSingleChoiceItems(ttfs,ttfs.indexOf(App.app.config.ttf)){dialog, which ->
+                AlertDialog.Builder(this).setSingleChoiceItems(ttfs, ttfs.indexOf(App.app.config.ttf)) { dialog, which ->
                     dialog.dismiss()
                     App.app.config.ttf = ttfs[which]
                     contentAdapter.ttf = Typeface.createFromAsset(assets, "fonts/${ttfs[which]}")
                     contentAdapter.notifyDataSetChanged()
                 }.show()
+                true
+            }
+            R.id.menu_add -> {
+                contentAdapter.textSize(1)
+                contentAdapter.notifyDataSetChanged()
+                true
+            }
+            R.id.menu_minus -> {
+                contentAdapter.textSize(-1)
+                contentAdapter.notifyDataSetChanged()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -201,6 +211,10 @@ class ReadActivity : BaseActivity(), ReadContract.View {
     private class ChapterContentAdapter(val presenter: ReadContract.Presenter, var ttf: Typeface) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         var chapters: List<Chapter>? = null
         private val fiction: FictionDataRepository = fictionDataRepository
+        private var contentTextSize = 24f
+        fun textSize(dif: Int) {
+            this.contentTextSize += dif
+        }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             return object : RecyclerView.ViewHolder(with(parent.context) {
@@ -226,6 +240,7 @@ class ReadActivity : BaseActivity(), ReadContract.View {
             if (chapter.content.isNotEmpty()) {
                 val content = holder.itemView.findViewById<TextView>(R.id.readItemChapterContent)
                 content.typeface = ttf
+                content.textSize = contentTextSize
                 content.text = Html.fromHtml(chapter.content)
             }
             if (!chapter.isLoadSuccess || chapter.content.isEmpty()) {

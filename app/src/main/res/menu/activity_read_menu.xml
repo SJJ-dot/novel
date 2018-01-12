@@ -4,13 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
     <item
+        android:id="@+id/menu_add"
+        android:title="放大字号"
+        app:showAsAction="collapseActionView" />
+    <item
+        android:id="@+id/menu_minus"
+        android:title="缩小字号"
+        app:showAsAction="collapseActionView" />
+    <item
         android:id="@+id/menu_ttf"
-        android:title="字体"
-        app:showAsAction="always" />
+        android:title="修改章节字体"
+        app:showAsAction="collapseActionView" />
     <item
         android:id="@+id/menu_cached"
         android:icon="@drawable/ic_cached_white"
-        android:title="缓存"
-        app:showAsAction="always" />
+        android:title="缓存章节内容"
+        app:showAsAction="collapseActionView" />
 
 </menu>
