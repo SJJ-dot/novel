@@ -4,4 +4,6 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="translucent">#AFffffff</color>
+    <color name="chapter_background">#F6F4EE</color>
+    <color name="chapter_text_color">#252525</color>
 </resources>
