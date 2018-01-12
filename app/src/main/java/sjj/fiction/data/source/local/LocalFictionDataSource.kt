@@ -29,7 +29,7 @@ class LocalFictionDataSource : FictionDataRepository.SourceLocal {
     }
 
     override fun getSearchHistory(): Observable<List<String>> = def {
-        get<List<String>>(KEY_SEARCH_HISTORY) ?: listOf("极道天魔", "霜寒之翼", "骑士号角", "哈利波特与秘密宝藏", "放开那个女巫", "网游之荒古时代", "老衲要还俗")
+        get<List<String>>(KEY_SEARCH_HISTORY) ?: listOf("极道天魔", "霜寒之翼", "骑士号角", "放开那个女巫","牧神记")
     }
 
 
