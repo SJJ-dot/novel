@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
     <item
+        android:id="@+id/nav_account"
+        android:title="Account" />
+    <item
         android:id="@+id/nav_about"
         android:title="About" />
 

@@ -28,6 +28,7 @@
             android:launchMode="singleTask"
             android:process=":crashInfo" />
         <activity android:name=".binding.DataBindingTest" />
+        <activity android:name=".account.AccountActivity"></activity>
     </application>
 
 </manifest>

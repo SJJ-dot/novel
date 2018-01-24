@@ -21,6 +21,7 @@ import org.jetbrains.anko.toast
 import sjj.fiction.BaseActivity
 import sjj.fiction.R
 import sjj.fiction.about.AboutActivity
+import sjj.fiction.account.AccountActivity
 import sjj.fiction.books.BookrackFragment
 import sjj.fiction.main.impl.MainPresenter
 import sjj.fiction.model.BookGroup
@@ -96,6 +97,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             R.id.nav_about -> {
                 startActivity(Intent(this, AboutActivity::class.java))
             }
+            R.id.nav_account -> startActivity(Intent(this, AccountActivity::class.java))
         }
 
         drawer_layout.closeDrawer(GravityCompat.START)
