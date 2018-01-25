@@ -28,7 +28,20 @@
             android:launchMode="singleTask"
             android:process=":crashInfo" />
         <activity android:name=".binding.DataBindingTest" />
-        <activity android:name=".account.AccountActivity"></activity>
+        <activity android:name=".account.AccountActivity" />
+
+        <service
+            android:name=".account.AccountService"
+            android:enabled="true"
+            android:exported="true">
+            <!-- Required filter used by the system to launch our account service. -->
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+            <!-- This points to an XMLf ile which describes our account service. -->
+            <meta-data android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
     </application>
 
 </manifest>
