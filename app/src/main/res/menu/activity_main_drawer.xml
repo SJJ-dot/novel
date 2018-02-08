@@ -6,6 +6,9 @@
         android:id="@+id/nav_account"
         android:title="Account" />
     <item
+        android:id="@+id/nav_data_binding"
+        android:title="DataBinding" />
+    <item
         android:id="@+id/nav_about"
         android:title="About" />
 
