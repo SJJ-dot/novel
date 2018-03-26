@@ -37,11 +37,11 @@ class BookrackFragment : BaseFragment(), BookrackContract.View {
     private val adapter by lazy { Adapter() }
     private var loadingHint: ProgressDialog? = null
     private var loadingDetailsHint: ProgressDialog? = null
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater?.inflate(R.layout.fragment_books, container, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         bookList.layoutManager = LinearLayoutManager(context)
         bookList.adapter = adapter
@@ -127,7 +127,7 @@ class BookrackFragment : BaseFragment(), BookrackContract.View {
             holder.itemView.find<SimpleDraweeView>(R.id.bookCover).setImageURI(bookGroup.currentBook.bookCoverImgUrl)
 //            holder.itemView.find<SimpleDraweeView>(R.id.bookCover).
             holder.itemView.setOnClickListener { v ->
-                presenter.onSelectBook(bookGroup, context)
+                presenter.onSelectBook(bookGroup, v.context)
             }
             holder.itemView.setOnLongClickListener {
                 alert {
