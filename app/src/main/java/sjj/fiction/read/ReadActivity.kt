@@ -224,8 +224,8 @@ class ReadActivity : BaseActivity(), ReadContract.View {
                         id = R.id.readItemChapterContentTitle
                         setPadding(16.toDpx(), 8.toDpx(), 16.toDpx(), 8.toDpx())
                         textSize = 24f
-                        textColor = getColor(R.color.material_textBlack_text)
-                        setBackgroundColor(getColor(R.color.chapter_background))
+                        textColor = resources.getColor(R.color.material_textBlack_text)
+                        setBackgroundColor(resources.getColor(R.color.chapter_background))
                     }
                     include<TextView>(R.layout.item_read_chapter_content)
                 }.lparams<RecyclerView.LayoutParams, LinearLayout> {
