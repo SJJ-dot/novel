@@ -22,6 +22,7 @@ import sjj.fiction.BaseActivity
 import sjj.fiction.R
 import sjj.fiction.about.AboutActivity
 import sjj.fiction.account.AccountActivity
+import sjj.fiction.binding.DataBindingTest
 import sjj.fiction.books.BookrackFragment
 import sjj.fiction.main.impl.MainPresenter
 import sjj.fiction.model.BookGroup
@@ -98,6 +99,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 startActivity(Intent(this, AboutActivity::class.java))
             }
             R.id.nav_account -> startActivity(Intent(this, AccountActivity::class.java))
+            R.id.nav_data_binding -> startActivity(Intent(this, DataBindingTest::class.java))
         }
 
         drawer_layout.closeDrawer(GravityCompat.START)

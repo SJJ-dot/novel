@@ -34,11 +34,11 @@ class SearchFragment : BaseFragment(), SearchContract.view {
         SearchPresenter(this)
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater?.inflate(R.layout.fragment_search, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_search, container, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         searchRecyclerView.layoutManager = LinearLayoutManager(context)
         searchRecyclerView.adapter = searchResultBookAdapter
         presenter.start()
@@ -78,8 +78,8 @@ class SearchFragment : BaseFragment(), SearchContract.view {
     private inner class SearchResultBookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         var data = listOf<BookGroup>()
         override fun getItemCount(): Int = data.size
-        override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder {
-            return object : RecyclerView.ViewHolder(with(parent!!.context) {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+            return object : RecyclerView.ViewHolder(with(parent.context) {
                 cardView {
                     linearLayout {
                         textView {
@@ -122,7 +122,7 @@ class SearchFragment : BaseFragment(), SearchContract.view {
             holder.itemView.find<TextView>(R.id.searchItemAuthor).text = book.author
             holder.itemView.find<TextView>(R.id.searchItemOrigin).text = bookGroup.books.size.toString()
             holder.itemView.setOnClickListener { v ->
-                presenter.onSelect(bookGroup, context)
+                presenter.onSelect(bookGroup, v.context)
             }
         }
 

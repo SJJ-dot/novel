@@ -83,23 +83,28 @@ class FictionDataRepositoryImpl : FictionDataRepository {
     override fun getSearchHistory(): Observable<List<String>> = localSource.getSearchHistory()
 
     override fun setSearchHistory(value: List<String>): Observable<List<String>> = localSource.setSearchHistory(value)
-    override fun loadBookDetailsAndChapter(book: BookGroup, force: Boolean): Observable<BookGroup> = observableCreate { emitter ->
+    override fun loadBookDetailsAndChapter(book: BookGroup, force: Boolean): Observable<BookGroup> = Observable.create { emitter ->
         val com = CompositeDisposable()
         val remote = {
-            com.add((sources[book.currentBook.url.domain()]
+            val disposable = sources[book.currentBook.url.domain()]
                     ?.loadBookDetailsAndChapter(book.currentBook)
                     ?.flatMap {
                         bus.onNext(Event(Event.NEW_BOOK, book))
                         localSource.saveBookGroup(listOf(book))
                     }
                     ?.map { book }
-                    ?: error("未知源 ${book.currentBook.url}"))
-                    .subscribe({
+                    ?.subscribe({
                         if (emitter.isDisposed) com.dispose() else emitter.onNext(book)
                         if (emitter.isDisposed) com.dispose() else emitter.onComplete()
                     }, {
                         if (emitter.isDisposed) com.dispose() else emitter.onError(it)
-                    }))
+                    })
+            if (disposable == null) {
+                emitter.tryOnError(Exception("未知源 ${book.currentBook.url}"))
+            } else {
+                com.add(disposable)
+            }
+
         }
 
         if (!force) {
@@ -114,6 +119,7 @@ class FictionDataRepositoryImpl : FictionDataRepository {
             remote()
         }
     }
+
 
     override fun loadBookChapter(chapter: Chapter): Observable<Chapter> = Observable.create<Chapter> { emitter ->
         val com = CompositeDisposable()
