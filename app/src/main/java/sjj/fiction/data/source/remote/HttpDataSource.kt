@@ -69,7 +69,7 @@ abstract class HttpDataSource : DataSourceInterface {
 
     private class ObserveOnMainCallAdapterFactory : CallAdapter.Factory() {
         val scheduler = AndroidSchedulers.mainThread()!!
-        val io = Schedulers.io()
+        val io = Schedulers.computation()
 
         override fun get(returnType: Type, annotations: Array<Annotation>, retrofit: Retrofit): CallAdapter<*, *>? {
             if (CallAdapter.Factory.getRawType(returnType) != Observable::class.java) {
