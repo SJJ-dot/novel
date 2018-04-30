@@ -12,7 +12,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 27
         versionCode commitCont
-        versionName "1.0-(" + shortHash + ")"
+        versionName "1.0.$commitCont-($shortHash)"
         multiDexEnabled true
     }
     buildTypes {
@@ -25,6 +25,7 @@ android {
     dataBinding {
         enabled = true
     }
+
 }
 def dbflow_version = "4.1.1"
 def retrofit2_version = "2.4.0"
