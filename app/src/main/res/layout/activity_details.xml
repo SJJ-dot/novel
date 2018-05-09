@@ -2,13 +2,26 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <data class=".Details">
-        <variable name="book" type="sjj.fiction.model.Book"/>
-        <import type="java.util.List"/>
-        <import type="sjj.fiction.model.Book"/>
-        <variable name="userList" type="List&lt;Book&gt;"/>
-        <variable name="detailsPresenter" type="sjj.fiction.details.DetailsContract.Presenter"/>
+
+        <variable
+            name="book"
+            type="sjj.fiction.model.Book" />
+
+        <import type="java.util.List" />
+
+        <import type="sjj.fiction.model.Book" />
+
+        <variable
+            name="userList"
+            type="List&lt;Book&gt;" />
+
+        <variable
+            name="detailsPresenter"
+            type="sjj.fiction.details.DetailsContract.Presenter" />
     </data>
+
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -39,8 +52,8 @@
             android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:textSize="20sp"
             android:text="@{book.name}"
+            android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -158,8 +171,8 @@
             android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:textSize="16sp"
             android:onClick="@{(view)->detailsPresenter.onSelectChapter(Integer.parseInt(view.getTag().toString()))}"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.916"
@@ -184,37 +197,37 @@
             app:layout_constraintVertical_bias="0.0"
             tools:text="intro" />
 
-        <Button
-            android:id="@+id/chapterListButton"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/chapterList"
-            app:layout_constraintBottom_toTopOf="@+id/chapterList"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0" />
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/chapterList"
-            android:layout_width="0dp"
-            android:layout_height="400dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:background="@color/material_white"
-            android:visibility="gone"
+            android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintVertical_bias="1.0">
+
+            <Button
+                android:id="@+id/chapterListButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:text="@string/chapterList" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/chapterList"
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/material_white"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
 
     </android.support.constraint.ConstraintLayout>
 </layout>
