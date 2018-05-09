@@ -46,6 +46,8 @@
     native <methods>;
 }
 
+-keep class * extends com.raizlabs.android.dbflow.config.DatabaseHolder { *; }
+
 -dontwarn okio.**
 -dontwarn com.squareup.okhttp.**
 -dontwarn okhttp3.**
