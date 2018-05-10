@@ -28,15 +28,22 @@
 # See http://sourceforge.net/p/proguard/bugs/466/
 -keep,allowobfuscation @interface com.facebook.common.internal.DoNotStrip
 -keep,allowobfuscation @interface com.facebook.soloader.DoNotOptimize
-
+-keep class * extends com.raizlabs.android.dbflow.config.DatabaseHolder { *; }
 # Do not strip any method/class that is annotated with @DoNotStrip
 -keep @com.facebook.common.internal.DoNotStrip class *
+# Do not strip any method/class that is annotated with @DoNotOptimize
+-keep @com.facebook.soloader.DoNotOptimize class *
+
+-keepattributes Signature
+
 -keepclassmembers class * {
     @com.facebook.common.internal.DoNotStrip *;
 }
 
-# Do not strip any method/class that is annotated with @DoNotOptimize
--keep @com.facebook.soloader.DoNotOptimize class *
+-keepclassmembernames,allowobfuscation interface * {
+    @retrofit2.http.* <methods>;
+}
+
 -keepclassmembers class * {
     @com.facebook.soloader.DoNotOptimize *;
 }
@@ -46,8 +53,12 @@
     native <methods>;
 }
 
--keep class * extends com.raizlabs.android.dbflow.config.DatabaseHolder { *; }
+# A resource is loaded with a relative path so the package of this class must be preserved.
+-keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
 
+# Ignore annotation used for build tooling.
+-dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
+-dontwarn org.conscrypt.**
 -dontwarn okio.**
 -dontwarn com.squareup.okhttp.**
 -dontwarn okhttp3.**
