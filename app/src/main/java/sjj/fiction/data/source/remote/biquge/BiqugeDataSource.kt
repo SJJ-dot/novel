@@ -15,7 +15,7 @@ import sjj.fiction.util.domain
  */
 class BiqugeDataSource():HttpDataSource(),FictionDataRepository.RemoteSource {
     private val service = create<HttpInterface>()
-    override fun baseUrl() = "https://www.biquge5200.com"
+    override fun baseUrl() = "https://www.biquge5200.cc"
     override fun domain() = baseUrl().domain()
     override fun search(search: String): Observable<List<Book>> {
         return service.searchForGBKGET("/modules/article/search.php", mapOf("searchkey" to search)).map {

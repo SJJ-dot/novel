@@ -16,7 +16,7 @@ import java.net.URLEncoder
  */
 class AszwFictionDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
     private val service = create<HttpInterface>()
-    override fun baseUrl(): String = "http://www.aszw.org"
+    override fun baseUrl(): String = "https://www.aszw.org"
 
     override fun domain() = baseUrl().domain()
 
