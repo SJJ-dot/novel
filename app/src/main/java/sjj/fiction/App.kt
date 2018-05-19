@@ -8,6 +8,7 @@ import com.facebook.drawee.backends.pipeline.Fresco
 import com.raizlabs.android.dbflow.config.DatabaseConfig
 import com.raizlabs.android.dbflow.config.FlowConfig
 import com.raizlabs.android.dbflow.config.FlowManager
+import io.reactivex.plugins.RxJavaPlugins
 import org.jetbrains.anko.newTask
 import sjj.alog.Config
 import sjj.alog.Log
@@ -69,6 +70,7 @@ class App : Application() {
                     .build())
         }
 
+        RxJavaPlugins.setErrorHandler { Log.e("error ",it) }
     }
 
     fun exit() {

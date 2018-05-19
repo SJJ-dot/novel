@@ -18,19 +18,18 @@ import org.jetbrains.anko.horizontalProgressBar
 import org.jetbrains.anko.indeterminateProgressDialog
 import org.jetbrains.anko.progressDialog
 import org.jetbrains.anko.toast
+import sjj.alog.Log
 import sjj.fiction.BaseActivity
 import sjj.fiction.R
 import sjj.fiction.about.AboutActivity
 import sjj.fiction.account.AccountActivity
 import sjj.fiction.binding.DataBindingTest
 import sjj.fiction.books.BookrackFragment
+import sjj.fiction.data.Repository.TestDataRepository
 import sjj.fiction.main.impl.MainPresenter
 import sjj.fiction.model.BookGroup
 import sjj.fiction.search.SearchFragment
-import sjj.fiction.util.getFragment
-import sjj.fiction.util.hideSoftInput
-import sjj.fiction.util.isDoubleClick
-import sjj.fiction.util.showSoftInput
+import sjj.fiction.util.*
 
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, MainContract.View {
@@ -69,6 +68,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         })
         searchInput.setOnClickListener { presenter.showAutoText() }
         MainPresenter(this)
+        testDataRepository.hello("hello").subscribe(Log::e){
+            Log.e("error ",it)
+        }
     }
 
     override fun onStart() {
