@@ -13,6 +13,7 @@ import sjj.fiction.model.BookGroup
 import sjj.fiction.model.Event
 import sjj.fiction.util.bus
 import sjj.fiction.util.fictionDataRepository
+import sjj.fiction.util.rxOfType
 
 /**
  * Created by SJJ on 2017/10/22.
@@ -47,7 +48,7 @@ class BooksPresenter(private val view: BookrackContract.View) : BookrackContract
                     }
 
                 })
-        bus.filter { it.id == Event.NEW_BOOK }.observeOn(AndroidSchedulers.mainThread()).subscribe {
+        rxOfType<Event>().filter { it.id == Event.NEW_BOOK }.observeOn(AndroidSchedulers.mainThread()).subscribe {
             when (it.id) {
                 Event.NEW_BOOK -> view.refreshBook(it.value as BookGroup)
             }

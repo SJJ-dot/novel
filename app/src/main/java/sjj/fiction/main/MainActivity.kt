@@ -14,9 +14,7 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-import org.jetbrains.anko.horizontalProgressBar
 import org.jetbrains.anko.indeterminateProgressDialog
-import org.jetbrains.anko.progressDialog
 import org.jetbrains.anko.toast
 import sjj.alog.Log
 import sjj.fiction.BaseActivity
@@ -25,7 +23,6 @@ import sjj.fiction.about.AboutActivity
 import sjj.fiction.account.AccountActivity
 import sjj.fiction.binding.DataBindingTest
 import sjj.fiction.books.BookrackFragment
-import sjj.fiction.data.Repository.TestDataRepository
 import sjj.fiction.main.impl.MainPresenter
 import sjj.fiction.model.BookGroup
 import sjj.fiction.search.SearchFragment
@@ -68,9 +65,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         })
         searchInput.setOnClickListener { presenter.showAutoText() }
         MainPresenter(this)
-        testDataRepository.hello("hello").subscribe(Log::e){
-            Log.e("error ",it)
-        }
     }
 
     override fun onStart() {

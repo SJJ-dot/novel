@@ -23,7 +23,7 @@ fun String.domain(): String {
 }
 
 fun <T> T.log():T {
-    Log.e(this)
+    Log.e(1,this)
     return this
 }
 

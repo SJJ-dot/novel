@@ -1,8 +1,6 @@
 package sjj.fiction.books
 
 import android.app.ProgressDialog
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -11,23 +9,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.facebook.drawee.view.SimpleDraweeView
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_books.*
-import org.jetbrains.anko.alert
 import org.jetbrains.anko.find
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.indeterminateProgressDialog
 import org.jetbrains.anko.support.v4.toast
-import sjj.alog.Log
 import sjj.fiction.BaseFragment
 import sjj.fiction.R
-import sjj.fiction.details.DetailsActivity
-import sjj.fiction.model.Book
 import sjj.fiction.model.BookGroup
-import sjj.fiction.util.bus
 import sjj.fiction.util.domain
-import sjj.fiction.util.fictionDataRepository
 
 /**
  * Created by SJJ on 2017/10/7.
