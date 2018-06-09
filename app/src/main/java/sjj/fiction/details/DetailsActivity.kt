@@ -24,7 +24,6 @@ import sjj.fiction.model.BookGroup
 import sjj.fiction.model.Chapter
 import sjj.fiction.read.ReadActivity
 import sjj.fiction.util.domain
-import sjj.fiction.util.fictionDataRepository
 
 /**
  * Created by SJJ on 2017/10/10.

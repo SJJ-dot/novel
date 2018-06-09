@@ -6,16 +6,15 @@ import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import sjj.fiction.data.Repository.FictionDataRepository
+import sjj.fiction.data.Repository.fictionDataRepository
 import sjj.fiction.details.DetailsActivity
 import sjj.fiction.model.BookGroup
-import sjj.fiction.util.fictionDataRepository
 
 /**
  * Created by SJJ on 2017/10/8.
  */
 class SearchPresenter(private val view: SearchContract.view) : SearchContract.presenter {
-    private var data: FictionDataRepository = fictionDataRepository
+    private var data = fictionDataRepository
     private val com = CompositeDisposable()
     init {
         view.setPresenter(this)

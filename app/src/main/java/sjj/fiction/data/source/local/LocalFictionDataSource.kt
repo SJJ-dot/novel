@@ -19,19 +19,8 @@ class LocalFictionDataSource : FictionDataRepository.SourceLocal {
 
     private val KEY_SEARCH_HISTORY = "LOCAL_FICTION_DATA_SOURCE_KEY_SEARCH_HISTORY"
 
-    private val config = App.app.config
 
     private val gson = Gson()
-
-    override fun setSearchHistory(value: List<String>): Observable<List<String>> = def {
-        set(KEY_SEARCH_HISTORY, value)
-        value
-    }
-
-    override fun getSearchHistory(): Observable<List<String>> = def {
-        get<List<String>>(KEY_SEARCH_HISTORY) ?: listOf("极道天魔", "霜寒之翼", "骑士号角", "放开那个女巫","牧神记")
-    }
-
 
     override fun saveBookGroup(book: List<BookGroup>): Observable<List<BookGroup>> {
         return def {
@@ -154,11 +143,5 @@ class LocalFictionDataSource : FictionDataRepository.SourceLocal {
             bookGroup
         }
     }
-
-    private fun set(key: String, value: Any) {
-        config.userEditor.putString(key, gson.toJson(value)).commit()
-    }
-
-    private fun <T> get(key: String): T? = gson.fromJson<T>(config.userSp.getString(key, ""), (object : TypeToken<T>() {}).type)
 
 }

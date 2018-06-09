@@ -1,35 +1,27 @@
 package sjj.fiction.read
 
 import android.app.ProgressDialog
+import android.arch.lifecycle.Observer
+import android.content.Context
 import android.graphics.Typeface
 import android.os.Bundle
-import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Html
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.raizlabs.android.dbflow.kotlinextensions.save
-import io.reactivex.Flowable
-import io.reactivex.Observable
-import io.reactivex.Observer
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_read.*
 import org.jetbrains.anko.*
-import sjj.alog.Log
 import sjj.fiction.App
+import sjj.fiction.AppConfig
 import sjj.fiction.BaseActivity
 import sjj.fiction.R
-import sjj.fiction.data.Repository.FictionDataRepository
-import sjj.fiction.model.Book
-import sjj.fiction.model.BookGroup
 import sjj.fiction.model.Chapter
-import sjj.fiction.util.fictionDataRepository
-import sjj.fiction.util.log
 import sjj.fiction.util.lparams
 import sjj.fiction.util.toDpx
 
@@ -48,7 +40,7 @@ class ReadActivity : BaseActivity(), ReadContract.View {
     private val bookName by lazy { intent.getStringExtra(DATA_BOOK_NAME) }
     private val bookAuthor by lazy { intent.getStringExtra(DATA_BOOK_AUTHOR) }
     private val index by lazy { intent.getIntExtra(DATA_CHAPTER_INDEX, 0) }
-    private val contentAdapter by lazy { ChapterContentAdapter(presenter, Typeface.createFromAsset(assets, "fonts/${App.app.config.ttf}")) }
+    private val contentAdapter by lazy { ChapterContentAdapter(presenter) }
     private val chapterListAdapter by lazy { ChapterListAdapter(presenter) }
     private var loadBookHint: ProgressDialog? = null
     private var cached: ProgressDialog? = null
@@ -114,22 +106,20 @@ class ReadActivity : BaseActivity(), ReadContract.View {
                 true
             }
             R.id.menu_ttf -> {
-                AlertDialog.Builder(this).setSingleChoiceItems(ttfs, ttfs.indexOf(App.app.config.ttf)) { dialog, which ->
+                AlertDialog.Builder(this).setSingleChoiceItems(ttfs, ttfs.indexOf(AppConfig.ttf.value)) { dialog, which ->
                     dialog.dismiss()
-                    App.app.config.ttf = ttfs[which]
+                    AppConfig.ttf.value = ttfs[which]
                     contentAdapter.ttf = Typeface.createFromAsset(assets, "fonts/${ttfs[which]}")
                     contentAdapter.notifyDataSetChanged()
                 }.show()
                 true
             }
             R.id.menu_add -> {
-                contentAdapter.textSize(1)
-                contentAdapter.notifyDataSetChanged()
+                AppConfig.readChapterTextSize.value = AppConfig.readChapterTextSize.value!! + 1
                 true
             }
             R.id.menu_minus -> {
-                contentAdapter.textSize(-1)
-                contentAdapter.notifyDataSetChanged()
+                AppConfig.readChapterTextSize.value = AppConfig.readChapterTextSize.value!! - 1
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -208,13 +198,20 @@ class ReadActivity : BaseActivity(), ReadContract.View {
         toast("缓存章节出错：${e.message}")
     }
 
-    private class ChapterContentAdapter(val presenter: ReadContract.Presenter, var ttf: Typeface) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    inner class ChapterContentAdapter(val presenter: ReadContract.Presenter) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+        lateinit var ttf: Typeface
+        var contentTextSize: Float = 0f
         var chapters: List<Chapter>? = null
-        private val fiction: FictionDataRepository = fictionDataRepository
-        private var contentTextSize = App.app.config.readChapterTextSize
-        fun textSize(dif: Int) {
-            this.contentTextSize += dif
-            App.app.config.readChapterTextSize = contentTextSize
+
+        init {
+            AppConfig.ttf.observe(this@ReadActivity, Observer {
+                ttf = Typeface.createFromAsset(ctx.assets, "fonts/$it")
+                notifyDataSetChanged()
+            })
+            AppConfig.readChapterTextSize.observe(this@ReadActivity, Observer {
+                contentTextSize = it!!
+                notifyDataSetChanged()
+            })
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

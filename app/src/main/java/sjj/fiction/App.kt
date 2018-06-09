@@ -22,7 +22,6 @@ class App : Application() {
         lateinit var app: App
     }
 
-    lateinit var config: Configuration
     val activitys = LinkedList<BaseActivity>()
     override fun onCreate() {
         super.onCreate()
@@ -36,7 +35,6 @@ class App : Application() {
             finishAll()
         }
         app = this
-        config = Configuration(this)
         val logConfig = Config()
         logConfig.hold = true
         logConfig.holdMultiple = false

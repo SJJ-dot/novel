@@ -3,9 +3,10 @@ package sjj.fiction.details
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import sjj.alog.Log
+import sjj.fiction.data.Repository.FictionDataRepository
+import sjj.fiction.data.Repository.fictionDataRepository
 import sjj.fiction.model.BookGroup
 import sjj.fiction.util.domain
-import sjj.fiction.util.fictionDataRepository
 
 /**
  * Created by SJJ on 2017/10/17.
@@ -13,7 +14,7 @@ import sjj.fiction.util.fictionDataRepository
 class DetailsPresenter(private val bookName: String, private val author: String, private val view: DetailsContract.View) : DetailsContract.Presenter {
 
     private val com = CompositeDisposable()
-    private val fictionData = fictionDataRepository
+    private val fictionData  = fictionDataRepository
     private var bookGroup: BookGroup? = null
     override fun start() {
         view.setLoadBookIndicator(true)
@@ -75,7 +76,7 @@ class DetailsPresenter(private val bookName: String, private val author: String,
     private fun loadBookDetailsAndChapter(force: Boolean) {
         val group = bookGroup ?: return
         view.setCheckUpdateIndicator(true)
-        fictionDataRepository.loadBookDetailsAndChapter(group, force)
+        fictionData.loadBookDetailsAndChapter(group, force)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     view.setCheckUpdateIndicator(false)

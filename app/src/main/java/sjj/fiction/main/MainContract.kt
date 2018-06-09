@@ -11,12 +11,10 @@ import sjj.fiction.model.BookGroup
  */
 interface MainContract {
     interface Presenter : BasePresenter {
-        fun showAutoText()
         fun search(text: String)
     }
 
     interface View : BaseView<Presenter> {
-        fun setAutoText(texts: List<String>)
         fun setSearchBookList(book: List<BookGroup>)
         fun setSearchProgressHint(active:Boolean)
         fun setSearchErrorHint(throwable: Throwable)

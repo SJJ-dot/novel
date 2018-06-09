@@ -17,6 +17,7 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 import org.jetbrains.anko.indeterminateProgressDialog
 import org.jetbrains.anko.toast
 import sjj.alog.Log
+import sjj.fiction.AppConfig
 import sjj.fiction.BaseActivity
 import sjj.fiction.R
 import sjj.fiction.about.AboutActivity
@@ -63,7 +64,13 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             }
             false
         })
-        searchInput.setOnClickListener { presenter.showAutoText() }
+        searchInput.setOnClickListener {
+            val arrayAdapter = searchInput.adapter as? ArrayAdapter<String> ?: return@setOnClickListener
+            arrayAdapter.clear()
+            Log.e(AppConfig.searchHistory)
+            arrayAdapter.addAll(AppConfig.searchHistory)
+            searchInput.showDropDown()
+        }
         MainPresenter(this)
     }
 
@@ -104,13 +111,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     override fun setPresenter(presenter: MainContract.Presenter) {
         this.presenter = presenter
-    }
-
-    override fun setAutoText(texts: List<String>) {
-        val arrayAdapter = searchInput.adapter as? ArrayAdapter<String> ?: return
-        arrayAdapter.clear()
-        arrayAdapter.addAll(texts)
-        searchInput.showDropDown()
     }
 
     override fun setSearchBookList(book: List<BookGroup>) {

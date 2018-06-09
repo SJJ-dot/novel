@@ -2,17 +2,15 @@ package sjj.fiction.books
 
 import android.content.Context
 import android.content.Intent
-import android.support.v4.content.ContextCompat.startActivity
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import sjj.alog.Log
+import sjj.fiction.data.Repository.FictionDataRepository
+import sjj.fiction.data.Repository.fictionDataRepository
 import sjj.fiction.details.DetailsActivity
 import sjj.fiction.model.BookGroup
 import sjj.fiction.model.Event
-import sjj.fiction.util.bus
-import sjj.fiction.util.fictionDataRepository
 import sjj.fiction.util.rxOfType
 
 /**
@@ -20,7 +18,7 @@ import sjj.fiction.util.rxOfType
  */
 class BooksPresenter(private val view: BookrackContract.View) : BookrackContract.Presenter {
     private val com = CompositeDisposable()
-    private val data = fictionDataRepository
+    private val data  = fictionDataRepository
 
     init {
         view.setPresenter(this)

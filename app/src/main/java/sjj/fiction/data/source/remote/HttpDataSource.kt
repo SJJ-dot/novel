@@ -28,12 +28,12 @@ import java.util.concurrent.TimeUnit
  * Created by SJJ on 2017/9/3.
  */
 abstract class HttpDataSource : DataSourceInterface {
-    abstract fun baseUrl(): String
+    abstract val baseUrl: String
 
     protected val retrofit: Retrofit by lazy {
         Retrofit.Builder()
                 .client(client)
-                .baseUrl(baseUrl())
+                .baseUrl(baseUrl)
                 .addConverterFactory(CharsetStringConverterFactory())
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
@@ -100,18 +100,18 @@ private val client by lazy {
             .connectTimeout(10, TimeUnit.SECONDS)
             .writeTimeout(10, TimeUnit.SECONDS)
             .readTimeout(10, TimeUnit.SECONDS)
-            .addNetworkInterceptor {
-                val response = it.proceed(it.request())
-                if (response.code() == HttpURLConnection.HTTP_MOVED_TEMP) {
-                    val buffer = Buffer()
-                    it.request().body()?.writeTo(buffer)
-                    val utf8 = Charset.forName("UTF-8")
-                    val charset: Charset = it.request().body()?.contentType()?.charset(utf8) ?: utf8
-                    val body = if (isPlaintext(buffer)) buffer.readString(charset) else ""
-                    App.app.config.setHttp302Url(it.request().url().toString(), response.header("Location") ?: "", body)
-                }
-                response
-            }
+//            .addNetworkInterceptor {
+//                val response = it.proceed(it.request())
+//                if (response.code() == HttpURLConnection.HTTP_MOVED_TEMP) {
+//                    val buffer = Buffer()
+//                    it.request().body()?.writeTo(buffer)
+//                    val utf8 = Charset.forName("UTF-8")
+//                    val charset: Charset = it.request().body()?.contentType()?.charset(utf8) ?: utf8
+//                    val body = if (isPlaintext(buffer)) buffer.readString(charset) else ""
+//                    App.app.config.setHttp302Url(it.request().url().toString(), response.header("Location") ?: "", body)
+//                }
+//                response
+//            }
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS))
             .build()
 }

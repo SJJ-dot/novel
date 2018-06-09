@@ -3,9 +3,8 @@ package sjj.fiction.read
 import com.raizlabs.android.dbflow.kotlinextensions.save
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import sjj.alog.Log
+import sjj.fiction.data.Repository.fictionDataRepository
 import sjj.fiction.model.BookGroup
-import sjj.fiction.util.fictionDataRepository
 
 /**
  * Created by SJJ on 2017/10/21.

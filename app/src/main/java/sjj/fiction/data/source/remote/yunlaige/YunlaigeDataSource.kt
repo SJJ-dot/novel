@@ -14,24 +14,26 @@ import java.net.URLEncoder
  * Created by SJJ on 2017/10/11.
  */
 class YunlaigeDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
+    override val baseUrl: String = "http://www.yunlaige.com"
     private val service = create<HttpInterface>()
-
-    override fun domain() = baseUrl().domain()
+    override fun domain() = baseUrl.domain()
     override fun search(search: String): Observable<List<Book>> {
         val url = "http://www.yunlaige.com/modules/article/search.php"
         val encode = URLEncoder.encode(search, "gbk");
         return service.searchForGBK(url, mapOf("searchkey" to encode)).map {
+            val document = Jsoup.parse(it)
             try {
-                Jsoup.parse(it).body().getElementsByClass("chart-dashed-list")[0].children().map {
+                document.body().getElementsByClass("chart-dashed-list")[0].children().map {
                     val child1 = it.child(1).child(0).child(0).select("a[href]")[0]
                     Book(child1.attr("href"), child1.text(), it.child(1).child(1).text().split("/")[0])
                 }
             } catch (e: Exception) {
-                val element = Jsoup.parse(it).body().getElementsByClass("book-info")[0]
+                val element = document.body().getElementsByClass("book-info")[0]
                 val info = element.getElementsByClass("info")[0]
                 val name = info.child(0).child(0).text()
                 val author = info.child(1).child(0).text()
-                listOf(Book(App.app.config.getHttp302Url(url, "searchkey=$encode"), name, author))
+                val split = document.getElementsByClass("book-info")[0].child(0).attr("href").split("/")
+                listOf(Book("$baseUrl/book/${split[split.size - 2]}.html", name, author))
             }
         }
     }
@@ -63,11 +65,10 @@ class YunlaigeDataSource : HttpDataSource(), FictionDataRepository.RemoteSource 
     override fun loadBookChapter(chapter: Chapter): Observable<Chapter> {
         return service.loadHtmlForGBK(chapter.url).map {
             val element = Jsoup.parse(it).getElementById("content")
-            chapter.content =element.html()
+            chapter.content = element.html()
             chapter.isLoadSuccess = true
             chapter
         }
     }
 
-    override fun baseUrl(): String = "http://www.yunlaige.com"
 }

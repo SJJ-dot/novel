@@ -4,17 +4,19 @@ import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import sjj.alog.Log
+import sjj.fiction.AppConfig
 import sjj.fiction.data.Repository.FictionDataRepository
+import sjj.fiction.data.Repository.fictionDataRepository
 import sjj.fiction.main.MainContract
 import sjj.fiction.model.BookGroup
-import sjj.fiction.util.fictionDataRepository
 
 /**
  * Created by SJJ on 2017/10/7.
  */
 class MainPresenter(private val view: MainContract.View) : MainContract.Presenter {
     private val com = CompositeDisposable()
-    val fiction: FictionDataRepository = fictionDataRepository
+    val fiction = fictionDataRepository
 
     init {
         view.setPresenter(this)
@@ -27,20 +29,9 @@ class MainPresenter(private val view: MainContract.View) : MainContract.Presente
         com.clear()
     }
 
-    override fun showAutoText() {
-        fiction.getSearchHistory()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(view::setAutoText, {})
-                .also { com.add(it) }
-    }
-
     override fun search(text: String) {
         fiction.search(text).doOnNext {
-            fiction.getSearchHistory().flatMap {
-                val set = it.toMutableSet()
-                set.add(text)
-                fiction.setSearchHistory(set.toList())
-            }.subscribe({}, {}).also { com.add(it) }
+            AppConfig.searchHistory = AppConfig.searchHistory.toMutableSet().apply { add(text) }
         }.observeOn(AndroidSchedulers.mainThread())
                 .subscribe(object : Observer<List<BookGroup>> {
                     override fun onSubscribe(d: Disposable) {

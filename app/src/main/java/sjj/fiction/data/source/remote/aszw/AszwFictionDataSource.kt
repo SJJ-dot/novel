@@ -15,10 +15,10 @@ import java.net.URLEncoder
  * Created by Administrator on 2017/10/23.
  */
 class AszwFictionDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
+    override val baseUrl: String =  "https://www.aszw.org"
     private val service = create<HttpInterface>()
-    override fun baseUrl(): String = "https://www.aszw.org"
 
-    override fun domain() = baseUrl().domain()
+    override fun domain() = baseUrl.domain()
 
     override fun search(search: String): Observable<List<Book>> {
         return service.searchForGBK("modules/article/search.php", mapOf("searchkey" to URLEncoder.encode(search, "gbk"))).map {
