@@ -2,12 +2,8 @@ package sjj.fiction
 
 import android.app.Application
 import android.content.Intent
-import android.net.TrafficStats
 import android.os.StrictMode
 import com.facebook.drawee.backends.pipeline.Fresco
-import com.raizlabs.android.dbflow.config.DatabaseConfig
-import com.raizlabs.android.dbflow.config.FlowConfig
-import com.raizlabs.android.dbflow.config.FlowManager
 import io.reactivex.plugins.RxJavaPlugins
 import org.jetbrains.anko.newTask
 import sjj.alog.Config
@@ -40,9 +36,7 @@ class App : Application() {
         logConfig.holdMultiple = false
         logConfig.holdLev = Config.ERROR
         Config.init(logConfig)
-        FlowManager.init(FlowConfig.builder(this)
-                .addDatabaseConfig(DatabaseConfig.builder(BookDataBase::class.java).build())
-                .build())
+
         Fresco.initialize(this);
 
         // 分别为MainThread和VM设置Strict Mode

@@ -1,6 +1,5 @@
 package sjj.fiction.read
 
-import com.raizlabs.android.dbflow.kotlinextensions.save
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import sjj.fiction.data.repository.fictionDataRepository
@@ -83,7 +82,7 @@ class ReadPresenter(private val bookName: String, private val author: String, pr
     }
 
     override fun stop() {
-        book?.save()
+        //todo save book?.save()
         com.clear()
     }
 }

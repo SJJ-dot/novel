@@ -1,10 +1,7 @@
 package sjj.fiction.util
 
-import android.app.Activity
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
-import com.raizlabs.android.dbflow.sql.language.Select
-import com.raizlabs.android.dbflow.sql.language.property.IProperty
 import sjj.alog.Log
 import java.util.regex.Pattern
 
@@ -49,5 +46,3 @@ inline fun <reified T : Fragment> FragmentActivity.getFragment(containerViewId: 
     return byTag as T
 
 }
-
-fun select(vararg properties: IProperty<*>) = Select(*properties)
