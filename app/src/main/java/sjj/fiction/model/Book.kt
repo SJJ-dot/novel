@@ -1,25 +1,22 @@
 package sjj.fiction.model
 
-import com.raizlabs.android.dbflow.annotation.*
-import com.raizlabs.android.dbflow.kotlinextensions.oneToMany
-import com.raizlabs.android.dbflow.kotlinextensions.select
-import org.jetbrains.annotations.PropertyKey
-import sjj.fiction.BookDataBase
+import android.arch.persistence.room.Entity
+import android.arch.persistence.room.Ignore
+import android.arch.persistence.room.PrimaryKey
 import java.io.Serializable
-import java.util.*
-import kotlin.reflect.KProperty
 
 /**
  * Created by SJJ on 2017/10/7.
  */
-@Table(database = BookDataBase::class)
+@Entity
 data class Book(
-        @Column var url: String = "",
-        @Column var name: String = "",
-        @Column var author: String = "",
-        @Column var bookCoverImgUrl: String = "",
-        @Column var intro: String = "",
-        @Column var chapterListUrl: String = "",
+        var url: String = "",
+        var name: String = "",
+        var author: String = "",
+        var bookCoverImgUrl: String = "",
+        var intro: String = "",
+        var chapterListUrl: String = "",
+        @Ignore
         var chapterList: List<Chapter> = mutableListOf()
 ) : Serializable {
     companion object {

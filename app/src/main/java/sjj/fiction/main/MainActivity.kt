@@ -24,14 +24,13 @@ import sjj.fiction.about.AboutActivity
 import sjj.fiction.account.AccountActivity
 import sjj.fiction.binding.DataBindingTest
 import sjj.fiction.books.BookrackFragment
-import sjj.fiction.data.repository.roomDataBaseTest
-import sjj.fiction.data.repository.roomDataBaseTestMemory
 import sjj.fiction.main.impl.MainPresenter
 import sjj.fiction.model.BookGroup
-import sjj.fiction.model.RoomTest
-import sjj.fiction.model.RoomTest2
 import sjj.fiction.search.SearchFragment
-import sjj.fiction.util.*
+import sjj.fiction.util.getFragment
+import sjj.fiction.util.hideSoftInput
+import sjj.fiction.util.isDoubleClick
+import sjj.fiction.util.showSoftInput
 import kotlin.concurrent.thread
 
 
@@ -79,33 +78,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
         MainPresenter(this)
 
-        thread {
-            roomDataBaseTest.userDao().all.log()
-            roomDataBaseTestMemory.userDao().all.log()
-            val a = RoomTest()
-            a.firstName = "a"
-            a.roomTest2s = listOf(RoomTest2(), RoomTest2())
-            val b = RoomTest()
-            b.roomTest2s = listOf(RoomTest2(), RoomTest2())
-            b.firstName = "b"
-            roomDataBaseTest.userDao().insertAll(a, b)
-            roomDataBaseTestMemory.userDao().insertAll(a, b)
-            roomDataBaseTest.userDao().all.log()
-            roomDataBaseTestMemory.userDao().all.log()
-            a.uid = 2
-            roomDataBaseTest.userDao().delete(a)
-            roomDataBaseTestMemory.userDao().delete(a)
-
-            roomDataBaseTest.userDao().all.log()
-            roomDataBaseTestMemory.userDao().all.log()
-
-            roomDataBaseTestMemory.userDao().insert(*a.roomTest2s!!.toTypedArray())
-            roomDataBaseTestMemory.userDao().allR2().log()
-            Log.e(roomDataBaseTest.userDao())
-            RoomTest::class.java.declaredMethods.forEach {
-                Log.e(it)
-            }
-        }
     }
 
     override fun onStart() {

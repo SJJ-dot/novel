@@ -47,7 +47,6 @@ class SharedPreferencesLiveData<T>(val def: T?, val sp: () -> SharedPreferences 
     private val json by lazy { gson.toJson(def) }
     private var liveData: MutableLiveData<T>? = null
     operator fun getValue(thisRef: Any?, property: KProperty<*>): MutableLiveData<T> {
-        val sp = sp()
         if (liveData == null) {
             liveData = object : MutableLiveData<T>() {
                 override fun setValue(value: T) {

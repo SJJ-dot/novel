@@ -235,13 +235,13 @@ class ReadActivity : BaseActivity(), ReadContract.View {
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val chapter = chapters!![position]
             holder.itemView.findViewById<TextView>(R.id.readItemChapterContentTitle).text = chapter.chapterName
-            if (chapter.content.isNotEmpty()) {
+            if (chapter.content?.isNotEmpty() == true) {
                 val content = holder.itemView.findViewById<TextView>(R.id.readItemChapterContent)
                 content.typeface = ttf
                 content.textSize = contentTextSize
                 content.text = Html.fromHtml(chapter.content)
             }
-            if (!chapter.isLoadSuccess || chapter.content.isEmpty()) {
+            if (!chapter.isLoadSuccess || chapter.content?.isEmpty() == true) {
                 presenter.setChapterContent(position)
                 holder.itemView.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
             } else {

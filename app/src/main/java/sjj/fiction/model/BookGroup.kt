@@ -1,26 +1,18 @@
 package sjj.fiction.model
 
-import com.raizlabs.android.dbflow.annotation.Column
-import com.raizlabs.android.dbflow.annotation.PrimaryKey
-import com.raizlabs.android.dbflow.annotation.Table
-import sjj.alog.Log
-import sjj.fiction.BookDataBase
+import android.arch.persistence.room.Entity
+import android.arch.persistence.room.Ignore
+import android.arch.persistence.room.PrimaryKey
 import java.io.Serializable
-import kotlin.reflect.KProperty
-import kotlin.reflect.jvm.javaMethod
 
 /**
  * Created by SJJ on 2017/10/14.
  */
-@Table(database = BookDataBase::class)
-data class BookGroup(var currentBook: Book = Book.def, var books: MutableList<Book> = mutableListOf()) : Serializable {
-    @PrimaryKey
+@Entity(primaryKeys = ["bookName","author"])
+data class BookGroup(@Ignore var currentBook: Book = Book.def,@Ignore  var books: MutableList<Book> = mutableListOf()) : Serializable {
     var bookName = currentBook.name
-    @PrimaryKey
     var author = currentBook.author
-    @Column
     var bookId = currentBook.id
-    @Column
     var readIndex: Int = 0
 
     override fun toString(): String {
