@@ -3,7 +3,7 @@ package sjj.fiction.read
 import com.raizlabs.android.dbflow.kotlinextensions.save
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import sjj.fiction.data.Repository.fictionDataRepository
+import sjj.fiction.data.repository.fictionDataRepository
 import sjj.fiction.model.BookGroup
 
 /**

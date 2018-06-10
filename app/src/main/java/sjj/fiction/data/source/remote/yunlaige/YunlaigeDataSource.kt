@@ -2,8 +2,7 @@ package sjj.fiction.data.source.remote.yunlaige
 
 import io.reactivex.Observable
 import org.jsoup.Jsoup
-import sjj.fiction.App
-import sjj.fiction.data.Repository.FictionDataRepository
+import sjj.fiction.data.repository.FictionDataRepository
 import sjj.fiction.data.source.remote.HttpDataSource
 import sjj.fiction.data.source.remote.HttpInterface
 import sjj.fiction.model.*

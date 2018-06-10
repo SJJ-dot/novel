@@ -1,4 +1,4 @@
-package sjj.fiction.data.Repository
+package sjj.fiction.data.repository
 
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable

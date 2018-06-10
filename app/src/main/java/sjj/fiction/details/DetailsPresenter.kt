@@ -3,8 +3,7 @@ package sjj.fiction.details
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import sjj.alog.Log
-import sjj.fiction.data.Repository.FictionDataRepository
-import sjj.fiction.data.Repository.fictionDataRepository
+import sjj.fiction.data.repository.fictionDataRepository
 import sjj.fiction.model.BookGroup
 import sjj.fiction.util.domain
 

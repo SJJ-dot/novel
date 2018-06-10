@@ -4,10 +4,8 @@ import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import sjj.alog.Log
 import sjj.fiction.AppConfig
-import sjj.fiction.data.Repository.FictionDataRepository
-import sjj.fiction.data.Repository.fictionDataRepository
+import sjj.fiction.data.repository.fictionDataRepository
 import sjj.fiction.main.MainContract
 import sjj.fiction.model.BookGroup
 
@@ -31,7 +29,10 @@ class MainPresenter(private val view: MainContract.View) : MainContract.Presente
 
     override fun search(text: String) {
         fiction.search(text).doOnNext {
-            AppConfig.searchHistory = AppConfig.searchHistory.toMutableSet().apply { add(text) }
+            AppConfig.searchHistory = AppConfig.searchHistory.toMutableList().apply {
+                remove(text)
+                add(text)
+            }.take(8)
         }.observeOn(AndroidSchedulers.mainThread())
                 .subscribe(object : Observer<List<BookGroup>> {
                     override fun onSubscribe(d: Disposable) {

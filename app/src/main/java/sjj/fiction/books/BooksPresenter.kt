@@ -6,8 +6,7 @@ import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import sjj.fiction.data.Repository.FictionDataRepository
-import sjj.fiction.data.Repository.fictionDataRepository
+import sjj.fiction.data.repository.fictionDataRepository
 import sjj.fiction.details.DetailsActivity
 import sjj.fiction.model.BookGroup
 import sjj.fiction.model.Event

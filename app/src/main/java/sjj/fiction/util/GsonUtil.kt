@@ -14,7 +14,6 @@ val gson = GsonBuilder()
 
             override fun shouldSkipField(f: FieldAttributes): Boolean {
                 val expose = f.getAnnotation(Expose::class.java)
-                Log.e("$f   ${expose != null && !expose.serialize}")
                 return expose != null && !expose.serialize
             }
         }).create()

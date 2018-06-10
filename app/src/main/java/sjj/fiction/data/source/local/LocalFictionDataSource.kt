@@ -1,15 +1,10 @@
 package sjj.fiction.data.source.local
 
-import android.content.res.Resources
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.raizlabs.android.dbflow.config.FlowManager
 import com.raizlabs.android.dbflow.kotlinextensions.*
 import io.reactivex.Observable
-import sjj.alog.Log
-import sjj.fiction.App
 import sjj.fiction.BookDataBase
-import sjj.fiction.data.Repository.FictionDataRepository
+import sjj.fiction.data.repository.FictionDataRepository
 import sjj.fiction.model.*
 import sjj.fiction.util.def
 /**
