@@ -114,12 +114,6 @@ class LocalFictionDataSource : FictionDataRepository.SourceLocal {
     override fun deleteBookGroup(bookName: String, author: String): Observable<BookGroup> {
         return def {
             val bookGroup = booksDataBase.bookDao().getBookGroup(bookName, author)
-            val list =booksDataBase.bookDao().getBook(bookName, author).toMutableList()
-            val chapter = list.flatMap {
-                booksDataBase.bookDao().getChapterIntro(it.id)
-            }
-            booksDataBase.bookDao().deleteChapter(chapter)
-            booksDataBase.bookDao().deleteBooks(list)
             booksDataBase.bookDao().deleteBookGroup(bookGroup)
             bookGroup
         }

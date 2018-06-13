@@ -1,14 +1,13 @@
 package sjj.fiction.model
 
-import android.arch.persistence.room.Entity
-import android.arch.persistence.room.Ignore
-import android.arch.persistence.room.PrimaryKey
+import android.arch.persistence.room.*
+import android.arch.persistence.room.ForeignKey.CASCADE
 import java.io.Serializable
 
 /**
  * Created by SJJ on 2017/10/7.
  */
-@Entity
+@Entity(indices = [(Index("name", "author"))],foreignKeys = [(ForeignKey(entity = BookGroup::class, parentColumns = ["bookName", "author"], childColumns = ["name", "author"],onDelete = CASCADE))])
 data class Book(
         var url: String = "",
         var name: String = "",

@@ -14,6 +14,9 @@ interface BookDao {
     @Query("SELECT * FROM BookGroup WHERE bookName=:name and author=:author")
     fun getBookGroup(name: String, author: String): BookGroup
 
+    @Query("delete  from BookGroup where bookName=:name and author=:author")
+    fun deleteBookGroup(name: String, author: String)
+
     @Delete
     fun deleteBookGroup(book: BookGroup)
 
@@ -33,7 +36,7 @@ interface BookDao {
     fun getBook(name: String, author: String): List<Book>
 
 
-    @Query("SELECT url,bookId,`index`,chapterName,isLoadSuccess FROM Chapter WHERE bookId=:bookId")
+    @Query("SELECT url,bookId,`index`,chapterName,isLoadSuccess FROM Chapter WHERE bookId=:bookId order by `index`")
     fun getChapterIntro(bookId: String): List<Chapter>
 
     @Query("SELECT * FROM Chapter WHERE url=:url")
