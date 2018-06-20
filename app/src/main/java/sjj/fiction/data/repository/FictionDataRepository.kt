@@ -36,7 +36,7 @@ class FictionDataRepository {
 
     fun search(search: String): Single<List<Pair<BookSourceRecord, List<Book>>>> {
         return Observable.fromIterable(sources.values).flatMap {
-            it.search(search)
+            it.search(search).onErrorResumeNext(Observable.empty())
         }.reduce(mutableMapOf<String, MutableList<Book>>(), { map, bs ->
             bs.forEach {
                 map.getOrPut(it.name + it.author, { mutableListOf() }).add(it)
