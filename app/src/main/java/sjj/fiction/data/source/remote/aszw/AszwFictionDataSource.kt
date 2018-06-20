@@ -49,7 +49,7 @@ class AszwFictionDataSource : HttpDataSource(), FictionDataRepository.RemoteSour
             val parse = body.getElementsByClass("info")[0]
             book.bookCoverImgUrl = parse.select("[src]")[0].attr("src")
             book.intro = parse.getElementsByClass("book")[0].getElementsByClass("js")[0].text()
-            book.chapterList = body.getElementById("at").select("a[href]").mapIndexed { index, e -> Chapter(e.attr("abs:href"), book.id, index = index, chapterName = e.text()) }
+            book.chapterList = body.getElementById("at").select("a[href]").mapIndexed { index, e -> Chapter(e.attr("abs:href"), book.url, index = index, chapterName = e.text()) }
             book.chapterListUrl = book.url
             book
         }

@@ -15,10 +15,7 @@ interface BookDao {
     fun getBookGroup(name: String, author: String): BookGroup
 
     @Query("delete  from BookGroup where bookName=:name and author=:author")
-    fun deleteBookGroup(name: String, author: String)
-
-    @Delete
-    fun deleteBookGroup(book: BookGroup)
+    fun deleteBookGroup(name: String, author: String): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun saveBooks(book: List<Book>)

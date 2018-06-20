@@ -44,7 +44,7 @@ class BiqugeDataSource():HttpDataSource(),FictionDataRepository.RemoteSource {
             val last = children.indexOfLast { it.tag().name == "dt" }
             book.chapterList = children.subList(last+1,children.size)
                     .map { it.select("a[href]") }
-                    .mapIndexed { index, e -> Chapter(e.attr("abs:href"), book.id, index = index, chapterName = e.text()) }
+                    .mapIndexed { index, e -> Chapter(e.attr("abs:href"), book.url, index = index, chapterName = e.text()) }
             book.chapterListUrl = book.url
             book
         }

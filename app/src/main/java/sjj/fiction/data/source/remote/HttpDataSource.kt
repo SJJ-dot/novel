@@ -37,8 +37,8 @@ abstract class HttpDataSource : DataSourceInterface {
                 .addConverterFactory(CharsetStringConverterFactory())
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(ObserveOnMainCallAdapterFactory())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+//                .addCallAdapterFactory(ObserveOnMainCallAdapterFactory())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .build()
     }
     protected inline fun <reified T> create(): T {

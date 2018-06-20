@@ -54,7 +54,7 @@ class YunlaigeDataSource : HttpDataSource(), FictionDataRepository.RemoteSource 
     private fun loadChapterList(book: Book): Observable<Book> {
         return service.loadHtmlForGBK(book.chapterListUrl).map {
             book.chapterList = Jsoup.parse(it, book.chapterListUrl).getElementById("contenttable").child(0).select("a[href]").mapIndexed { index, e ->
-                Chapter(e.attr("abs:href"), book.id, index, e.text())
+                Chapter(e.attr("abs:href"), book.url, index, e.text())
             }
             book
         }

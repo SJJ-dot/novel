@@ -35,7 +35,7 @@ class DhzwDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
             val parse = Jsoup.parse(it, book.url).body()
             book.bookCoverImgUrl = parse.getElementById("fmimg").select("[src]")[0].attr("src")
             book.intro = parse.getElementById("info").child(1).text()
-            book.chapterList = parse.getElementById("list").select("a[href]").mapIndexed { index, e -> Chapter(e.attr("abs:href"), book.id, index = index, chapterName = e.text()) }
+            book.chapterList = parse.getElementById("list").select("a[href]").mapIndexed { index, e -> Chapter(e.attr("abs:href"), book.url, index = index, chapterName = e.text()) }
             book.chapterListUrl = book.url
             book
         }

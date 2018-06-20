@@ -14,7 +14,7 @@ abstract class BooksDataBase : RoomDatabase() {
 }
 
 val booksDataBase by lazy {
-    Room.databaseBuilder(App.app, BooksDataBase::class.java, "books.db")
+    Room.databaseBuilder(App.app, BooksDataBase::class.java, "books.db").fallbackToDestructiveMigration()
 //            .addMigrations(object : Migration(1, 2) {
 //                override fun migrate(database: SupportSQLiteDatabase) {
 //                    database.execSQL("""

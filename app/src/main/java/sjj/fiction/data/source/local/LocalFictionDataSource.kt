@@ -2,6 +2,8 @@ package sjj.fiction.data.source.local
 
 import com.google.gson.Gson
 import io.reactivex.Observable
+import io.reactivex.Scheduler
+import io.reactivex.schedulers.Schedulers
 import sjj.fiction.data.repository.FictionDataRepository
 import sjj.fiction.model.Book
 import sjj.fiction.model.BookGroup
@@ -11,12 +13,10 @@ import sjj.fiction.util.def
 /**
  * Created by SJJ on 2017/10/15.
  */
-class LocalFictionDataSource : FictionDataRepository.SourceLocal {
-
-    private val KEY_SEARCH_HISTORY = "LOCAL_FICTION_DATA_SOURCE_KEY_SEARCH_HISTORY"
+class LocalFictionDataSource: FictionDataRepository.LocalSource {
 
 
-    private val gson = Gson()
+    private val bookDao by lazy { booksDataBase.bookDao() }
 
     override fun saveBookGroup(book: List<BookGroup>): Observable<List<BookGroup>> {
         return def {
@@ -111,12 +111,10 @@ class LocalFictionDataSource : FictionDataRepository.SourceLocal {
         }
     }
 
-    override fun deleteBookGroup(bookName: String, author: String): Observable<BookGroup> {
-        return def {
-            val bookGroup = booksDataBase.bookDao().getBookGroup(bookName, author)
-            booksDataBase.bookDao().deleteBookGroup(bookGroup)
-            bookGroup
-        }
+    override fun deleteBookGroup(bookName: String, author: String): Observable<Int> {
+        return Observable.fromCallable<Int> {
+            booksDataBase.bookDao().deleteBookGroup(bookName, author)
+        }.subscribeOn(Schedulers.io())
     }
 
 }
