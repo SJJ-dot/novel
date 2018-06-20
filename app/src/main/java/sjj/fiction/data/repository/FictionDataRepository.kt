@@ -3,6 +3,7 @@ package sjj.fiction.data.repository
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import sjj.fiction.data.source.local.LocalFictionDataSource
 import sjj.fiction.data.source.remote.aszw.AszwFictionDataSource
@@ -33,61 +34,23 @@ class FictionDataRepository {
         input(BiqugeDataSource())
     }
 
-    fun search(search: String): Observable<List<Pair<BookSourceRecord, List<Book>>>> = observableCreate { emitter ->
-        if (search.isEmpty()) {
-            throw IllegalArgumentException("搜索内容不能为空")
-        }
-        val map = mutableMapOf<String, MutableList<Book>>()
-        val count = object {
-            var count = sources.size
-            var complete = false
-            @Synchronized
-            fun complete() {
-                count--
-                complete = true
-
-                emitter.onNext(map.map { entry ->
-                    Pair(BookSourceRecord().apply {
-                        val first = entry.value.first()
-                        bookName = first.name
-                        author = first.author
-                        bookUrl = first.url
-                    }, entry.value)
-                })
-                if (count == 0) {
-                    emitter.onComplete()
-                }
+    fun search(search: String): Single<List<Pair<BookSourceRecord, List<Book>>>> {
+        return Observable.fromIterable(sources.values).flatMap {
+            it.search(search)
+        }.reduce(mutableMapOf<String, MutableList<Book>>(), { map, bs ->
+            bs.forEach {
+                map.getOrPut(it.name + it.author, { mutableListOf() }).add(it)
             }
-
-            @Synchronized
-            fun error(throwable: Throwable) {
-                count--
-                emitter.onNext(map.map { entry ->
-                    Pair(BookSourceRecord().apply {
-                        val first = entry.value.first()
-                        bookName = first.name
-                        author = first.author
-                        bookUrl = first.url
-                    }, entry.value)
-                })
-                if (count == 0) {
-                    if (complete) {
-                        emitter.onComplete()
-                    } else emitter.onError(throwable)
-                }
+            map
+        }).map {
+            it.map { entry ->
+                Pair(BookSourceRecord().apply {
+                    val first = entry.value.first()
+                    bookName = first.name
+                    author = first.author
+                    bookUrl = first.url
+                }, entry.value)
             }
-
-        }
-        val com = CompositeDisposable()
-        sources.forEach {
-            com.add(it.value.search(search).subscribe({
-                it.forEach {
-                    map.getOrPut(it.name + it.author, { mutableListOf() }).add(it)
-                }
-                if (emitter.isDisposed) com.dispose() else count.complete()
-            }, {
-                if (emitter.isDisposed) com.dispose() else count.error(it)
-            }))
         }
     }
 
@@ -142,7 +105,7 @@ class FictionDataRepository {
         fun saveBook(book: Book): Observable<Book>
         fun getAllReadingBook(): Flowable<List<Book>>
         fun saveBooks(books: List<Pair<BookSourceRecord, List<Book>>>): Observable<List<Book>>
-        fun deleteBook(bookName: String, author: String):Observable<String>
+        fun deleteBook(bookName: String, author: String): Observable<String>
     }
 
 }
