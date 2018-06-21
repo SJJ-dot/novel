@@ -3,10 +3,12 @@ package sjj.fiction.data.source.local
 import com.google.gson.Gson
 import io.reactivex.Observable
 import io.reactivex.Scheduler
+import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import sjj.fiction.data.repository.FictionDataRepository
 import sjj.fiction.model.Book
 import sjj.fiction.model.BookGroup
+import sjj.fiction.model.BookSourceRecord
 import sjj.fiction.model.Chapter
 import sjj.fiction.util.def
 
@@ -17,6 +19,17 @@ class LocalFictionDataSource: FictionDataRepository.LocalSource {
 
 
     private val bookDao by lazy { booksDataBase.bookDao() }
+
+    override fun saveBooks(books: List<Pair<BookSourceRecord, List<Book>>>): Single<List<Book>> {
+        return Single.fromCallable {
+            booksDataBase.runInTransaction {
+
+            }
+            books.map {pair->
+                pair.second.find { pair.first.bookUrl == it.url }!!
+            }
+        }
+    }
 
     override fun saveBookGroup(book: List<BookGroup>): Observable<List<BookGroup>> {
         return def {

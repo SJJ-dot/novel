@@ -34,19 +34,28 @@ class AszwFictionDataSource : HttpDataSource(), FictionDataRepository.RemoteSour
         }
     }
 
-    override fun loadBookChapter(chapter: Chapter): Observable<Chapter> {
-        return service.loadHtmlForGBK(chapter.url).map {
-            val parse = Jsoup.parse(it).getElementById("contents")
+    override fun getChapterContent(url: String): Observable<Chapter> {
+        return service.loadHtmlForGBK(url).map {
+            val document = Jsoup.parse(it)
+            val parse = document.getElementById("contents")
+            val chapter = Chapter()
+            chapter.url = url
+            chapter.chapterName =document.getElementsByClass("bdb")[0].text()
             chapter.content = parse.html()
             chapter.isLoadSuccess = true
             chapter
         }
     }
 
-    override fun loadBookDetailsAndChapter(book: Book): Observable<Book> {
-        return service.loadHtmlForGBK(book.url).map {
-            val body = Jsoup.parse(it, book.url).body()
+    override fun getBook(url: String): Observable<Book> {
+        return service.loadHtmlForGBK(url).map {
+            val body = Jsoup.parse(it, url).body()
             val parse = body.getElementsByClass("info")[0]
+            val book  = Book()
+            book.url = url
+            val btitle = parse.getElementsByClass("btitle")
+            book.name = btitle[0].child(0).text()
+            book.author = btitle[0].child(1).text().trim().split("：").last()
             book.bookCoverImgUrl = parse.select("[src]")[0].attr("src")
             book.intro = parse.getElementsByClass("book")[0].getElementsByClass("js")[0].text()
             book.chapterList = body.getElementById("at").select("a[href]").mapIndexed { index, e -> Chapter(e.attr("abs:href"), book.url, index = index, chapterName = e.text()) }

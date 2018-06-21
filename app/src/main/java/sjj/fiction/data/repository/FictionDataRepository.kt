@@ -4,7 +4,6 @@ import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.disposables.CompositeDisposable
 import sjj.fiction.data.source.local.LocalFictionDataSource
 import sjj.fiction.data.source.remote.aszw.AszwFictionDataSource
 import sjj.fiction.data.source.remote.biquge.BiqugeDataSource
@@ -14,7 +13,6 @@ import sjj.fiction.model.Book
 import sjj.fiction.model.BookSourceRecord
 import sjj.fiction.model.Chapter
 import sjj.fiction.util.domain
-import sjj.fiction.util.observableCreate
 
 val fictionDataRepository by lazy { FictionDataRepository() }
 
@@ -72,7 +70,7 @@ class FictionDataRepository {
             if (it.isLoadSuccess) {
                 Observable.just(it)
             } else {
-                sources[url.domain()]!!.getChapter(url).flatMap(localSource::saveChapter)
+                sources[url.domain()]!!.getChapterContent(url).flatMap(localSource::saveChapter)
             }
         }
     }
@@ -84,15 +82,17 @@ class FictionDataRepository {
         return Observable.fromIterable(book.chapterList).map {
             it.url
         }.flatMap {
-            sources[it.domain()]!!.getChapter(it).flatMap(localSource::saveChapter)
+            sources[it.domain()]!!.getChapterContent(it).flatMap(localSource::saveChapter)
         }.toFlowable(BackpressureStrategy.LATEST)
     }
+
+
 
     fun deleteBook(bookName: String, author: String) = localSource.deleteBook(bookName, author)
 
 
     interface RemoteSource {
-        fun getChapter(url: String): Observable<Chapter>
+        fun getChapterContent(url: String): Observable<Chapter>
         fun getBook(url: String): Observable<Book>
         fun domain(): String
         fun search(search: String): Observable<List<Book>>
@@ -104,7 +104,7 @@ class FictionDataRepository {
         fun saveChapter(chapter: Chapter): Observable<Chapter>
         fun saveBook(book: Book): Observable<Book>
         fun getAllReadingBook(): Flowable<List<Book>>
-        fun saveBooks(books: List<Pair<BookSourceRecord, List<Book>>>): Observable<List<Book>>
+        fun saveBooks(books: List<Pair<BookSourceRecord, List<Book>>>): Single<List<Book>>
         fun deleteBook(bookName: String, author: String): Observable<String>
     }
 

@@ -1,24 +1,23 @@
 package sjj.fiction.data.source.local
 
 import android.arch.persistence.room.*
+import sjj.fiction.App
 import sjj.fiction.model.Book
 import sjj.fiction.model.BookGroup
+import sjj.fiction.model.BookSourceRecord
 import sjj.fiction.model.Chapter
 
 
 @Dao
 interface BookDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun saveBookGroups(book: List<BookGroup>)
+    @Query("replece into ")
+    fun saveBooks(bookSource: List<BookSourceRecord>,books:List<Book>)
 
     @Query("SELECT * FROM BookGroup WHERE bookName=:name and author=:author")
     fun getBookGroup(name: String, author: String): BookGroup
 
     @Query("delete  from BookGroup where bookName=:name and author=:author")
     fun deleteBookGroup(name: String, author: String): Int
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun saveBooks(book: List<Book>)
 
     @Delete
     fun deleteBooks(book: List<Book>)
@@ -45,4 +44,15 @@ interface BookDao {
     @Query("SELECT * FROM BookGroup")
     fun getAllBookGroup(): List<BookGroup>
 
+}
+
+
+@Database(entities = [Book::class, BookSourceRecord::class, Chapter::class], version = 1)
+abstract class BooksDataBase : RoomDatabase() {
+    abstract fun bookDao(): BookDao
+}
+
+val booksDataBase by lazy {
+    Room.databaseBuilder(App.app, BooksDataBase::class.java, "books.db").fallbackToDestructiveMigration()
+            .build()
 }

@@ -37,11 +37,15 @@ class YunlaigeDataSource : HttpDataSource(), FictionDataRepository.RemoteSource 
         }
     }
 
-    override fun loadBookDetailsAndChapter(book: Book): Observable<Book> {
-        return service.loadHtmlForGBK(book.url).map {
+    override fun getBook(url: String): Observable<Book> {
+        return service.loadHtmlForGBK(url).map {
             //            val name: String, val author: String, val coverImgUrl: Url, val intro: String, val latestChapter: Chapter, val chapterList: List<Chapter>
             val element = Jsoup.parse(it).body().getElementsByClass("book-info")[0]
             val info = element.getElementsByClass("info")[0]
+            val book = Book()
+            book.url = url
+            book.name = info.child(0).child(0).text()
+            book.author = info.child(1).child(0).text()
             book.bookCoverImgUrl = element.select("a[href]")[0].attr("href")
             book.intro = info.child(2).text()
             book.chapterListUrl = info.child(3).select("a[href]")[0].attr("href")
@@ -50,7 +54,6 @@ class YunlaigeDataSource : HttpDataSource(), FictionDataRepository.RemoteSource 
             loadChapterList(it)
         }
     }
-
     private fun loadChapterList(book: Book): Observable<Book> {
         return service.loadHtmlForGBK(book.chapterListUrl).map {
             book.chapterList = Jsoup.parse(it, book.chapterListUrl).getElementById("contenttable").child(0).select("a[href]").mapIndexed { index, e ->
@@ -60,10 +63,11 @@ class YunlaigeDataSource : HttpDataSource(), FictionDataRepository.RemoteSource 
         }
     }
 
-
-    override fun loadBookChapter(chapter: Chapter): Observable<Chapter> {
-        return service.loadHtmlForGBK(chapter.url).map {
+    override fun getChapterContent(url: String): Observable<Chapter> {
+        return service.loadHtmlForGBK(url).map {
             val element = Jsoup.parse(it).getElementById("content")
+            val chapter = Chapter()
+            chapter.url = url
             chapter.content = element.html()
             chapter.isLoadSuccess = true
             chapter
