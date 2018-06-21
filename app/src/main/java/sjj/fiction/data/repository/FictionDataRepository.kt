@@ -62,16 +62,14 @@ class FictionDataRepository {
     fun refreshBook(url: String): Observable<Book> {
         return Observable.just(url).flatMap {
             sources[it.domain()]?.getBook(it) ?: throw Exception("未知源 $it")
-        }.flatMap(localSource::saveBook)
+        }.flatMap(localSource::insertBook)
     }
 
-    fun loadBookChapter(url: String): Observable<Chapter> {
-        return localSource.getChapter(url).flatMap {
-            if (it.isLoadSuccess) {
-                Observable.just(it)
-            } else {
-                sources[url.domain()]!!.getChapterContent(url).flatMap(localSource::saveChapter)
-            }
+    fun getChapterContent(url: String): Flowable<Chapter> {
+        return localSource.getChapter(url).doOnNext {
+            sources[url.domain()]!!.getChapterContent(url)
+                    .flatMap(localSource::updateChapter)
+                    .subscribe()
         }
     }
 
@@ -82,10 +80,9 @@ class FictionDataRepository {
         return Observable.fromIterable(book.chapterList).map {
             it.url
         }.flatMap {
-            sources[it.domain()]!!.getChapterContent(it).flatMap(localSource::saveChapter)
+            sources[it.domain()]!!.getChapterContent(it).flatMap(localSource::updateChapter)
         }.toFlowable(BackpressureStrategy.LATEST)
     }
-
 
 
     fun deleteBook(bookName: String, author: String) = localSource.deleteBook(bookName, author)
@@ -99,13 +96,13 @@ class FictionDataRepository {
     }
 
     interface LocalSource {
+        fun saveBookSourceRecord(books: List<Pair<BookSourceRecord, List<Book>>>): Single<List<Book>>
         fun getBook(url: String): Flowable<Book>
-        fun getChapter(url: String): Observable<Chapter>
-        fun saveChapter(chapter: Chapter): Observable<Chapter>
-        fun saveBook(book: Book): Observable<Book>
+        fun insertBook(book: Book): Observable<Book>
+        fun getChapter(url: String): Flowable<Chapter>
+        fun updateChapter(chapter: Chapter): Observable<Chapter>
         fun getAllReadingBook(): Flowable<List<Book>>
-        fun saveBooks(books: List<Pair<BookSourceRecord, List<Book>>>): Single<List<Book>>
-        fun deleteBook(bookName: String, author: String): Observable<String>
+        fun deleteBook(bookName: String, author: String): Observable<Int>
     }
 
 }

@@ -1,48 +1,42 @@
 package sjj.fiction.data.source.local
 
 import android.arch.persistence.room.*
+import io.reactivex.Flowable
 import sjj.fiction.App
 import sjj.fiction.model.Book
-import sjj.fiction.model.BookGroup
 import sjj.fiction.model.BookSourceRecord
 import sjj.fiction.model.Chapter
 
 
 @Dao
 interface BookDao {
-    @Query("replece into ")
-    fun saveBooks(bookSource: List<BookSourceRecord>,books:List<Book>)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertRecordAndBooks(bookSource: List<BookSourceRecord>, books: List<Book>)
 
-    @Query("SELECT * FROM BookGroup WHERE bookName=:name and author=:author")
-    fun getBookGroup(name: String, author: String): BookGroup
+    @Query("select * from Book where url in (select bookUrl from BookSourceRecord)")
+    fun getBooksInRecord(): Flowable<List<Book>>
 
-    @Query("delete  from BookGroup where bookName=:name and author=:author")
-    fun deleteBookGroup(name: String, author: String): Int
 
-    @Delete
-    fun deleteBooks(book: List<Book>)
+    @Query("SELECT * FROM Book WHERE url=:url")
+    fun getBook(url: String): Flowable<Book>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun saveChapter(book: List<Chapter>)
+    fun insertBook(book: Book)
 
-    @Query("SELECT * FROM Book WHERE id=:id")
-    fun getBook(id: String): Book
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertChapters(book: List<Chapter>)
 
-    @Query("SELECT * FROM Book WHERE name=:name and author=:author")
-    fun getBook(name: String, author: String): List<Book>
+    @Query("select url,bookUrl,`index`,chapterName,isLoadSuccess from Chapter where bookUrl=:bookUrl")
+    fun getChapters(bookUrl: String): List<Chapter>
 
+    @Query("select * from Chapter where url=:url")
+    fun getChapter(url: String): Flowable<Chapter>
 
-    @Query("SELECT url,bookId,`index`,chapterName,isLoadSuccess FROM Chapter WHERE bookId=:bookId order by `index`")
-    fun getChapterIntro(bookId: String): List<Chapter>
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    fun updateChapter(chapter: Chapter)
 
-    @Query("SELECT * FROM Chapter WHERE url=:url")
-    fun getChapter(url: String): Chapter
-
-    @Delete
-    fun deleteChapter(chapter: List<Chapter>)
-
-    @Query("SELECT * FROM BookGroup")
-    fun getAllBookGroup(): List<BookGroup>
+    @Query("delete from BookSourceRecord where bookName=:bookName and author=:author")
+    fun deleteBook(bookName: String, author: String):Int
 
 }
 
