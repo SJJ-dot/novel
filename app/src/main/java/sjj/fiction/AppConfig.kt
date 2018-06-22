@@ -9,6 +9,6 @@ object AppConfig {
 
     val readChapterTextSize by liveDataDelegate(24f)
 
-    var searchHistory by sharedPreferencesDelegate<List<String>>(listOf())
+    val searchHistory by liveDataDelegate<List<String>>(listOf())
 
 }

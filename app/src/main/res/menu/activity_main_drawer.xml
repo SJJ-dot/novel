@@ -3,10 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
     <item
-        android:id="@+id/nav_account"
-        android:title="Account" />
+        android:id="@+id/bookShelfFragment"
+        android:title="书架" />
     <item
-        android:id="@+id/nav_about"
-        android:title="About" />
+        android:id="@+id/searchFragment"
+        android:title="搜索" />
+    <item
+        android:id="@+id/aboutFragment"
+        android:title="关于" />
 
 </menu>

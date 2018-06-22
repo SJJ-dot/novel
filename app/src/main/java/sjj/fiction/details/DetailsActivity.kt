@@ -30,8 +30,7 @@ import sjj.fiction.util.domain
  */
 class DetailsActivity : BaseActivity(), DetailsContract.View {
     companion object {
-        val data_book_name = "data_book_name"
-        val data_book_author = "data_book_author"
+        val book_url = "book_url"
     }
 
     private lateinit var presenter: DetailsContract.Presenter

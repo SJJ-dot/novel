@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_main_menu"
+    app:startDestination="@id/bookShelfFragment">
+    <fragment
+        android:id="@+id/bookShelfFragment"
+        android:name="sjj.fiction.main.BookshelfFragment"
+        android:label="书架"
+        tools:layout="@layout/fragment_books"/>
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="sjj.fiction.main.SearchFragment"
+        android:label="搜索"
+        tools:layout="@layout/fragment_search" />
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="sjj.fiction.main.AboutFragment"
+        android:label="关于"
+        tools:layout="@layout/fragment_about" />
+</navigation>

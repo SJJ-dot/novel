@@ -62,7 +62,7 @@ class App : Application() {
                     .build())
         }
 
-        RxJavaPlugins.setErrorHandler { Log.e("error ",it) }
+        RxJavaPlugins.setErrorHandler { Log.e("error $it",it) }
     }
 
     fun exit() {

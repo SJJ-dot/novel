@@ -34,6 +34,9 @@ class FictionDataRepository {
 
     fun search(search: String): Single<List<Pair<BookSourceRecord, List<Book>>>> {
         return Observable.fromIterable(sources.values).flatMap {
+            if (search.isBlank()) {
+                throw IllegalArgumentException("搜索内容不能为空")
+            }
             it.search(search).onErrorResumeNext(Observable.empty())
         }.reduce(mutableMapOf<String, MutableList<Book>>(), { map, bs ->
             bs.forEach {
@@ -87,6 +90,7 @@ class FictionDataRepository {
 
     fun deleteBook(bookName: String, author: String) = localSource.deleteBook(bookName, author)
 
+    fun saveBookSourceRecord(books: List<Pair<BookSourceRecord, List<Book>>>)  = localSource.saveBookSourceRecord(books)
 
     interface RemoteSource {
         fun getChapterContent(url: String): Observable<Chapter>
