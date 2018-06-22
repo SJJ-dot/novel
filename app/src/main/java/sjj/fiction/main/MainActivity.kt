@@ -1,6 +1,8 @@
 package sjj.fiction.main
 
 import android.app.ProgressDialog
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.NavigationView
@@ -24,6 +26,7 @@ import sjj.fiction.about.AboutActivity
 import sjj.fiction.account.AccountActivity
 import sjj.fiction.books.BookrackFragment
 import sjj.fiction.main.impl.MainPresenter
+import sjj.fiction.model.Book
 import sjj.fiction.model.BookGroup
 import sjj.fiction.search.SearchFragment
 import sjj.fiction.util.getFragment
@@ -75,7 +78,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             searchInput.showDropDown()
         }
         MainPresenter(this)
+        val model = ViewModelProviders.of(this).get(MainViewModel::class.java)
+        model.books.observe(this, Observer {
 
+        })
     }
 
     override fun onStart() {

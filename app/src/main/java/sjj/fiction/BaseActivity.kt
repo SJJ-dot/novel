@@ -7,8 +7,12 @@ import sjj.permission.util.PermissionUtil
 import android.content.pm.PackageManager
 import android.content.pm.PackageInfo
 import android.os.PersistableBundle
+import io.reactivex.disposables.Disposable
 import org.jetbrains.anko.toast
 import sjj.alog.Log
+import sjj.fiction.util.destroy
+import sjj.fiction.util.pause
+import sjj.fiction.util.stop
 import sjj.permission.PermissionCallback
 import sjj.permission.model.Permission
 
@@ -90,13 +94,28 @@ abstract class BaseActivity : AppCompatActivity() {
         super.onPause()
         Log.i("onPause $this")
     }
+
     override fun onStop() {
         super.onStop()
         Log.i("onStop $this")
     }
+
     override fun onDestroy() {
         super.onDestroy()
         App.app.activitys.remove(this)
         Log.i("onDestroy $this")
+    }
+
+
+    fun Disposable.destroy(onceKey: String? = null) {
+        destroy(onceKey, lifecycle)
+    }
+
+    fun Disposable.stop(onceKey: String? = null) {
+        stop(onceKey, lifecycle)
+    }
+
+    fun Disposable.pause(onceKey: String? = null) {
+        pause(onceKey, lifecycle)
     }
 }
