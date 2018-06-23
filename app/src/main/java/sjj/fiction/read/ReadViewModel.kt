@@ -15,9 +15,7 @@ class ReadViewModel(val name: String, val author: String) : ViewModel() {
 
     @SuppressLint("CheckResult")
     fun loadChapter(chapter: Chapter) {
-        fictionDataRepository.loadChapter(chapter).subscribe({
-            Log.e(it.chapterName)
-        })
+        fictionDataRepository.loadChapter(chapter).subscribe()
     }
 
     val readIndex = fictionDataRepository.getReadIndex(name, author)

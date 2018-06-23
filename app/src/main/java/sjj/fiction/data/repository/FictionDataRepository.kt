@@ -43,7 +43,6 @@ class FictionDataRepository {
             }
             it.search(search)
         }.reduce(mutableMapOf<String, MutableList<Book>>(), { map, bs ->
-            Log.e(bs)
             bs.forEach {
                 map.getOrPut(it.name + it.author, { mutableListOf() }).add(it)
             }
@@ -62,8 +61,9 @@ class FictionDataRepository {
 
     fun getBookInBookSource(name: String, author: String): Flowable<Book> {
         return localSource.getBookInBookSource(name, author).doOnNext {
-            if (it.updateTime < System.currentTimeMillis() - 1000 * 60 * 10)
+            if (it.updateTime < System.currentTimeMillis() - 1000 * 60 * 10 || it.intro.isBlank()) {
                 refreshBook(it.url).subscribe()
+            }
         }
     }
 
