@@ -121,7 +121,7 @@ class SearchFragment : BaseFragment() {
             holder.itemView.find<TextView>(R.id.searchItemAuthor).text = book.author
             holder.itemView.find<TextView>(R.id.searchItemOrigin).text = bookGroup.second.size.toString()
             holder.itemView.setOnClickListener { v ->
-                model.saveBookSourceRecord(data).subscribe { _ ->
+                model.saveBookSourceRecord(data).observeOn(AndroidSchedulers.mainThread()).subscribe { _ ->
                     startActivity<DetailsActivity>(DetailsActivity.BOOK_NAME to book.name, DetailsActivity.BOOK_AUTHOR to book.author)
                 }
             }

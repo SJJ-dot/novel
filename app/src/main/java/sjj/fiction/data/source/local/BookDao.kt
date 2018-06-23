@@ -59,7 +59,7 @@ interface BookDao {
 }
 
 
-@Database(entities = [Book::class, BookSourceRecord::class, Chapter::class], version = 1)
+@Database(entities = [Book::class, BookSourceRecord::class, Chapter::class], version = 2)
 abstract class BooksDataBase : RoomDatabase() {
     abstract fun bookDao(): BookDao
 }

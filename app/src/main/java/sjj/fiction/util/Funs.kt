@@ -20,7 +20,11 @@ fun String.domain(): String {
 }
 
 fun <T> T.log():T {
-    Log.e(1,this)
+    if (this is Throwable) {
+        Log.e(1, this,this)
+    } else {
+        Log.e(1,this)
+    }
     return this
 }
 

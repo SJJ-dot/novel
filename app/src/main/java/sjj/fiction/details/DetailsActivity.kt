@@ -57,7 +57,7 @@ class DetailsActivity : BaseActivity() {
                 v.isEnabled = false
                 model.bookSource.doOnTerminate {
                     v.isEnabled = true
-                }.subscribe { bs ->
+                }.observeOn(AndroidSchedulers.mainThread()).subscribe { bs ->
                     v.isEnabled = true
                     alert {
                         items(bs.map { it.domain() }) { dialog, index ->
@@ -71,7 +71,7 @@ class DetailsActivity : BaseActivity() {
                 if (chapterList.visibility != View.VISIBLE) {
                     chapterList.visibility = View.VISIBLE
                     model.getChapters(it.url).observe(this, Observer(adapter::submitList))
-                    model.readIndex.firstElement().subscribe { index ->
+                    model.readIndex.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe { index ->
                         chapterList.scrollToPosition(index)
                     }
                 } else {
@@ -83,7 +83,7 @@ class DetailsActivity : BaseActivity() {
             intro.text = it.intro
             bookCover.setImageURI(it.bookCoverImgUrl)
 
-            model.getLatestChapter(it.url).subscribe {
+            model.getLatestChapter(it.url).observeOn(AndroidSchedulers.mainThread()).subscribe {
                 latestChapter.text = it.chapterName
                 latestChapter.setOnClickListener { v ->
                     v.isEnabled = false
@@ -122,7 +122,7 @@ class DetailsActivity : BaseActivity() {
             holder.itemView.find<TextView>(R.id.text1).text = book.chapterName
             holder.itemView.setOnClickListener {
                 it.isEnabled = false
-                model.setReadIndex(position).doOnTerminate {
+                model.setReadIndex(position).observeOn(AndroidSchedulers.mainThread()).doOnTerminate {
                     it.isEnabled = true
                 }.subscribe {
                     startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)

@@ -62,7 +62,8 @@ class FictionDataRepository {
 
     fun getBookInBookSource(name: String, author: String): Flowable<Book> {
         return localSource.getBookInBookSource(name, author).doOnNext {
-            refreshBook(it.url).subscribe()
+            if (it.updateTime < System.currentTimeMillis() - 1000 * 60 * 10)
+                refreshBook(it.url).subscribe()
         }
     }
 
@@ -136,7 +137,7 @@ class FictionDataRepository {
         fun setReadIndex(name: String, author: String, index: Int): Observable<Int>
         fun getLatestChapter(bookUrl: String): Observable<Chapter>
         fun getChapters(bookUrl: String): DataSource.Factory<Int, Chapter>
-        fun getUnLoadChapters(bookUrl: String):Observable<List<Chapter>>
+        fun getUnLoadChapters(bookUrl: String): Observable<List<Chapter>>
     }
 
 }

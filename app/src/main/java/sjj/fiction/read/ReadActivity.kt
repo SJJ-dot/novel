@@ -20,6 +20,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_read.*
 import org.jetbrains.anko.*
 import sjj.alog.Log
@@ -65,14 +66,13 @@ class ReadActivity : BaseActivity() {
         chapterContent.adapter = contentAdapter
         chapterList.adapter = chapterListAdapter
 
-        model.book.subscribe {
+        model.book.observeOn(AndroidSchedulers.mainThread()).subscribe {
             title = it.name
             model.getChapters(it.url).observe(this, Observer {
-                Log.e(it?.size)
                 seekBar.max = it?.size ?:0
                 contentAdapter.submitList(it)
                 chapterListAdapter.submitList(it)
-                model.readIndex.subscribe {
+                model.readIndex.observeOn(AndroidSchedulers.mainThread()).subscribe {
                     chapterList.scrollToPosition(it)
                     chapterContent.scrollToPosition(it)
                     seekBar.progress = it
@@ -99,7 +99,7 @@ class ReadActivity : BaseActivity() {
                     cached?.dismiss()
                     cached = progressDialog("正在缓存章节内容")
                     cached?.max = 1000
-                    model.cachedBookChapter(it.url).subscribe({ _ ->
+                    model.cachedBookChapter(it.url).observeOn(AndroidSchedulers.mainThread()).subscribe({ _ ->
                         cached?.progress = cached?.progress ?: 0 + 1
                     }, {
                         toast("缓存章节内容出错：$it")
