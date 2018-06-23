@@ -16,9 +16,11 @@ interface BookDao {
     @Query("select * from Book where url in (select bookUrl from BookSourceRecord)")
     fun getBooksInRecord(): Flowable<List<Book>>
 
+    @Query("select url from Book where name=:name and author=:author")
+    fun getBookSource(name: String, author: String): List<String>
 
-    @Query("SELECT * FROM Book WHERE url=:url")
-    fun getBook(url: String): Flowable<Book>
+    @Query("SELECT * FROM Book WHERE url = (select bookUrl from BookSourceRecord where bookName=:name and author=:author)")
+    fun getBookInBookSource(name: String, author: String): Flowable<Book>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertBook(book: Book)
@@ -26,7 +28,7 @@ interface BookDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertChapters(book: List<Chapter>)
 
-    @Query("select url,bookUrl,`index`,chapterName,isLoadSuccess from Chapter where bookUrl=:bookUrl")
+    @Query("select url,bookUrl,`index`,chapterName,isLoadSuccess from Chapter where bookUrl=:bookUrl order by `index`")
     fun getChapters(bookUrl: String): List<Chapter>
 
     @Query("select * from Chapter where url=:url")
@@ -36,7 +38,13 @@ interface BookDao {
     fun updateChapter(chapter: Chapter)
 
     @Query("delete from BookSourceRecord where bookName=:bookName and author=:author")
-    fun deleteBook(bookName: String, author: String):Int
+    fun deleteBook(bookName: String, author: String): Int
+
+    @Query("update BookSourceRecord set bookUrl=:url where bookName=:name and author=:author")
+    fun updateBookSource(name: String, author: String, url: String): Int
+
+    @Query("select readIndex from BookSourceRecord where bookName=:name and author=:author")
+    fun getReadIndex(name: String, author: String): Int
 
 }
 

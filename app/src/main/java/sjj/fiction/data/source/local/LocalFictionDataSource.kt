@@ -34,9 +34,27 @@ class LocalFictionDataSource : FictionDataRepository.LocalSource {
         }
     }
 
-    override fun getBook(url: String): Flowable<Book> {
-        return bookDao.getBook(url).doOnNext {
-            it.chapterList = bookDao.getChapters(url)
+    override fun getBookSource(name: String, author: String): Observable<List<String>> {
+        return Observable.fromCallable {
+            bookDao.getBookSource(name,author)
+        }
+    }
+
+    override fun updateBookSource(name: String, author: String, url: String): Observable<Int> {
+        return Observable.fromCallable {
+            bookDao.updateBookSource(name,author,url)
+        }
+    }
+
+    override fun getBookInBookSource(name: String, author: String): Flowable<Book> {
+        return bookDao.getBookInBookSource(name,author).doOnNext {
+            it.chapterList = bookDao.getChapters(it.url)
+        }
+    }
+
+    override fun getReadIndex(name: String, author: String): Observable<Int> {
+        return Observable.fromCallable {
+            bookDao.getReadIndex(name,author)
         }
     }
 

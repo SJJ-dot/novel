@@ -25,21 +25,17 @@ import sjj.fiction.model.Chapter
 import sjj.fiction.util.lparams
 import sjj.fiction.util.toDpx
 
-class ReadActivity : BaseActivity(), ReadContract.View {
+class ReadActivity : BaseActivity() {
     companion object {
-        val DATA_BOOK_NAME = "DATA_BOOK_NAME"
-        val DATA_BOOK_AUTHOR = "DATA_BOOK_AUTHOR"
-        val DATA_CHAPTER_INDEX = "DATA_CHAPTER_INDEX"
+        val BOOK_URL = "BOOK_URL"
+        val BOOK_INDEX = "BOOK_INDEX"
     }
 
     private val ttfs = arrayOf<String>("Roboto-Black.ttf", "Roboto-BlackItalic.ttf", "Roboto-Bold.ttf", "Roboto-BoldItalic.ttf", "Roboto-Italic.ttf", "Roboto-Light.ttf", "Roboto-LightItalic.ttf", "Roboto-Medium.ttf", "Roboto-MediumItalic.ttf", "Roboto-Regular.ttf", "Roboto-Thin.ttf",
             "Roboto-ThinItalic.ttf", "RobotoCondensed-Bold.ttf", "RobotoCondensed-BoldItalic.ttf", "RobotoCondensed-Italic.ttf", "RobotoCondensed-Light.ttf",
             "RobotoCondensed-LightItalic.ttf",
             "RobotoCondensed-Regular.ttf")
-    private lateinit var presenter: ReadContract.Presenter
-    private val bookName by lazy { intent.getStringExtra(DATA_BOOK_NAME) }
-    private val bookAuthor by lazy { intent.getStringExtra(DATA_BOOK_AUTHOR) }
-    private val index by lazy { intent.getIntExtra(DATA_CHAPTER_INDEX, 0) }
+
     private val contentAdapter by lazy { ChapterContentAdapter(presenter) }
     private val chapterListAdapter by lazy { ChapterListAdapter(presenter) }
     private var loadBookHint: ProgressDialog? = null
@@ -50,7 +46,6 @@ class ReadActivity : BaseActivity(), ReadContract.View {
         setSupportActionBar(toolbar)
         val supportActionBar = supportActionBar!!
         supportActionBar.setDisplayHomeAsUpEnabled(true)
-        ReadPresenter(bookName, bookAuthor, index, this)
 
         chapterContent.layoutManager = LinearLayoutManager(this)
         chapterContent.adapter = contentAdapter
@@ -63,7 +58,6 @@ class ReadActivity : BaseActivity(), ReadContract.View {
                 presenter.onContentScrolled(position)
             }
         })
-        presenter.start()
     }
 
     override fun onStop() {

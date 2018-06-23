@@ -10,7 +10,6 @@ import sjj.fiction.R
 class AboutFragment : BaseFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        parentFragment
         return inflater.inflate(R.layout.fragment_about, container, false)
     }
 }

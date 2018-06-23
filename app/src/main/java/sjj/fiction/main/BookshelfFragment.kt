@@ -19,13 +19,14 @@ import sjj.fiction.R
 import sjj.fiction.details.DetailsActivity
 import sjj.fiction.model.Book
 import sjj.fiction.util.domain
+import sjj.fiction.util.getModel
 
 /**
  * Created by SJJ on 2017/10/7.
  */
 class BookshelfFragment : BaseFragment() {
 
-    private val model by lazy { ViewModelProviders.of(this).get(MainViewModel::class.java) }
+    private val model by lazy { getModel<MainViewModel>() }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_books, container, false)
@@ -56,7 +57,7 @@ class BookshelfFragment : BaseFragment() {
             holder.itemView.find<TextView>(R.id.lastChapter).text = book.chapterList.last().chapterName
             holder.itemView.find<SimpleDraweeView>(R.id.bookCover).setImageURI(book.bookCoverImgUrl)
             holder.itemView.setOnClickListener { v ->
-                startActivity<DetailsActivity>(DetailsActivity.book_url to book.url)
+                startActivity<DetailsActivity>(DetailsActivity.BOOK_NAME to book.name,DetailsActivity.BOOK_AUTHOR to book.author)
             }
             holder.itemView.setOnLongClickListener {
                 alert {

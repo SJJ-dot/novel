@@ -55,10 +55,9 @@ class FictionDataRepository {
         }
     }
 
-    fun getBook(url: String): Flowable<Book> {
-//      return  localSource.getBook(url)
-        return localSource.getBook(url).doOnNext {
-            refreshBook(url).subscribe()
+    fun getBookInBookSource(name: String, author: String): Flowable<Book> {
+        return localSource.getBookInBookSource(name,author).doOnNext {
+            refreshBook(it.url).subscribe()
         }
     }
 
@@ -90,7 +89,18 @@ class FictionDataRepository {
 
     fun deleteBook(bookName: String, author: String) = localSource.deleteBook(bookName, author)
 
-    fun saveBookSourceRecord(books: List<Pair<BookSourceRecord, List<Book>>>)  = localSource.saveBookSourceRecord(books)
+    fun saveBookSourceRecord(books: List<Pair<BookSourceRecord, List<Book>>>) = localSource.saveBookSourceRecord(books)
+    fun getBookSource(name: String, author: String): Observable<List<String>> {
+        return localSource.getBookSource(name, author)
+    }
+
+    fun setBookSource(name: String, author: String, url: String):Observable<Int> {
+        return localSource.updateBookSource(name,author,url)
+    }
+
+    fun getReadIndex(name: String, author: String): Observable<Int> {
+        return localSource.getReadIndex(name, author)
+    }
 
     interface RemoteSource {
         fun getChapterContent(url: String): Observable<Chapter>
@@ -101,12 +111,15 @@ class FictionDataRepository {
 
     interface LocalSource {
         fun saveBookSourceRecord(books: List<Pair<BookSourceRecord, List<Book>>>): Single<List<Book>>
-        fun getBook(url: String): Flowable<Book>
+        fun getBookInBookSource(name: String, author: String): Flowable<Book>
         fun insertBook(book: Book): Observable<Book>
         fun getChapter(url: String): Flowable<Chapter>
         fun updateChapter(chapter: Chapter): Observable<Chapter>
         fun getAllReadingBook(): Flowable<List<Book>>
         fun deleteBook(bookName: String, author: String): Observable<Int>
+        fun getBookSource(name: String, author: String): Observable<List<String>>
+        fun updateBookSource(name: String, author: String, url: String): Observable<Int>
+        fun getReadIndex(name: String, author: String): Observable<Int>
     }
 
 }

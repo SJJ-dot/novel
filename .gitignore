@@ -9,3 +9,5 @@
 .externalNativeBuild
 /.idea/caches
 .idea/misc.xml
+.idea/navEditor.xml
+.idea

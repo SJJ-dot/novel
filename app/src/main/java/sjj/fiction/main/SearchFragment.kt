@@ -27,16 +27,13 @@ import sjj.fiction.R
 import sjj.fiction.details.DetailsActivity
 import sjj.fiction.model.Book
 import sjj.fiction.model.BookSourceRecord
-import sjj.fiction.util.cardView
-import sjj.fiction.util.lparams
-import sjj.fiction.util.textView
-import sjj.fiction.util.toDpx
+import sjj.fiction.util.*
 
 /**
  * Created by SJJ on 2017/10/7.
  */
 class SearchFragment : BaseFragment() {
-    private val model by lazy { ViewModelProviders.of(this).get(MainViewModel::class.java) }
+    private val model by lazy { getModel<MainViewModel>() }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_search, container, false)
@@ -118,7 +115,7 @@ class SearchFragment : BaseFragment() {
             holder.itemView.find<TextView>(R.id.searchItemOrigin).text = bookGroup.second.size.toString()
             holder.itemView.setOnClickListener { v ->
                 model.saveBookSourceRecord(data).subscribe { _ ->
-                    startActivity<DetailsActivity>(DetailsActivity.book_url to book.url)
+                    startActivity<DetailsActivity>(DetailsActivity.BOOK_NAME to book.name, DetailsActivity.BOOK_AUTHOR to book.author)
                 }
             }
         }
