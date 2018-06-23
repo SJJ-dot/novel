@@ -28,21 +28,24 @@
             android:id="@+id/chapterContent"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
         <SeekBar
             android:id="@+id/seekBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
         <TextView
             android:id="@+id/chapterName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/chapter_background_translucent"
-            android:paddingBottom="5dp"
             android:paddingLeft="8dp"
-            android:paddingRight="8dp"
             android:paddingTop="8dp"
+            android:paddingRight="8dp"
+            android:paddingBottom="5dp"
             android:textSize="14sp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             tools:text="@string/app_name" />
@@ -52,5 +55,6 @@
         android:id="@+id/chapterList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="start" />
+        android:layout_gravity="start"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
 </android.support.v4.widget.DrawerLayout>

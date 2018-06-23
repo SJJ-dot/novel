@@ -13,11 +13,11 @@ import sjj.fiction.util.domain
  * Created by SJJ on 2017/11/3.
  */
 class BiqugeDataSource() : HttpDataSource(), FictionDataRepository.RemoteSource {
-    override val baseUrl: String = "https://www.biquge5200.cc"
+    override val baseUrl: String = "https://www.biquge5200.cc/"
     private val service = create<HttpInterface>()
     override fun domain() = baseUrl.domain()
     override fun search(search: String): Observable<List<Book>> {
-        return service.searchForGBKGET("/modules/article/search.php", mapOf("searchkey" to search)).map {
+        return service.searchForGBKGET("modules/article/search.php", mapOf("searchkey" to search)).map {
             val children = Jsoup.parse(it).body().getElementsByTag("tbody")[0].children()
             children.takeLast(children.size - 1).map {
                 val element = it.select("a[href]")[0]
@@ -26,12 +26,10 @@ class BiqugeDataSource() : HttpDataSource(), FictionDataRepository.RemoteSource 
         }
     }
 
-    override fun getChapterContent(url: String): Observable<Chapter> {
-        return service.loadHtmlForGBK(url).map {
+    override fun getChapterContent(chapter: Chapter): Observable<Chapter> {
+        return service.loadHtmlForGBK(chapter.url).map {
             val get = Jsoup.parse(it)
             val parse = get.getElementById("content")
-            val chapter = Chapter()
-            chapter.url = url
             chapter.chapterName =get.getElementsByClass("bookname")[0].child(0).text()
             chapter.content = parse.html()
             chapter.isLoadSuccess = true
@@ -51,6 +49,7 @@ class BiqugeDataSource() : HttpDataSource(), FictionDataRepository.RemoteSource 
             book.intro = parse.getElementById("intro").child(0).text()
             val children = parse.getElementById("list").child(0).children()
             val last = children.indexOfLast { it.tag().name == "dt" }
+            book.chapterListUrl = url
             book.chapterList = children.subList(last+1,children.size)
                     .map { it.select("a[href]") }
                     .mapIndexed { index, e -> Chapter(e.attr("abs:href"),book.url,index = index, chapterName = e.text()) }

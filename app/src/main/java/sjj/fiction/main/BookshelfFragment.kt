@@ -9,6 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.facebook.drawee.view.SimpleDraweeView
+import io.reactivex.BackpressureStrategy
+import io.reactivex.Flowable
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_books.*
 import org.jetbrains.anko.find
@@ -57,7 +60,7 @@ class BookshelfFragment : BaseFragment() {
             holder.itemView.find<TextView>(R.id.lastChapter).text = book.chapterList.last().chapterName
             holder.itemView.find<SimpleDraweeView>(R.id.bookCover).setImageURI(book.bookCoverImgUrl)
             holder.itemView.setOnClickListener { v ->
-                startActivity<DetailsActivity>(DetailsActivity.BOOK_NAME to book.name,DetailsActivity.BOOK_AUTHOR to book.author)
+                startActivity<DetailsActivity>(DetailsActivity.BOOK_NAME to book.name, DetailsActivity.BOOK_AUTHOR to book.author)
             }
             holder.itemView.setOnLongClickListener {
                 alert {

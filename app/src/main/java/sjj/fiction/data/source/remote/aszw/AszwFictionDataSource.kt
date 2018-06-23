@@ -14,7 +14,7 @@ import java.net.URLEncoder
  * Created by Administrator on 2017/10/23.
  */
 class AszwFictionDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
-    override val baseUrl: String =  "https://www.aszw.org"
+    override val baseUrl: String =  "https://www.aszw.org/"
     private val service = create<HttpInterface>()
 
     override fun domain() = baseUrl.domain()
@@ -34,12 +34,10 @@ class AszwFictionDataSource : HttpDataSource(), FictionDataRepository.RemoteSour
         }
     }
 
-    override fun getChapterContent(url: String): Observable<Chapter> {
-        return service.loadHtmlForGBK(url).map {
+    override fun getChapterContent(chapter: Chapter): Observable<Chapter> {
+        return service.loadHtmlForGBK(chapter.url).map {
             val document = Jsoup.parse(it)
             val parse = document.getElementById("contents")
-            val chapter = Chapter()
-            chapter.url = url
             chapter.chapterName =document.getElementsByClass("bdb")[0].text()
             chapter.content = parse.html()
             chapter.isLoadSuccess = true

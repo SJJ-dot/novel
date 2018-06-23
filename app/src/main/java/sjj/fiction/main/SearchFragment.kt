@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_search.*
 import org.jetbrains.anko.find
 import org.jetbrains.anko.linearLayout
@@ -49,13 +50,19 @@ class SearchFragment : BaseFragment() {
         val adapter = ArrayAdapter<String>(context, R.layout.item_text_text, R.id.text1)
         searchInput.setAdapter(adapter)
         searchHistory.observe(this, Observer {
+            val v = it ?: return@Observer
             adapter.clear()
-            adapter.addAll(it)
+            adapter.addAll(v)
             adapter.notifyDataSetChanged()
         })
         searchInput.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                model.search(searchInput.text.toString()).subscribe({ ls ->
+                model.search(searchInput.text.toString()).observeOn(AndroidSchedulers.mainThread()).subscribe({ ls ->
+                    val set = searchHistory.value?.toMutableList() ?: mutableListOf()
+                    val list = ls.map { it.first.bookName }
+                    set.removeAll(list)
+                    set.addAll(list)
+                    searchHistory.value = set
                     resultBookAdapter.data = ls
                     resultBookAdapter.notifyDataSetChanged()
                 }, {

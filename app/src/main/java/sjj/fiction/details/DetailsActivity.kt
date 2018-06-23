@@ -1,10 +1,13 @@
 package sjj.fiction.details
 
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
+import android.arch.paging.PagedListAdapter
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.support.v7.util.DiffUtil
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
@@ -34,82 +37,97 @@ class DetailsActivity : BaseActivity() {
         const val BOOK_AUTHOR = "book_author"
     }
 
-    private val adapter by lazy { ChapterListAdapter() }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val bind = DataBindingUtil.setContentView<Details>(this, R.layout.activity_details)
-
-        val model = getModel<DetailsViewModel>(object : ViewModelProvider.Factory {
+    private val model by lazy {
+        getModel<DetailsViewModel>(object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 @Suppress("UNCHECKED_CAST")
                 return DetailsViewModel(intent.getStringExtra(BOOK_NAME), intent.getStringExtra(BOOK_AUTHOR)) as T
             }
         })
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val bind = DataBindingUtil.setContentView<Details>(this, R.layout.activity_details)
+        val adapter = ChapterListAdapter()
         model.book.observeOn(AndroidSchedulers.mainThread()).subscribe {
             bind.book = it
             originWebsite.text = it.url.domain()
             originWebsite.setOnClickListener { v ->
                 v.isEnabled = false
-                model.bookSource(it).doOnTerminate {
+                model.bookSource.doOnTerminate {
                     v.isEnabled = true
                 }.subscribe { bs ->
                     v.isEnabled = true
                     alert {
                         items(bs.map { it.domain() }) { dialog, index ->
                             dialog.dismiss()
-                            model.setBookSource(it, bs[index]).subscribe()
+                            model.setBookSource(bs[index]).subscribe()
                         }
                     }.show()
                 }
             }
             chapterListButton.setOnClickListener { v ->
                 if (chapterList.visibility != View.VISIBLE) {
-                    v.isEnabled = false
-                    model.getReadIndex(it).doOnTerminate {
-                        v.isEnabled = true
-                    }.subscribe {index->
-                        adapter.data.clear()
-                        adapter.data.addAll(it.chapterList)
-                        adapter.notifyDataSetChanged()
+                    chapterList.visibility = View.VISIBLE
+                    model.getChapters(it.url).observe(this, Observer(adapter::submitList))
+                    model.readIndex.firstElement().subscribe { index ->
                         chapterList.scrollToPosition(index)
-                        chapterList.visibility = View.VISIBLE
                     }
                 } else {
                     chapterList.visibility = View.GONE
                 }
             }
-            refreshBtn.setOnClickListener {_-> model.refresh(it) }
+            refreshBtn.setOnClickListener { _ -> model.refresh(it) }
 
-            latestChapter.text = it.chapterList.last().chapterName
-            latestChapter.setOnClickListener {_->
-                startActivity<ReadActivity>(ReadActivity.BOOK_URL to it.url,ReadActivity.BOOK_INDEX to it.chapterList.lastIndex)
-            }
             intro.text = it.intro
             bookCover.setImageURI(it.bookCoverImgUrl)
 
+            model.getLatestChapter(it.url).subscribe {
+                latestChapter.text = it.chapterName
+                latestChapter.setOnClickListener { v ->
+                    v.isEnabled = false
+                    model.setReadIndex(it.index).doOnTerminate {
+                        v.isEnabled = true
+                    }.subscribe {
+                        startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)
+                    }
+                }
+            }
+
         }.destroy()
+
+
 
         chapterList.layoutManager = LinearLayoutManager(this)
         chapterList.adapter = adapter
     }
 
 
-    private inner class ChapterListAdapter : RecyclerView.Adapter<ViewHolder>() {
-        val data = mutableListOf<Chapter>()
+    private inner class ChapterListAdapter : PagedListAdapter<Chapter, ViewHolder>(object : DiffUtil.ItemCallback<Chapter>() {
+        override fun areItemsTheSame(oldItem: Chapter?, newItem: Chapter?): Boolean {
+            return oldItem?.url == newItem?.url
+        }
+
+        override fun areContentsTheSame(oldItem: Chapter?, newItem: Chapter?): Boolean {
+            return oldItem?.chapterName == newItem?.chapterName
+        }
+    }) {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             return object : ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_text_text, parent, false)) {}
         }
 
-        override fun getItemCount() = data.size
-
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val book = data[position]
+            val book = getItem(position) ?: return
             holder.itemView.find<TextView>(R.id.text1).text = book.chapterName
             holder.itemView.setOnClickListener {
-                startActivity<ReadActivity>(ReadActivity.BOOK_URL to book.url,ReadActivity.BOOK_INDEX to position)
+                it.isEnabled = false
+                model.setReadIndex(position).doOnTerminate {
+                    it.isEnabled = true
+                }.subscribe {
+                    startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)
+                }
             }
         }
-
     }
 }

@@ -1,5 +1,6 @@
 package sjj.fiction.data.source.local
 
+import android.arch.paging.DataSource
 import android.arch.persistence.room.*
 import io.reactivex.Flowable
 import sjj.fiction.App
@@ -28,8 +29,8 @@ interface BookDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertChapters(book: List<Chapter>)
 
-    @Query("select url,bookUrl,`index`,chapterName,isLoadSuccess from Chapter where bookUrl=:bookUrl order by `index`")
-    fun getChapters(bookUrl: String): List<Chapter>
+    @Query("select * from Chapter where bookUrl=:bookUrl order by `index`")
+    fun getChapters(bookUrl: String): DataSource.Factory<Int, Chapter>
 
     @Query("select * from Chapter where url=:url")
     fun getChapter(url: String): Flowable<Chapter>
@@ -44,7 +45,16 @@ interface BookDao {
     fun updateBookSource(name: String, author: String, url: String): Int
 
     @Query("select readIndex from BookSourceRecord where bookName=:name and author=:author")
-    fun getReadIndex(name: String, author: String): Int
+    fun getReadIndex(name: String, author: String): Flowable<Int>
+
+    @Query("update BookSourceRecord set readIndex=:index where bookName=:name and author=:author")
+    fun setReadIndex(name: String, author: String, index: Int): Int
+
+    @Query("select * from Chapter where bookUrl=:bookUrl order by `index` desc limit 1")
+    fun getLatestChapter(bookUrl: String): Chapter
+
+    @Query("select url,bookUrl,`index`,chapterName,isLoadSuccess from Chapter where bookUrl=:bookUrl and isLoadSuccess=0 order by `index`")
+    fun getUnLoadChapters(bookUrl: String): List<Chapter>
 
 }
 

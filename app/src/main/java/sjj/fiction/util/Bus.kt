@@ -1,12 +1,6 @@
 package sjj.fiction.util
 
-import android.arch.lifecycle.Lifecycle
-import android.arch.lifecycle.LifecycleObserver
-import android.arch.lifecycle.OnLifecycleEvent
-import io.reactivex.disposables.Disposable
 import io.reactivex.processors.PublishProcessor
-import sjj.fiction.model.Event
-import java.util.*
 
 /**
  * Created by SJJ on 2017/11/25.

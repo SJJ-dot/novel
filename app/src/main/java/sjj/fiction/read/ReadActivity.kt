@@ -2,10 +2,14 @@ package sjj.fiction.read
 
 import android.app.ProgressDialog
 import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModel
+import android.arch.lifecycle.ViewModelProvider
+import android.arch.paging.PagedListAdapter
 import android.content.Context
 import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
+import android.support.v7.util.DiffUtil
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Html
@@ -14,21 +18,21 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.SeekBar
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_read.*
 import org.jetbrains.anko.*
-import sjj.fiction.App
-import sjj.fiction.AppConfig
-import sjj.fiction.BaseActivity
-import sjj.fiction.R
+import sjj.alog.Log
+import sjj.fiction.*
 import sjj.fiction.model.Chapter
+import sjj.fiction.util.getModel
 import sjj.fiction.util.lparams
 import sjj.fiction.util.toDpx
 
 class ReadActivity : BaseActivity() {
     companion object {
-        val BOOK_URL = "BOOK_URL"
-        val BOOK_INDEX = "BOOK_INDEX"
+        val BOOK_NAME = "BOOK_NAME"
+        val BOOK_AUTHOR = "BOOK_AUTHOR"
     }
 
     private val ttfs = arrayOf<String>("Roboto-Black.ttf", "Roboto-BlackItalic.ttf", "Roboto-Bold.ttf", "Roboto-BoldItalic.ttf", "Roboto-Italic.ttf", "Roboto-Light.ttf", "Roboto-LightItalic.ttf", "Roboto-Medium.ttf", "Roboto-MediumItalic.ttf", "Roboto-Regular.ttf", "Roboto-Thin.ttf",
@@ -36,10 +40,20 @@ class ReadActivity : BaseActivity() {
             "RobotoCondensed-LightItalic.ttf",
             "RobotoCondensed-Regular.ttf")
 
-    private val contentAdapter by lazy { ChapterContentAdapter(presenter) }
-    private val chapterListAdapter by lazy { ChapterListAdapter(presenter) }
     private var loadBookHint: ProgressDialog? = null
     private var cached: ProgressDialog? = null
+
+    private val model by lazy {
+        getModel<ReadViewModel>(object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                @Suppress("UNCHECKED_CAST")
+                return ReadViewModel(intent.getStringExtra(BOOK_NAME), intent.getStringExtra(BOOK_AUTHOR)) as T
+            }
+        })
+    }
+
+    private val contentAdapter = ChapterContentAdapter()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_read)
@@ -47,22 +61,25 @@ class ReadActivity : BaseActivity() {
         val supportActionBar = supportActionBar!!
         supportActionBar.setDisplayHomeAsUpEnabled(true)
 
-        chapterContent.layoutManager = LinearLayoutManager(this)
+        val chapterListAdapter = ChapterListAdapter()
         chapterContent.adapter = contentAdapter
-        chapterList.layoutManager = LinearLayoutManager(this)
         chapterList.adapter = chapterListAdapter
-        chapterContent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                val manager = chapterContent.layoutManager as LinearLayoutManager
-                val position = manager.findFirstVisibleItemPosition()
-                presenter.onContentScrolled(position)
-            }
-        })
-    }
 
-    override fun onStop() {
-        super.onStop()
-        presenter.stop()
+        model.book.subscribe {
+            title = it.name
+            model.getChapters(it.url).observe(this, Observer {
+                Log.e(it?.size)
+                seekBar.max = it?.size ?:0
+                contentAdapter.submitList(it)
+                chapterListAdapter.submitList(it)
+                model.readIndex.subscribe {
+                    chapterList.scrollToPosition(it)
+                    chapterContent.scrollToPosition(it)
+                    seekBar.progress = it
+                }.destroy(DISPOSABLE_ACTIVITY_READ_READ_INDEX)
+            })
+
+        }.destroy()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -77,26 +94,23 @@ class ReadActivity : BaseActivity() {
                 true
             }
             R.id.menu_cached -> {
-                presenter.cachedBookChapter()
-//                val dialog = progressDialog("正在加载书籍信息")
-//                fictionDataRepository.loadBookGroup(bookName, bookAuthor).observeOn(AndroidSchedulers.mainThread())
-//                        .subscribe({
-//                            dialog.max = it.currentBook.chapterList.size
-//                            dialog.setMessage("正在缓存章节类容……")
-//                            fictionDataRepository.cachedBookChapter(it.currentBook)
-//                                    .observeOn(AndroidSchedulers.mainThread())
-//                                    .subscribe({
-//                                        dialog.progress = dialog.progress + 1
-//                                    }, {
-//                                        toast("缓存出错")
-//                                    }, {
-//                                        dialog.dismiss()
-//                                        toast("加载完成：${dialog.progress}")
-//                                    }).also { com.add(it) }
-//                        }, {
-//                            dialog.dismiss()
-//                            toast("书籍信息加载失败：${it.message}")
-//                        }).also { com.add(it) }
+
+                model.book.firstElement().subscribe {
+                    cached?.dismiss()
+                    cached = progressDialog("正在缓存章节内容")
+                    cached?.max = 1000
+                    model.cachedBookChapter(it.url).subscribe({ _ ->
+                        cached?.progress = cached?.progress ?: 0 + 1
+                    }, {
+                        toast("缓存章节内容出错：$it")
+                        cached?.dismiss()
+                        cached = null
+                    },{
+                        toast("缓存章节内容完成")
+                        cached?.dismiss()
+                        cached = null
+                    })
+                }.destroy(DISPOSABLE_CACHED_BOOK_CHAPTER)
                 true
             }
             R.id.menu_ttf -> {
@@ -120,82 +134,14 @@ class ReadActivity : BaseActivity() {
         }
     }
 
-    override fun setPresenter(presenter: ReadContract.Presenter) {
-        this.presenter = presenter
-    }
 
-    override fun setChapterList(chapter: List<Chapter>) {
-        seekBar.max = chapter.size
-        chapterListAdapter.data = chapter
-        contentAdapter.chapters = chapter
-        chapterListAdapter.notifyDataSetChanged()
-        contentAdapter.notifyDataSetChanged()
-    }
+    inner class ChapterContentAdapter : PagedListAdapter<Chapter, RecyclerView.ViewHolder>(object : DiffUtil.ItemCallback<Chapter>() {
+        override fun areItemsTheSame(oldItem: Chapter?, newItem: Chapter?) = oldItem?.url == newItem?.url
 
-    override fun setChapterListPosition(position: Int) {
-        chapterList.scrollToPosition(position)
-        seekBar.progress = position
-    }
-
-    override fun setChapterContentPosition(position: Int) {
-        chapterContent.scrollToPosition(position)
-        seekBar.progress = position
-    }
-
-    override fun setTitle(title: String) {
-        this.title = title
-    }
-
-    override fun setLoadBookHint(active: Boolean) {
-        loadBookHint = if (active) {
-            loadBookHint ?: indeterminateProgressDialog("正在加载书籍请稍候……")
-        } else {
-            loadBookHint?.dismiss()
-            null
-        }
-    }
-
-    override fun setLoadBookHintError(e: Throwable) {
-        toast("加载书籍出错：${e.message}")
-    }
-
-    override fun setChapterName(name: String) {
-        chapterName.text = name
-    }
-
-    override fun notifyChapterContentChange() {
-        contentAdapter.notifyDataSetChanged()
-    }
-
-    override fun setCachedBookChapterHint(active: Boolean) {
-        cached = if (active) {
-            cached ?: progressDialog("正在缓存章节内容")
-        } else {
-            cached?.dismiss()
-            null
-        }
-    }
-
-    override fun setCachedBookChapterProgressPlus(max: Int) {
-        val dialog = cached ?: return
-        if (dialog.max != max) {
-            dialog.max = max
-        }
-        dialog.progress = dialog.progress + 1
-    }
-
-    override fun setCachedBookChapterComplete() {
-        toast("缓存章节完成")
-    }
-
-    override fun setCachedBookChapterError(e: Throwable) {
-        toast("缓存章节出错：${e.message}")
-    }
-
-    inner class ChapterContentAdapter(val presenter: ReadContract.Presenter) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+        override fun areContentsTheSame(oldItem: Chapter?, newItem: Chapter?) = oldItem?.content == newItem?.content
+    }) {
         lateinit var ttf: Typeface
         var contentTextSize: Float = 0f
-        var chapters: List<Chapter>? = null
 
         init {
             AppConfig.ttf.observe(this@ReadActivity, Observer {
@@ -227,7 +173,10 @@ class ReadActivity : BaseActivity() {
         }
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-            val chapter = chapters!![position]
+            val chapter = getItem(position) ?: return
+
+            chapterName.text = chapter.chapterName
+
             holder.itemView.findViewById<TextView>(R.id.readItemChapterContentTitle).text = chapter.chapterName
             if (chapter.content?.isNotEmpty() == true) {
                 val content = holder.itemView.findViewById<TextView>(R.id.readItemChapterContent)
@@ -236,28 +185,29 @@ class ReadActivity : BaseActivity() {
                 content.text = Html.fromHtml(chapter.content)
             }
             if (!chapter.isLoadSuccess || chapter.content?.isEmpty() == true) {
-                presenter.setChapterContent(position)
+                model.loadChapter(chapter)
                 holder.itemView.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
             } else {
                 holder.itemView.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
             }
         }
 
-        override fun getItemCount(): Int = chapters?.size ?: 0
     }
 
-    private class ChapterListAdapter(private val presenter: ReadContract.Presenter) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-        var data: List<Chapter>? = null
+    private inner class ChapterListAdapter : PagedListAdapter<Chapter, RecyclerView.ViewHolder>(object : DiffUtil.ItemCallback<Chapter>() {
+        override fun areItemsTheSame(oldItem: Chapter?, newItem: Chapter?) = oldItem?.url == newItem?.url
+
+        override fun areContentsTheSame(oldItem: Chapter?, newItem: Chapter?) = oldItem?.chapterName == newItem?.chapterName
+    }) {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             return object : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_text_text, parent, false)) {}
         }
 
-        override fun getItemCount() = data?.size ?: 0
-
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-            holder.itemView.find<TextView>(R.id.text1).text = data!![position].chapterName
+            val c = getItem(position) ?: return
+            holder.itemView.find<TextView>(R.id.text1).text = c.chapterName
             holder.itemView.setOnClickListener {
-                presenter.onSelectChapter(position)
+                model.setReadIndex(position).subscribe().destroy(DISPOSABLE_READ_INDEX)
             }
         }
 

@@ -1,9 +1,13 @@
 package sjj.fiction.data.repository
 
+import android.arch.paging.DataSource
+import android.arch.paging.LivePagedListBuilder
+import android.arch.paging.PagedList
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
+import sjj.alog.Log
 import sjj.fiction.data.source.local.LocalFictionDataSource
 import sjj.fiction.data.source.remote.aszw.AszwFictionDataSource
 import sjj.fiction.data.source.remote.biquge.BiqugeDataSource
@@ -37,8 +41,9 @@ class FictionDataRepository {
             if (search.isBlank()) {
                 throw IllegalArgumentException("搜索内容不能为空")
             }
-            it.search(search).onErrorResumeNext(Observable.empty())
+            it.search(search)
         }.reduce(mutableMapOf<String, MutableList<Book>>(), { map, bs ->
+            Log.e(bs)
             bs.forEach {
                 map.getOrPut(it.name + it.author, { mutableListOf() }).add(it)
             }
@@ -56,7 +61,7 @@ class FictionDataRepository {
     }
 
     fun getBookInBookSource(name: String, author: String): Flowable<Book> {
-        return localSource.getBookInBookSource(name,author).doOnNext {
+        return localSource.getBookInBookSource(name, author).doOnNext {
             refreshBook(it.url).subscribe()
         }
     }
@@ -67,43 +72,51 @@ class FictionDataRepository {
         }.flatMap(localSource::insertBook)
     }
 
-    fun getChapterContent(url: String): Flowable<Chapter> {
-        return localSource.getChapter(url).doOnNext {
-            sources[url.domain()]!!.getChapterContent(url)
-                    .flatMap(localSource::updateChapter)
-                    .subscribe()
-        }
-    }
-
     fun getBooks(): Flowable<List<Book>> = localSource.getAllReadingBook()
 
 
-    fun cachedBookChapter(book: Book): Flowable<Chapter> {
-        return Observable.fromIterable(book.chapterList).map {
-            it.url
-        }.flatMap {
-            sources[it.domain()]!!.getChapterContent(it).flatMap(localSource::updateChapter)
-        }.toFlowable(BackpressureStrategy.LATEST)
+    fun cachedBookChapter(bookUrl: String): Flowable<Chapter> {
+        return localSource.getUnLoadChapters(bookUrl).flatMap { Observable.fromIterable(it) }.flatMap(this::loadChapter).toFlowable(BackpressureStrategy.LATEST)
     }
 
+    fun loadChapter(chapter: Chapter): Observable<Chapter> {
+        return Observable.just(chapter).flatMap {
+            sources[it.url.domain()]!!.getChapterContent(it)
+        }.flatMap(localSource::updateChapter)
+    }
 
     fun deleteBook(bookName: String, author: String) = localSource.deleteBook(bookName, author)
 
     fun saveBookSourceRecord(books: List<Pair<BookSourceRecord, List<Book>>>) = localSource.saveBookSourceRecord(books)
+
     fun getBookSource(name: String, author: String): Observable<List<String>> {
         return localSource.getBookSource(name, author)
     }
 
-    fun setBookSource(name: String, author: String, url: String):Observable<Int> {
-        return localSource.updateBookSource(name,author,url)
+    fun setBookSource(name: String, author: String, url: String): Observable<Int> {
+        return localSource.updateBookSource(name, author, url)
     }
 
-    fun getReadIndex(name: String, author: String): Observable<Int> {
+    fun getReadIndex(name: String, author: String): Flowable<Int> {
         return localSource.getReadIndex(name, author)
     }
 
+    fun setReadIndex(name: String, author: String, index: Int): Observable<Int> {
+        return localSource.setReadIndex(name, author, index)
+    }
+
+    fun getLatestChapter(bookUrl: String): Observable<Chapter> {
+        return localSource.getLatestChapter(bookUrl)
+    }
+
+    fun getChapters(url: String) = LivePagedListBuilder(localSource.getChapters(url), PagedList.Config.Builder()
+            .setPageSize(50)
+//            .setEnablePlaceholders(true) 默认true
+            .build()).build()
+
+
     interface RemoteSource {
-        fun getChapterContent(url: String): Observable<Chapter>
+        fun getChapterContent(chapter: Chapter): Observable<Chapter>
         fun getBook(url: String): Observable<Book>
         fun domain(): String
         fun search(search: String): Observable<List<Book>>
@@ -119,7 +132,11 @@ class FictionDataRepository {
         fun deleteBook(bookName: String, author: String): Observable<Int>
         fun getBookSource(name: String, author: String): Observable<List<String>>
         fun updateBookSource(name: String, author: String, url: String): Observable<Int>
-        fun getReadIndex(name: String, author: String): Observable<Int>
+        fun getReadIndex(name: String, author: String): Flowable<Int>
+        fun setReadIndex(name: String, author: String, index: Int): Observable<Int>
+        fun getLatestChapter(bookUrl: String): Observable<Chapter>
+        fun getChapters(bookUrl: String): DataSource.Factory<Int, Chapter>
+        fun getUnLoadChapters(bookUrl: String):Observable<List<Chapter>>
     }
 
 }

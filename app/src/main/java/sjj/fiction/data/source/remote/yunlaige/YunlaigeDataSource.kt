@@ -13,7 +13,7 @@ import java.net.URLEncoder
  * Created by SJJ on 2017/10/11.
  */
 class YunlaigeDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
-    override val baseUrl: String = "http://www.yunlaige.com"
+    override val baseUrl: String = "http://www.yunlaige.com/"
     private val service = create<HttpInterface>()
     override fun domain() = baseUrl.domain()
     override fun search(search: String): Observable<List<Book>> {
@@ -63,11 +63,9 @@ class YunlaigeDataSource : HttpDataSource(), FictionDataRepository.RemoteSource 
         }
     }
 
-    override fun getChapterContent(url: String): Observable<Chapter> {
-        return service.loadHtmlForGBK(url).map {
+    override fun getChapterContent(chapter: Chapter): Observable<Chapter> {
+        return service.loadHtmlForGBK(chapter.url).map {
             val element = Jsoup.parse(it).getElementById("content")
-            val chapter = Chapter()
-            chapter.url = url
             chapter.content = element.html()
             chapter.isLoadSuccess = true
             chapter

@@ -13,7 +13,7 @@ import java.net.URLEncoder
  * Created by SJJ on 2017/9/3.
  */
 class DhzwDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
-    override val baseUrl: String = "https://www.dhzw.org"
+    override val baseUrl: String = "https://www.dhzw.org/"
     override fun domain(): String = baseUrl.domain()
 
     private val service = create<HttpInterface>()
@@ -30,11 +30,9 @@ class DhzwDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
                 }
     }
 
-    override fun getChapterContent(url: String): Observable<Chapter> {
-        return service.loadHtmlForGBK(url).map {
+    override fun getChapterContent(chapter: Chapter): Observable<Chapter> {
+        return service.loadHtmlForGBK(chapter.url).map {
             val parse = Jsoup.parse(it).getElementById("BookText")
-            val chapter = Chapter()
-            chapter.url = url
             chapter.content = parse.html()
             chapter.isLoadSuccess = true
             chapter
