@@ -23,8 +23,8 @@ class CrashActivity : AppCompatActivity() {
         Log.e(stackTraceString)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStop() {
+        super.onStop()
         System.exit(0)
     }
 }

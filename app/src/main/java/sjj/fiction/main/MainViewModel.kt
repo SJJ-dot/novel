@@ -16,7 +16,7 @@ class MainViewModel : ViewModel() {
                 b.chapterList = listOf(it)
                 b
             }
-        }.map { list }.toFlowable(BackpressureStrategy.LATEST)
+        }.reduce(list,{t1, t2 -> list }).toFlowable()
     }
 
     fun delete(book: Book) {
