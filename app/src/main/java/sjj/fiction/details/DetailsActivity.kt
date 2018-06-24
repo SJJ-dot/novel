@@ -91,7 +91,11 @@ class DetailsActivity : BaseActivity() {
                     detailsRefreshLayout.isRefreshing = false
                 }.subscribe().destroy(DISPOSABLE_ACTIVITY_DETAILS_REFRESH)
             }
-
+            reading.setOnClickListener {
+                model.readIndex.firstElement().subscribe {
+                    startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)
+                }
+            }
             intro.text = it.intro
             bookCover.setImageURI(it.bookCoverImgUrl)
             if (it.chapterList.isNotEmpty()) {
