@@ -38,7 +38,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
-                    android:outlineProvider="paddedBounds"
+                    android:outlineProvider="bounds"
                     android:translationZ="5dp"
                     app:failureImage="@drawable/ic_laokuoteng"
                     app:layout_constraintBottom_toBottomOf="parent"
