@@ -13,9 +13,12 @@ class ReadViewModel(val name: String, val author: String) : ViewModel() {
 
     fun getChapters(bookUrl: String) = fictionDataRepository.getChapters(bookUrl)
 
-    @SuppressLint("CheckResult")
-    fun loadChapter(chapter: Chapter) {
-        fictionDataRepository.loadChapter(chapter).subscribe()
+    fun loadChapter(chapter: Chapter): Observable<Chapter> {
+        return fictionDataRepository.loadChapter(chapter)
+    }
+
+    fun getChapter(url: String): Observable<Chapter> {
+        return fictionDataRepository.getChapter(url)
     }
 
     val readIndex = fictionDataRepository.getReadIndex(name, author)

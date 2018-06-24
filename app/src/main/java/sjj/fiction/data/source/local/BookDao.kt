@@ -33,7 +33,7 @@ interface BookDao {
     fun getChapters(bookUrl: String): DataSource.Factory<Int, Chapter>
 
     @Query("select * from Chapter where url=:url")
-    fun getChapter(url: String): Flowable<Chapter>
+    fun getChapter(url: String): Chapter
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun updateChapter(chapter: Chapter)
@@ -55,6 +55,9 @@ interface BookDao {
 
     @Query("select url,bookUrl,`index`,chapterName,isLoadSuccess from Chapter where bookUrl=:bookUrl and isLoadSuccess=0 order by `index`")
     fun getUnLoadChapters(bookUrl: String): List<Chapter>
+
+    @Query("select url,bookUrl,`index`,chapterName,isLoadSuccess from Chapter where bookUrl=:bookUrl order by `index`")
+    fun getChapterIntro(bookUrl: String): Flowable<List<Chapter>>
 
 }
 

@@ -17,6 +17,7 @@ import sjj.fiction.model.Book
 import sjj.fiction.model.BookSourceRecord
 import sjj.fiction.model.Chapter
 import sjj.fiction.util.domain
+import sjj.fiction.util.log
 
 val fictionDataRepository by lazy { FictionDataRepository() }
 
@@ -77,13 +78,24 @@ class FictionDataRepository {
 
 
     fun cachedBookChapter(bookUrl: String): Flowable<Chapter> {
-        return localSource.getUnLoadChapters(bookUrl).flatMap { Observable.fromIterable(it) }.flatMap(this::loadChapter).toFlowable(BackpressureStrategy.LATEST)
+        return Observable.concat(localSource.getUnLoadChapters(bookUrl).map { Observable.fromIterable(it) })
+                .flatMap(this::loadChapter).toFlowable(BackpressureStrategy.LATEST)
     }
 
     fun loadChapter(chapter: Chapter): Observable<Chapter> {
         return Observable.just(chapter).flatMap {
             sources[it.url.domain()]!!.getChapterContent(it)
         }.flatMap(localSource::updateChapter)
+    }
+
+    fun getChapter(url: String):Observable<Chapter> {
+        return localSource.getChapter(url).flatMap {
+            if (it.isLoadSuccess) {
+                Observable.just(it)
+            } else {
+                loadChapter(it)
+            }
+        }
     }
 
     fun deleteBook(bookName: String, author: String) = localSource.deleteBook(bookName, author)
@@ -127,7 +139,7 @@ class FictionDataRepository {
         fun saveBookSourceRecord(books: List<Pair<BookSourceRecord, List<Book>>>): Single<List<Book>>
         fun getBookInBookSource(name: String, author: String): Flowable<Book>
         fun insertBook(book: Book): Observable<Book>
-        fun getChapter(url: String): Flowable<Chapter>
+        fun getChapter(url: String): Observable<Chapter>
         fun updateChapter(chapter: Chapter): Observable<Chapter>
         fun getAllReadingBook(): Flowable<List<Book>>
         fun deleteBook(bookName: String, author: String): Observable<Int>
@@ -137,6 +149,7 @@ class FictionDataRepository {
         fun setReadIndex(name: String, author: String, index: Int): Observable<Int>
         fun getLatestChapter(bookUrl: String): Observable<Chapter>
         fun getChapters(bookUrl: String): DataSource.Factory<Int, Chapter>
+        fun getChapterIntro(bookUrl: String):Flowable<List<Chapter>>
         fun getUnLoadChapters(bookUrl: String): Observable<List<Chapter>>
     }
 

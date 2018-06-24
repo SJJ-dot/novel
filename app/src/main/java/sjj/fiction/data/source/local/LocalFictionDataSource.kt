@@ -37,27 +37,32 @@ class LocalFictionDataSource : FictionDataRepository.LocalSource {
 
     override fun getBookSource(name: String, author: String): Observable<List<String>> {
         return Observable.fromCallable {
-            bookDao.getBookSource(name,author)
+            bookDao.getBookSource(name, author)
         }.subscribeOn(Schedulers.io())
     }
 
     override fun updateBookSource(name: String, author: String, url: String): Observable<Int> {
         return Observable.fromCallable {
-            bookDao.updateBookSource(name,author,url)
+            bookDao.updateBookSource(name, author, url)
         }.subscribeOn(Schedulers.io())
     }
 
     override fun getBookInBookSource(name: String, author: String): Flowable<Book> {
-        return bookDao.getBookInBookSource(name,author)
+        return bookDao.getBookInBookSource(name, author).flatMap {
+            getChapterIntro(it.url).first(listOf()).map { c ->
+                it.chapterList = c
+                it
+            }.toFlowable()
+        }
     }
 
     override fun getReadIndex(name: String, author: String): Flowable<Int> {
-        return bookDao.getReadIndex(name,author)
+        return bookDao.getReadIndex(name, author)
     }
 
     override fun setReadIndex(name: String, author: String, index: Int): Observable<Int> {
         return Observable.fromCallable {
-            bookDao.setReadIndex(name,author,index)
+            bookDao.setReadIndex(name, author, index)
         }.subscribeOn(Schedulers.io())
     }
 
@@ -77,12 +82,18 @@ class LocalFictionDataSource : FictionDataRepository.LocalSource {
         }.subscribeOn(Schedulers.io())
     }
 
-    override fun getChapter(url: String): Flowable<Chapter> {
-        return bookDao.getChapter(url)
+    override fun getChapter(url: String): Observable<Chapter> {
+        return Observable.fromCallable {
+            bookDao.getChapter(url)
+        }.subscribeOn(Schedulers.io())
     }
 
     override fun getChapters(bookUrl: String): DataSource.Factory<Int, Chapter> {
         return bookDao.getChapters(bookUrl)
+    }
+
+    override fun getChapterIntro(bookUrl: String): Flowable<List<Chapter>> {
+        return bookDao.getChapterIntro(bookUrl)
     }
 
     override fun getUnLoadChapters(bookUrl: String): Observable<List<Chapter>> {

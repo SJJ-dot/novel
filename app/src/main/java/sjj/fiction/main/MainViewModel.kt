@@ -29,7 +29,7 @@ class MainViewModel : ViewModel() {
 
     fun saveBookSourceRecord(books: List<Pair<BookSourceRecord, List<Book>>>) = fictionDataRepository.saveBookSourceRecord(books)
 
-    fun getLatestChapter(bookUrl: String): Observable<Chapter> {
+    private fun getLatestChapter(bookUrl: String): Observable<Chapter> {
         return fictionDataRepository.getLatestChapter(bookUrl)
     }
 

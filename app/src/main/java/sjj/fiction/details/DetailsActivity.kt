@@ -67,10 +67,15 @@ class DetailsActivity : BaseActivity() {
                     }.show()
                 }
             }
+            adapter.data = it.chapterList
+            adapter.notifyDataSetChanged()
             chapterListButton.setOnClickListener { v ->
                 if (chapterList.visibility != View.VISIBLE) {
                     chapterList.visibility = View.VISIBLE
-                    model.getChapters(it.url).observe(this, Observer(adapter::submitList))
+//                    model.getChapters(it.url).observe(this, Observer{
+//                        adapter.submitList(it)
+//
+//                    })
                     model.readIndex.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe { index ->
                         chapterList.scrollToPosition(index)
                     }
@@ -83,15 +88,13 @@ class DetailsActivity : BaseActivity() {
             intro.text = it.intro
             bookCover.setImageURI(it.bookCoverImgUrl)
 
-            model.getLatestChapter(it.url).observeOn(AndroidSchedulers.mainThread()).subscribe {
-                latestChapter.text = it.chapterName
-                latestChapter.setOnClickListener { v ->
-                    v.isEnabled = false
-                    model.setReadIndex(it.index).doOnTerminate {
-                        v.isEnabled = true
-                    }.subscribe {
-                        startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)
-                    }
+            latestChapter.text = it.chapterList.last().chapterName
+            latestChapter.setOnClickListener { v ->
+                v.isEnabled = false
+                model.setReadIndex(it.chapterList.lastIndex).doOnTerminate {
+                    v.isEnabled = true
+                }.subscribe {
+                    startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)
                 }
             }
 
@@ -103,8 +106,29 @@ class DetailsActivity : BaseActivity() {
         chapterList.adapter = adapter
     }
 
+    private inner class ChapterListAdapter : RecyclerView.Adapter<ViewHolder>() {
+        var data = listOf<Chapter>()
+        override fun getItemCount(): Int = data.size
 
-    private inner class ChapterListAdapter : PagedListAdapter<Chapter, ViewHolder>(object : DiffUtil.ItemCallback<Chapter>() {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            return object : ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_text_text, parent, false)) {}
+        }
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val book = data[position]
+            holder.itemView.find<TextView>(R.id.text1).text = book.chapterName
+            holder.itemView.setOnClickListener {
+                it.isEnabled = false
+                model.setReadIndex(position).observeOn(AndroidSchedulers.mainThread()).doOnTerminate {
+                    it.isEnabled = true
+                }.subscribe {
+                    startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)
+                }
+            }
+        }
+    }
+
+    private inner class ChapterListPageAdapter : PagedListAdapter<Chapter, ViewHolder>(object : DiffUtil.ItemCallback<Chapter>() {
         override fun areItemsTheSame(oldItem: Chapter?, newItem: Chapter?): Boolean {
             return oldItem?.url == newItem?.url
         }

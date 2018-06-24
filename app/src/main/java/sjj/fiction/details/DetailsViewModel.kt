@@ -16,9 +16,9 @@ class DetailsViewModel(val name: String, val author: String) : ViewModel() {
         return fictionDataRepository.setBookSource(name, author, url)
     }
 
-    fun getLatestChapter(url: String): Observable<Chapter> {
-        return fictionDataRepository.getLatestChapter(url)
-    }
+//    fun getLatestChapter(url: String): Observable<Chapter> {
+//        return fictionDataRepository.getLatestChapter(url)
+//    }
 
     fun getChapters(bookUrl: String) = fictionDataRepository.getChapters(bookUrl)
 

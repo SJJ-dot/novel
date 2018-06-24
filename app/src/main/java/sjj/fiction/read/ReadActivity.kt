@@ -12,6 +12,7 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.RecyclerView.SCROLL_STATE_IDLE
 import android.text.Html
 import android.view.LayoutInflater
 import android.view.Menu
@@ -22,11 +23,13 @@ import android.widget.SeekBar
 import android.widget.TextView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_read.*
+import kotlinx.android.synthetic.main.item_read_chapter_content.view.*
 import org.jetbrains.anko.*
 import sjj.alog.Log
 import sjj.fiction.*
 import sjj.fiction.model.Chapter
 import sjj.fiction.util.getModel
+import sjj.fiction.util.log
 import sjj.fiction.util.lparams
 import sjj.fiction.util.toDpx
 
@@ -65,21 +68,29 @@ class ReadActivity : BaseActivity() {
         val chapterListAdapter = ChapterListAdapter()
         chapterContent.adapter = contentAdapter
         chapterList.adapter = chapterListAdapter
-
-        model.book.observeOn(AndroidSchedulers.mainThread()).subscribe {
+        model.book.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
             title = it.name
-            model.getChapters(it.url).observe(this, Observer {
-                seekBar.max = it?.size ?:0
-                contentAdapter.submitList(it)
-                chapterListAdapter.submitList(it)
-                model.readIndex.observeOn(AndroidSchedulers.mainThread()).subscribe {
-                    chapterList.scrollToPosition(it)
-                    chapterContent.scrollToPosition(it)
-                    seekBar.progress = it
-                }.destroy(DISPOSABLE_ACTIVITY_READ_READ_INDEX)
-            })
-
+            seekBar.max = it.chapterList.size
+            contentAdapter.data = it.chapterList
+            chapterListAdapter.data = it.chapterList
+            contentAdapter.notifyDataSetChanged()
+            chapterListAdapter.notifyDataSetChanged()
+            model.readIndex.observeOn(AndroidSchedulers.mainThread()).firstElement().subscribe {
+                chapterList.scrollToPosition(it)
+                chapterContent.scrollToPosition(it)
+            }.destroy(DISPOSABLE_ACTIVITY_READ_READ_INDEX)
         }.destroy()
+        chapterContent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                val manager = recyclerView.layoutManager as LinearLayoutManager
+                val position = manager.findFirstVisibleItemPosition()
+                seekBar.progress = position
+                if (contentAdapter.data.size > position) {
+                    chapterName.text = contentAdapter.data[position].chapterName
+                    model.setReadIndex(manager.findLastCompletelyVisibleItemPosition()).subscribe().destroy(DISPOSABLE_READ_INDEX)
+                }
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -95,7 +106,7 @@ class ReadActivity : BaseActivity() {
             }
             R.id.menu_cached -> {
 
-                model.book.firstElement().subscribe {
+                model.book.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
                     cached?.dismiss()
                     cached = progressDialog("正在缓存章节内容")
                     cached?.max = 1000
@@ -105,7 +116,7 @@ class ReadActivity : BaseActivity() {
                         toast("缓存章节内容出错：$it")
                         cached?.dismiss()
                         cached = null
-                    },{
+                    }, {
                         toast("缓存章节内容完成")
                         cached?.dismiss()
                         cached = null
@@ -135,12 +146,12 @@ class ReadActivity : BaseActivity() {
     }
 
 
-    inner class ChapterContentAdapter : PagedListAdapter<Chapter, RecyclerView.ViewHolder>(object : DiffUtil.ItemCallback<Chapter>() {
-        override fun areItemsTheSame(oldItem: Chapter?, newItem: Chapter?) = oldItem?.url == newItem?.url
+    inner class ChapterContentAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-        override fun areContentsTheSame(oldItem: Chapter?, newItem: Chapter?) = oldItem?.content == newItem?.content
-    }) {
+        var data = listOf<Chapter>()
+
         lateinit var ttf: Typeface
+
         var contentTextSize: Float = 0f
 
         init {
@@ -153,6 +164,8 @@ class ReadActivity : BaseActivity() {
                 notifyDataSetChanged()
             })
         }
+
+        override fun getItemCount(): Int = data.size
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             return object : RecyclerView.ViewHolder(with(parent.context) {
@@ -173,9 +186,7 @@ class ReadActivity : BaseActivity() {
         }
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-            val chapter = getItem(position) ?: return
-
-            chapterName.text = chapter.chapterName
+            val chapter = data.get(position)
 
             holder.itemView.findViewById<TextView>(R.id.readItemChapterContentTitle).text = chapter.chapterName
             if (chapter.content?.isNotEmpty() == true) {
@@ -185,29 +196,36 @@ class ReadActivity : BaseActivity() {
                 content.text = Html.fromHtml(chapter.content)
             }
             if (!chapter.isLoadSuccess || chapter.content?.isEmpty() == true) {
-                model.loadChapter(chapter)
                 holder.itemView.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
             } else {
                 holder.itemView.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
             }
+            model.getChapter(chapter.url).observeOn(AndroidSchedulers.mainThread()).subscribe {
+                val content = holder.itemView.findViewById<TextView>(R.id.readItemChapterContent)
+                content.text = Html.fromHtml(it.content)
+                holder.itemView.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+                holder.itemView.requestLayout()
+            }.destroy("$holder")
         }
 
     }
 
-    private inner class ChapterListAdapter : PagedListAdapter<Chapter, RecyclerView.ViewHolder>(object : DiffUtil.ItemCallback<Chapter>() {
-        override fun areItemsTheSame(oldItem: Chapter?, newItem: Chapter?) = oldItem?.url == newItem?.url
+    private inner class ChapterListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-        override fun areContentsTheSame(oldItem: Chapter?, newItem: Chapter?) = oldItem?.chapterName == newItem?.chapterName
-    }) {
+        var data = listOf<Chapter>()
+
+        override fun getItemCount(): Int = data.size
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             return object : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_text_text, parent, false)) {}
         }
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-            val c = getItem(position) ?: return
+            val c = data[position]
             holder.itemView.find<TextView>(R.id.text1).text = c.chapterName
             holder.itemView.setOnClickListener {
                 model.setReadIndex(position).subscribe().destroy(DISPOSABLE_READ_INDEX)
+                chapterContent.scrollToPosition(position)
             }
         }
 
