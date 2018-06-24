@@ -16,7 +16,7 @@ class MainViewModel : ViewModel() {
                 b.chapterList = listOf(it)
                 b
             }
-        }.reduce(list,{ _, _ -> list }).toFlowable()
+        }.reduce(list, { _, _ -> list }).toFlowable()
     }
 
     fun delete(book: Book) {
@@ -31,6 +31,8 @@ class MainViewModel : ViewModel() {
     private fun getLatestChapter(bookUrl: String): Observable<Chapter> {
         return fictionDataRepository.getLatestChapter(bookUrl)
     }
+
+    fun getReadIndex(name: String, author: String) = fictionDataRepository.getReadIndex(name, author)
 
     fun refresh(): Observable<Book> {
         return fictionDataRepository.getBooks().firstElement().toObservable().flatMap {

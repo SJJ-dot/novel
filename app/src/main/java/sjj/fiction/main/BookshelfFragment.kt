@@ -1,6 +1,7 @@
 package sjj.fiction.main
 
 import android.arch.lifecycle.ViewModelProviders
+import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -14,9 +15,11 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_books.*
+import kotlinx.android.synthetic.main.item_book_list.view.*
 import org.jetbrains.anko.find
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.startActivity
+import org.jetbrains.anko.textColor
 import sjj.fiction.BaseFragment
 import sjj.fiction.DISPOSABLE_ACTIVITY_MAIN_REFRESH
 import sjj.fiction.R
@@ -60,11 +63,18 @@ class BookshelfFragment : BaseFragment() {
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val book = data!![position]
-            holder.itemView.find<TextView>(R.id.bookName).text = book.name
-            holder.itemView.find<TextView>(R.id.author).text = book.author
-            holder.itemView.find<TextView>(R.id.originWebsite).text = book.url.domain()
-            holder.itemView.find<TextView>(R.id.lastChapter).text = book.chapterList.last().chapterName
-            holder.itemView.find<SimpleDraweeView>(R.id.bookCover).setImageURI(book.bookCoverImgUrl)
+            model.getReadIndex(book.name,book.author).firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
+                if (it < book.chapterList.last().index) {
+                    holder.itemView.bookName.textColor = R.color.colorAccent
+                } else {
+                    holder.itemView.bookName.textColor = R.color.colorText
+                }
+            }.destroy(holder.itemView.toString())
+            holder.itemView.bookName.text = book.name
+            holder.itemView.author.text = book.author
+            holder.itemView.originWebsite.text = book.url.domain()
+            holder.itemView.lastChapter.text = book.chapterList.last().chapterName
+            holder.itemView.bookCover.setImageURI(book.bookCoverImgUrl)
             holder.itemView.setOnClickListener { v ->
                 startActivity<DetailsActivity>(DetailsActivity.BOOK_NAME to book.name, DetailsActivity.BOOK_AUTHOR to book.author)
             }
