@@ -18,6 +18,7 @@ import org.jetbrains.anko.find
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.startActivity
 import sjj.fiction.BaseFragment
+import sjj.fiction.DISPOSABLE_ACTIVITY_MAIN_REFRESH
 import sjj.fiction.R
 import sjj.fiction.details.DetailsActivity
 import sjj.fiction.model.Book
@@ -44,6 +45,11 @@ class BookshelfFragment : BaseFragment() {
             adapter.data = it
             adapter.notifyDataSetChanged()
         }.destroy()
+        bookListRefreshLayout.setOnRefreshListener {
+            model.refresh().doOnComplete {
+                bookListRefreshLayout.isRefreshing = false
+            }.subscribe().destroy(DISPOSABLE_ACTIVITY_MAIN_REFRESH)
+        }
     }
 
     private inner class Adapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {

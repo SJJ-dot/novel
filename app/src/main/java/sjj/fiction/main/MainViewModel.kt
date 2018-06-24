@@ -7,9 +7,10 @@ import sjj.fiction.data.repository.fictionDataRepository
 import sjj.fiction.model.Book
 import sjj.fiction.model.BookSourceRecord
 import sjj.fiction.model.Chapter
+import sjj.fiction.util.log
 
 class MainViewModel : ViewModel() {
-    val books = fictionDataRepository.getBooks().flatMap {list->
+    val books = fictionDataRepository.getBooks().flatMap { list ->
         Observable.fromIterable(list).flatMap { b ->
             getLatestChapter(b.url).map {
                 b.chapterList = listOf(it)
@@ -29,6 +30,12 @@ class MainViewModel : ViewModel() {
 
     private fun getLatestChapter(bookUrl: String): Observable<Chapter> {
         return fictionDataRepository.getLatestChapter(bookUrl)
+    }
+
+    fun refresh(): Observable<Book> {
+        return fictionDataRepository.getBooks().firstElement().toObservable().flatMap {
+            Observable.fromIterable(it).flatMap { fictionDataRepository.refreshBook(it.url) }
+        }
     }
 
 }
