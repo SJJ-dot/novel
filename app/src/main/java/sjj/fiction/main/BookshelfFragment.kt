@@ -20,6 +20,7 @@ import org.jetbrains.anko.find
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.startActivity
 import org.jetbrains.anko.textColor
+import org.jetbrains.anko.textColorResource
 import sjj.fiction.BaseFragment
 import sjj.fiction.DISPOSABLE_ACTIVITY_MAIN_REFRESH
 import sjj.fiction.R
@@ -65,9 +66,9 @@ class BookshelfFragment : BaseFragment() {
             val book = data!![position]
             model.getReadIndex(book.name,book.author).firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
                 if (it < book.chapterList.last().index) {
-                    holder.itemView.bookName.textColor = R.color.colorAccent
+                    holder.itemView.bookName.textColorResource = R.color.colorAccent
                 } else {
-                    holder.itemView.bookName.textColor = R.color.colorText
+                    holder.itemView.bookName.textColorResource = R.color.colorText
                 }
             }.destroy(holder.itemView.toString())
             holder.itemView.bookName.text = book.name
