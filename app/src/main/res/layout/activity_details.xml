@@ -34,12 +34,12 @@
                     android:id="@+id/bookCover"
                     android:layout_width="100dp"
                     android:layout_height="150dp"
-                    android:layout_margin="8dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:elevation="5dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:outlineProvider="paddedBounds"
+                    android:translationZ="5dp"
                     app:failureImage="@drawable/ic_laokuoteng"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -58,6 +58,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="8dp"
                     android:text="@{book.name}"
+                    android:textColor="@color/colorText"
                     android:textSize="20sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -65,7 +66,6 @@
                     app:layout_constraintStart_toEndOf="@+id/bookCover"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.0"
-                    android:textColor="@color/colorText"
                     tools:text="极道天魔" />
 
                 <TextView
@@ -149,8 +149,8 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
-                    android:textColor="@color/colorTextLight"
                     android:text="最新章节："
+                    android:textColor="@color/colorTextLight"
                     android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -167,14 +167,13 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
-                    android:textSize="16sp"
                     android:textColor="@color/colorText"
+                    android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.916"
                     app:layout_constraintStart_toEndOf="@+id/bookCover"
                     app:layout_constraintTop_toBottomOf="@+id/latestChapterTitle"
-                    app:layout_constraintVertical_bias="0.0"
+                    app:layout_constraintVertical_bias="0"
                     tools:text="最新章节" />
 
                 <TextView
@@ -184,8 +183,8 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
-                    android:textColor="@color/colorTextLight"
                     android:layout_marginBottom="16dp"
+                    android:textColor="@color/colorTextLight"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
@@ -201,14 +200,16 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
-                    android:background="@drawable/btn_default"
-                    android:textColor="@color/material_white"
                     android:layout_marginEnd="16dp"
-                    android:elevation="0dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/btn_default"
                     android:text="@string/chapterList"
+                    android:textColor="@color/material_white"
+                    app:layout_constraintBottom_toTopOf="@+id/chapterList"
                     app:layout_constraintEnd_toStartOf="@+id/reading"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/intro" />
+                    app:layout_constraintTop_toBottomOf="@+id/bookCover"
+                    app:layout_constraintVertical_bias="1.0" />
 
                 <Button
                     android:id="@+id/reading"
@@ -217,8 +218,8 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:background="@drawable/btn_default"
-                    android:textColor="@color/material_white"
                     android:text="开始阅读"
+                    android:textColor="@color/material_white"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/chapterListButton"
                     app:layout_constraintTop_toTopOf="@+id/chapterListButton" />
@@ -227,14 +228,14 @@
                     android:id="@+id/chapterList"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
                     android:background="@color/material_white"
-                    android:minHeight="250dp"
+                    android:outlineProvider="bounds"
+                    android:translationZ="5dp"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/chapterListButton" />
+                    app:layout_constraintStart_toStartOf="parent" />
             </android.support.constraint.ConstraintLayout>
         </ScrollView>
 

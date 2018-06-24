@@ -111,8 +111,6 @@ class DetailsActivity : BaseActivity() {
             }
         }.destroy()
 
-
-
         chapterList.layoutManager = LinearLayoutManager(this)
         chapterList.adapter = adapter
     }
