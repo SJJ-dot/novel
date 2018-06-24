@@ -111,7 +111,7 @@ class ReadActivity : BaseActivity() {
                     cached?.dismiss()
                     cached = progressDialog("正在缓存章节内容")
 
-                    model.cachedBookChapter(it.url).observeOn(AndroidSchedulers.mainThread()).subscribe({ p ->
+                    model.cachedBookChapter(it.url).observeOn(AndroidSchedulers.mainThread()).subscribe({ p: Pair<Int, Int> ->
                         cached?.max = p.second
                         cached?.progress = p.first
                     }, {
