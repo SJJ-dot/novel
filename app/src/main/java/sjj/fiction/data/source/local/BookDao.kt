@@ -14,7 +14,7 @@ interface BookDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertRecordAndBooks(bookSource: List<BookSourceRecord>, books: List<Book>)
 
-    @Query("select * from Book where url in (select bookUrl from BookSourceRecord)")
+    @Query("select * from Book where url in (select bookUrl from BookSourceRecord) order by name")
     fun getBooksInRecord(): Flowable<List<Book>>
 
     @Query("select url from Book where name=:name and author=:author")
