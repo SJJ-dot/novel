@@ -88,7 +88,7 @@ class ReadActivity : BaseActivity() {
                 seekBar.progress = position
                 if (contentAdapter.data.size > position) {
                     chapterName.text = contentAdapter.data[position].chapterName
-                    model.setReadIndex(manager.findLastCompletelyVisibleItemPosition()).subscribe().destroy(DISPOSABLE_READ_INDEX)
+                    model.setReadIndex(position).subscribe().destroy(DISPOSABLE_READ_INDEX)
                 }
             }
         })
