@@ -16,7 +16,7 @@ class MainViewModel : ViewModel() {
                 b.chapterList = listOf(it)
                 b
             }
-        }.reduce(list,{t1, t2 -> list }).toFlowable()
+        }.reduce(list,{ _, _ -> list }).toFlowable()
     }
 
     fun delete(book: Book) {
