@@ -3,10 +3,13 @@ package sjj.fiction.util
 import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.LifecycleObserver
 import android.arch.lifecycle.OnLifecycleEvent
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import sjj.alog.Log
 import java.util.*
+import kotlin.collections.HashMap
 
-private val map = Collections.synchronizedMap(WeakHashMap<String, BaseLifecycleObserver>())
+private val map = Collections.synchronizedMap(HashMap<String, BaseLifecycleObserver>())
 
 fun Disposable.destroy(onceKey: String? = null, lifecycle: Lifecycle) {
     lifecycle.addObserver(BaseLifecycleObserver(this, lifecycle, onceKey, Lifecycle.Event.ON_DESTROY))
@@ -33,6 +36,7 @@ class BaseLifecycleObserver(val disposable: Disposable,
                 lifecycle.removeObserver(observer)
             }
         }
+        lifecycle.addObserver(this)
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)

@@ -19,7 +19,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_details.*
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.support.v4.indeterminateProgressDialog
 import sjj.fiction.BaseActivity
+import sjj.fiction.DISPOSABLE_ACTIVITY_DETAILS_REFRESH
 import sjj.fiction.Details
 import sjj.fiction.R
 import sjj.fiction.model.Book
@@ -27,6 +29,7 @@ import sjj.fiction.model.Chapter
 import sjj.fiction.read.ReadActivity
 import sjj.fiction.util.domain
 import sjj.fiction.util.getModel
+import sjj.fiction.util.log
 
 /**
  * Created by SJJ on 2017/10/10.
@@ -83,21 +86,27 @@ class DetailsActivity : BaseActivity() {
                     chapterList.visibility = View.GONE
                 }
             }
-            refreshBtn.setOnClickListener { _ -> model.refresh(it) }
+
+            refreshBtn.setOnClickListener { _ ->
+                val dialog = indeterminateProgressDialog("加载中……")
+                model.refresh(it).doOnTerminate {
+                    dialog.dismiss()
+                }.subscribe().destroy(DISPOSABLE_ACTIVITY_DETAILS_REFRESH)
+            }
 
             intro.text = it.intro
             bookCover.setImageURI(it.bookCoverImgUrl)
-
-            latestChapter.text = it.chapterList.last().chapterName
-            latestChapter.setOnClickListener { v ->
-                v.isEnabled = false
-                model.setReadIndex(it.chapterList.lastIndex).doOnTerminate {
-                    v.isEnabled = true
-                }.subscribe {
-                    startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)
+            if (it.chapterList.isNotEmpty()) {
+                latestChapter.text = it.chapterList.last().chapterName
+                latestChapter.setOnClickListener { v ->
+                    v.isEnabled = false
+                    model.setReadIndex(it.chapterList.lastIndex).doOnTerminate {
+                        v.isEnabled = true
+                    }.subscribe {
+                        startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)
+                    }
                 }
             }
-
         }.destroy()
 
 

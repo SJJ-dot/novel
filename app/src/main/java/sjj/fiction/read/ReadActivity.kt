@@ -22,6 +22,7 @@ import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_read.*
 import kotlinx.android.synthetic.main.item_read_chapter_content.view.*
 import org.jetbrains.anko.*
@@ -109,9 +110,10 @@ class ReadActivity : BaseActivity() {
                 model.book.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
                     cached?.dismiss()
                     cached = progressDialog("正在缓存章节内容")
-                    cached?.max = 1000
-                    model.cachedBookChapter(it.url).observeOn(AndroidSchedulers.mainThread()).subscribe({ _ ->
-                        cached?.progress = cached?.progress ?: 0 + 1
+
+                    model.cachedBookChapter(it.url).observeOn(AndroidSchedulers.mainThread()).subscribe({ p ->
+                        cached?.max = p.second
+                        cached?.progress = p.first
                     }, {
                         toast("缓存章节内容出错：$it")
                         cached?.dismiss()
@@ -120,7 +122,7 @@ class ReadActivity : BaseActivity() {
                         toast("缓存章节内容完成")
                         cached?.dismiss()
                         cached = null
-                    })
+                    }).destroy(DISPOSABLE_CACHED_BOOK_CHAPTER)
                 }.destroy(DISPOSABLE_CACHED_BOOK_CHAPTER)
                 true
             }
@@ -205,7 +207,7 @@ class ReadActivity : BaseActivity() {
                 content.text = Html.fromHtml(it.content)
                 holder.itemView.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
                 holder.itemView.requestLayout()
-            }.destroy("$holder")
+            }.destroy("${holder.itemView}")
         }
 
     }

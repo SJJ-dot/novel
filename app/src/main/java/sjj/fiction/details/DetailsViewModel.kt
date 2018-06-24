@@ -28,7 +28,7 @@ class DetailsViewModel(val name: String, val author: String) : ViewModel() {
         return fictionDataRepository.setReadIndex(name, author, index)
     }
 
-    fun refresh(it: Book) {
-        fictionDataRepository.refreshBook(it.url).subscribe()
+    fun refresh(it: Book): Observable<Book> {
+       return fictionDataRepository.refreshBook(it.url)
     }
 }

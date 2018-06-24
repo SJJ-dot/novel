@@ -57,7 +57,10 @@ class SearchFragment : BaseFragment() {
         })
         searchInput.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                model.search(searchInput.text.toString()).observeOn(AndroidSchedulers.mainThread()).subscribe({ ls ->
+                val dialog = indeterminateProgressDialog("搜索中……")
+                model.search(searchInput.text.toString()).observeOn(AndroidSchedulers.mainThread()).doAfterTerminate {
+                    dialog.dismiss()
+                }.subscribe({ ls ->
                     val set = searchHistory.value?.toMutableList() ?: mutableListOf()
                     val list = ls.map { it.first.bookName }
                     set.removeAll(list)

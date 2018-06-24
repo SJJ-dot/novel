@@ -7,7 +7,6 @@ import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
-import sjj.alog.Log
 import sjj.fiction.data.source.local.LocalFictionDataSource
 import sjj.fiction.data.source.remote.aszw.AszwFictionDataSource
 import sjj.fiction.data.source.remote.biquge.BiqugeDataSource
@@ -17,7 +16,7 @@ import sjj.fiction.model.Book
 import sjj.fiction.model.BookSourceRecord
 import sjj.fiction.model.Chapter
 import sjj.fiction.util.domain
-import sjj.fiction.util.log
+import java.util.concurrent.CountDownLatch
 
 val fictionDataRepository by lazy { FictionDataRepository() }
 
@@ -42,7 +41,7 @@ class FictionDataRepository {
             if (search.isBlank()) {
                 throw IllegalArgumentException("搜索内容不能为空")
             }
-            it.search(search)
+            it.search(search).onErrorResumeNext(Observable.empty())
         }.reduce(mutableMapOf<String, MutableList<Book>>(), { map, bs ->
             bs.forEach {
                 map.getOrPut(it.name + it.author, { mutableListOf() }).add(it)
@@ -77,9 +76,20 @@ class FictionDataRepository {
     fun getBooks(): Flowable<List<Book>> = localSource.getAllReadingBook()
 
 
-    fun cachedBookChapter(bookUrl: String): Flowable<Chapter> {
-        return Observable.concat(localSource.getUnLoadChapters(bookUrl).map { Observable.fromIterable(it) })
-                .flatMap(this::loadChapter).toFlowable(BackpressureStrategy.LATEST)
+    fun cachedBookChapter(bookUrl: String): Flowable<Pair<Int, Int>> {
+        var count = 0
+        var process = 0
+        return Observable.concat(localSource.getUnLoadChapters(bookUrl).map {
+            count = it.size
+            Observable.fromIterable(it).map {
+                Thread.sleep(1000)
+                it
+            }
+        })
+                .flatMap(this::loadChapter).map {
+                    process++
+                    process to count
+                }.toFlowable(BackpressureStrategy.LATEST)
     }
 
     fun loadChapter(chapter: Chapter): Observable<Chapter> {
@@ -88,7 +98,7 @@ class FictionDataRepository {
         }.flatMap(localSource::updateChapter)
     }
 
-    fun getChapter(url: String):Observable<Chapter> {
+    fun getChapter(url: String): Observable<Chapter> {
         return localSource.getChapter(url).flatMap {
             if (it.isLoadSuccess) {
                 Observable.just(it)
@@ -149,7 +159,7 @@ class FictionDataRepository {
         fun setReadIndex(name: String, author: String, index: Int): Observable<Int>
         fun getLatestChapter(bookUrl: String): Observable<Chapter>
         fun getChapters(bookUrl: String): DataSource.Factory<Int, Chapter>
-        fun getChapterIntro(bookUrl: String):Flowable<List<Chapter>>
+        fun getChapterIntro(bookUrl: String): Flowable<List<Chapter>>
         fun getUnLoadChapters(bookUrl: String): Observable<List<Chapter>>
     }
 
