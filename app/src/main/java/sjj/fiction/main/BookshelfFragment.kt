@@ -19,6 +19,7 @@ import kotlinx.android.synthetic.main.item_book_list.view.*
 import org.jetbrains.anko.find
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.startActivity
+import org.jetbrains.anko.support.v4.toast
 import org.jetbrains.anko.textColor
 import org.jetbrains.anko.textColorResource
 import sjj.fiction.BaseFragment
@@ -50,7 +51,9 @@ class BookshelfFragment : BaseFragment() {
             adapter.notifyDataSetChanged()
         }.destroy()
         bookListRefreshLayout.setOnRefreshListener {
-            model.refresh().doOnComplete {
+            model.refresh().doOnError {
+                toast("$it")
+            }.doOnComplete {
                 bookListRefreshLayout.isRefreshing = false
             }.subscribe().destroy(DISPOSABLE_ACTIVITY_MAIN_REFRESH)
         }
@@ -64,7 +67,7 @@ class BookshelfFragment : BaseFragment() {
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val book = data!![position]
-            model.getReadIndex(book.name,book.author).firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
+            model.getReadIndex(book.name, book.author).firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
                 if (it < book.chapterList.last().index) {
                     holder.itemView.bookName.textColorResource = R.color.colorAccent
                 } else {
