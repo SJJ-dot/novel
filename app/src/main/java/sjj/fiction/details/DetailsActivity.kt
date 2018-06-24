@@ -86,11 +86,9 @@ class DetailsActivity : BaseActivity() {
                     chapterList.visibility = View.GONE
                 }
             }
-
-            refreshBtn.setOnClickListener { _ ->
-                val dialog = indeterminateProgressDialog("加载中……")
+            detailsRefreshLayout.setOnRefreshListener {
                 model.refresh(it).doOnTerminate {
-                    dialog.dismiss()
+                    detailsRefreshLayout.isRefreshing = false
                 }.subscribe().destroy(DISPOSABLE_ACTIVITY_DETAILS_REFRESH)
             }
 
