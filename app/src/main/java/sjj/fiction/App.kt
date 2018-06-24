@@ -6,6 +6,7 @@ import android.os.StrictMode
 import com.facebook.drawee.backends.pipeline.Fresco
 import io.reactivex.plugins.RxJavaPlugins
 import org.jetbrains.anko.newTask
+import org.jetbrains.anko.noHistory
 import sjj.alog.Config
 import sjj.alog.Log
 import java.util.*
@@ -23,12 +24,13 @@ class App : Application() {
         super.onCreate()
         Thread.setDefaultUncaughtExceptionHandler { t, e ->
             Log.e("UncaughtException",e)
+            finishAll()
             val intent = Intent(this, CrashActivity::class.java)
             intent.putExtra(CrashActivity.THREAD_INFO, "线程：${t.name} ID：${t.id}")
             intent.putExtra(CrashActivity.CRASH_DATA, e)
-            intent.newTask()
+            intent.noHistory()
             startActivity(intent)
-            finishAll()
+            System.exit(0)
         }
         app = this
         val logConfig = Config()

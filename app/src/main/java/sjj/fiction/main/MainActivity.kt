@@ -1,12 +1,15 @@
 package sjj.fiction.main
 
 import android.annotation.SuppressLint
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI
 import kotlinx.android.synthetic.main.activity_main.*
 import sjj.fiction.BaseActivity
 import sjj.fiction.R
+import sjj.fiction.util.log
 
 
 class MainActivity : BaseActivity() {
@@ -15,5 +18,11 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         NavigationUI.setupWithNavController(nav_ui, Navigation.findNavController(this, R.id.nav_host_fragment_main))
+       // val  clipboardManager=getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+
+        //if (clipboardManager.hasPrimaryClip()) {
+           // val item = clipboardManager.primaryClip.getItemAt(0)
+//            item.text ==
+        //}
     }
 }
