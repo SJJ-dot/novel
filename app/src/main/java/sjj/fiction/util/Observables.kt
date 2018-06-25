@@ -1,6 +1,7 @@
 package sjj.fiction.util
 
 import io.reactivex.Observable
+import io.reactivex.ObservableSource
 
 fun <T, R> Observable<List<T>>.lazyFromIterable(mapper: (T) -> Observable<R>): Observable<Observable<R>> {
     return flatMap { list ->
@@ -18,4 +19,8 @@ fun <T, R> Observable<List<T>>.lazyFromIterable(mapper: (T) -> Observable<R>): O
             emi(0)
         }
     }
+}
+
+fun <T> ObservableSource<out ObservableSource<out T>>.concat(): Observable<T> {
+    return Observable.concat(this)
 }

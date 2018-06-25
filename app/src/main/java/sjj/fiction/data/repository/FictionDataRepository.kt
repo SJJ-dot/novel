@@ -15,8 +15,10 @@ import sjj.fiction.data.source.remote.yunlaige.YunlaigeDataSource
 import sjj.fiction.model.Book
 import sjj.fiction.model.BookSourceRecord
 import sjj.fiction.model.Chapter
+import sjj.fiction.util.concat
 import sjj.fiction.util.domain
 import sjj.fiction.util.lazyFromIterable
+import java.util.concurrent.TimeUnit
 
 val fictionDataRepository by lazy { FictionDataRepository() }
 
@@ -77,9 +79,9 @@ class FictionDataRepository {
 
 
     fun cachedBookChapter(bookUrl: String): Flowable<Pair<Int, Int>> {
-        return Observable.concat(localSource.getUnLoadChapters(bookUrl).map { cs -> cs.mapIndexed { index, chapter -> index to cs.size to chapter } }.lazyFromIterable {
-            loadChapter(it.second).map { _ -> it.first }
-        }).toFlowable(BackpressureStrategy.LATEST)
+        return localSource.getUnLoadChapters(bookUrl).map { cs -> cs.mapIndexed { index, chapter -> index to cs.size to chapter } }.lazyFromIterable {
+            loadChapter(it.second).map { _ -> it.first }.delay(500, TimeUnit.MILLISECONDS)
+        }.concat().toFlowable(BackpressureStrategy.LATEST)
     }
 
     fun loadChapter(chapter: Chapter): Observable<Chapter> {
