@@ -15,8 +15,10 @@ import sjj.fiction.data.source.remote.yunlaige.YunlaigeDataSource
 import sjj.fiction.model.Book
 import sjj.fiction.model.BookSourceRecord
 import sjj.fiction.model.Chapter
+import sjj.fiction.util.concat
 import sjj.fiction.util.domain
-import java.util.concurrent.CountDownLatch
+import sjj.fiction.util.lazyFromIterable
+import java.util.concurrent.TimeUnit
 
 val fictionDataRepository by lazy { FictionDataRepository() }
 
@@ -70,26 +72,16 @@ class FictionDataRepository {
     fun refreshBook(url: String): Observable<Book> {
         return Observable.just(url).flatMap {
             sources[it.domain()]?.getBook(it) ?: throw Exception("未知源 $it")
-        }.flatMap(localSource::insertBook)
+        }.flatMap(localSource::refreshBook)
     }
 
     fun getBooks(): Flowable<List<Book>> = localSource.getAllReadingBook()
 
 
     fun cachedBookChapter(bookUrl: String): Flowable<Pair<Int, Int>> {
-        var count = 0
-        var process = 0
-        return Observable.concat(localSource.getUnLoadChapters(bookUrl).map {
-            count = it.size
-            Observable.fromIterable(it).map {
-                Thread.sleep(1000)
-                it
-            }
-        })
-                .flatMap(this::loadChapter).map {
-                    process++
-                    process to count
-                }.toFlowable(BackpressureStrategy.LATEST)
+        return localSource.getUnLoadChapters(bookUrl).map { cs -> cs.mapIndexed { index, chapter -> index to cs.size to chapter } }.lazyFromIterable {
+            loadChapter(it.second).map { _ -> it.first }.delay(500, TimeUnit.MILLISECONDS)
+        }.concat().toFlowable(BackpressureStrategy.LATEST)
     }
 
     fun loadChapter(chapter: Chapter): Observable<Chapter> {
@@ -148,7 +140,7 @@ class FictionDataRepository {
     interface LocalSource {
         fun saveBookSourceRecord(books: List<Pair<BookSourceRecord, List<Book>>>): Single<List<Book>>
         fun getBookInBookSource(name: String, author: String): Flowable<Book>
-        fun insertBook(book: Book): Observable<Book>
+        fun refreshBook(book: Book): Observable<Book>
         fun getChapter(url: String): Observable<Chapter>
         fun updateChapter(chapter: Chapter): Observable<Chapter>
         fun getAllReadingBook(): Flowable<List<Book>>

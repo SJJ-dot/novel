@@ -66,10 +66,10 @@ class LocalFictionDataSource : FictionDataRepository.LocalSource {
         }.subscribeOn(Schedulers.io())
     }
 
-    override fun insertBook(book: Book): Observable<Book> {
+    override fun refreshBook(book: Book): Observable<Book> {
         return Observable.fromCallable {
             booksDataBase.runInTransaction {
-                bookDao.insertBook(book)
+                bookDao.updateBook(book)
                 bookDao.insertChapters(book.chapterList)
             }
             book
