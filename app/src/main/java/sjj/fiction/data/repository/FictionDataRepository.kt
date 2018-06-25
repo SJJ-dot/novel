@@ -16,6 +16,7 @@ import sjj.fiction.model.Book
 import sjj.fiction.model.BookSourceRecord
 import sjj.fiction.model.Chapter
 import sjj.fiction.util.domain
+import sjj.fiction.util.lazyFromIterable
 import java.util.concurrent.CountDownLatch
 
 val fictionDataRepository by lazy { FictionDataRepository() }
@@ -77,20 +78,8 @@ class FictionDataRepository {
 
 
     fun cachedBookChapter(bookUrl: String): Flowable<Pair<Int, Int>> {
-        return Observable.concat(localSource.getUnLoadChapters(bookUrl).flatMap { chapterList ->
-            Observable.create<Observable<Pair<Int, Int>>> { emitter ->
-                var emi: ((Int) -> Unit)? = null
-                emi = { index ->
-                    if (chapterList.size > index + 1) {
-                        emitter.onNext(loadChapter(chapterList[index]).map { index to chapterList.size }.doOnComplete {
-                            emi?.invoke(index + 1)
-                        })
-                    } else {
-                        emitter.onComplete()
-                    }
-                }
-                emi(0)
-            }
+        return Observable.concat(localSource.getUnLoadChapters(bookUrl).map { cs -> cs.mapIndexed { index, chapter -> index to cs.size to chapter } }.lazyFromIterable {
+            loadChapter(it.second).map { _ -> it.first }
         }).toFlowable(BackpressureStrategy.LATEST)
     }
 
