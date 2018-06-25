@@ -53,7 +53,7 @@ class BookshelfFragment : BaseFragment() {
         bookListRefreshLayout.setOnRefreshListener {
             model.refresh().observeOn(AndroidSchedulers.mainThread()).doOnError {
                 toast("$it")
-            }.doOnComplete {
+            }.doOnTerminate {
                 bookListRefreshLayout.isRefreshing = false
             }.subscribe().destroy(DISPOSABLE_ACTIVITY_MAIN_REFRESH)
         }
