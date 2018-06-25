@@ -77,19 +77,21 @@ class FictionDataRepository {
 
 
     fun cachedBookChapter(bookUrl: String): Flowable<Pair<Int, Int>> {
-        var count = 0
-        var process = 0
-        return Observable.concat(localSource.getUnLoadChapters(bookUrl).map {
-            count = it.size
-            Observable.fromIterable(it).map {
-                Thread.sleep(1000)
-                it
+        return Observable.concat(localSource.getUnLoadChapters(bookUrl).flatMap { chapterList ->
+            Observable.create<Observable<Pair<Int, Int>>> { emitter ->
+                var emi: ((Int) -> Unit)? = null
+                emi = { index ->
+                    if (chapterList.size > index + 1) {
+                        emitter.onNext(loadChapter(chapterList[index]).map { index to chapterList.size }.doOnComplete {
+                            emi?.invoke(index + 1)
+                        })
+                    } else {
+                        emitter.onComplete()
+                    }
+                }
+                emi(0)
             }
-        })
-                .flatMap(this::loadChapter).map {
-                    process++
-                    process to count
-                }.toFlowable(BackpressureStrategy.LATEST)
+        }).toFlowable(BackpressureStrategy.LATEST)
     }
 
     fun loadChapter(chapter: Chapter): Observable<Chapter> {

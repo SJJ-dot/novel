@@ -87,12 +87,12 @@ class DetailsActivity : BaseActivity() {
                 }
             }
             detailsRefreshLayout.setOnRefreshListener {
-                model.refresh(it).doOnTerminate {
+                model.refresh(it).observeOn(AndroidSchedulers.mainThread()).doOnTerminate {
                     detailsRefreshLayout.isRefreshing = false
                 }.subscribe().destroy(DISPOSABLE_ACTIVITY_DETAILS_REFRESH)
             }
             reading.setOnClickListener {
-                model.readIndex.firstElement().subscribe {
+                model.readIndex.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
                     startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)
                 }
             }
@@ -102,7 +102,7 @@ class DetailsActivity : BaseActivity() {
                 latestChapter.text = it.chapterList.last().chapterName
                 latestChapter.setOnClickListener { v ->
                     v.isEnabled = false
-                    model.setReadIndex(it.chapterList.lastIndex).doOnTerminate {
+                    model.setReadIndex(it.chapterList.lastIndex).observeOn(AndroidSchedulers.mainThread()).doOnTerminate {
                         v.isEnabled = true
                     }.subscribe {
                         startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)

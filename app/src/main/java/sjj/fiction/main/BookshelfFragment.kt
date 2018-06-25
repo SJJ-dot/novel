@@ -51,7 +51,7 @@ class BookshelfFragment : BaseFragment() {
             adapter.notifyDataSetChanged()
         }.destroy()
         bookListRefreshLayout.setOnRefreshListener {
-            model.refresh().doOnError {
+            model.refresh().observeOn(AndroidSchedulers.mainThread()).doOnError {
                 toast("$it")
             }.doOnComplete {
                 bookListRefreshLayout.isRefreshing = false

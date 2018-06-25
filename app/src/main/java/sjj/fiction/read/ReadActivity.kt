@@ -76,7 +76,7 @@ class ReadActivity : BaseActivity() {
             chapterListAdapter.data = it.chapterList
             contentAdapter.notifyDataSetChanged()
             chapterListAdapter.notifyDataSetChanged()
-            model.readIndex.observeOn(AndroidSchedulers.mainThread()).firstElement().subscribe {
+            model.readIndex.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
                 chapterList.scrollToPosition(it)
                 chapterContent.scrollToPosition(it)
             }.destroy(DISPOSABLE_ACTIVITY_READ_READ_INDEX)
