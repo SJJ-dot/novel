@@ -17,7 +17,6 @@ import sjj.fiction.model.BookSourceRecord
 import sjj.fiction.model.Chapter
 import sjj.fiction.util.domain
 import sjj.fiction.util.lazyFromIterable
-import java.util.concurrent.CountDownLatch
 
 val fictionDataRepository by lazy { FictionDataRepository() }
 
@@ -71,7 +70,7 @@ class FictionDataRepository {
     fun refreshBook(url: String): Observable<Book> {
         return Observable.just(url).flatMap {
             sources[it.domain()]?.getBook(it) ?: throw Exception("未知源 $it")
-        }.flatMap(localSource::insertBook)
+        }.flatMap(localSource::refreshBook)
     }
 
     fun getBooks(): Flowable<List<Book>> = localSource.getAllReadingBook()
@@ -139,7 +138,7 @@ class FictionDataRepository {
     interface LocalSource {
         fun saveBookSourceRecord(books: List<Pair<BookSourceRecord, List<Book>>>): Single<List<Book>>
         fun getBookInBookSource(name: String, author: String): Flowable<Book>
-        fun insertBook(book: Book): Observable<Book>
+        fun refreshBook(book: Book): Observable<Book>
         fun getChapter(url: String): Observable<Chapter>
         fun updateChapter(chapter: Chapter): Observable<Chapter>
         fun getAllReadingBook(): Flowable<List<Book>>

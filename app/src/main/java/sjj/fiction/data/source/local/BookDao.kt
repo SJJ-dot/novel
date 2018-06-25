@@ -23,8 +23,8 @@ interface BookDao {
     @Query("SELECT * FROM Book WHERE url = (select bookUrl from BookSourceRecord where bookName=:name and author=:author)")
     fun getBookInBookSource(name: String, author: String): Flowable<Book>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertBook(book: Book)
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    fun updateBook(book: Book)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertChapters(book: List<Chapter>)
