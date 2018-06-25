@@ -8,7 +8,7 @@ fun <T, R> Observable<List<T>>.lazyFromIterable(mapper: (T) -> Observable<R>): O
         Observable.create<Observable<R>> { emitter ->
             var emi: ((Int) -> Unit)? = null
             emi = { index ->
-                if (list.size > index + 1) {
+                if (list.size > index) {
                     emitter.onNext(mapper(list[index]).doOnComplete {
                         emi?.invoke(index + 1)
                     })

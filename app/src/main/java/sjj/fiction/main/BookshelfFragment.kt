@@ -69,9 +69,9 @@ class BookshelfFragment : BaseFragment() {
             val book = data!![position]
             model.getReadIndex(book.name, book.author).firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
                 if (it < book.chapterList.last().index) {
-                    holder.itemView.bookName.textColorResource = R.color.colorAccent
+                    holder.itemView.lastChapter.textColorResource = R.color.colorText
                 } else {
-                    holder.itemView.bookName.textColorResource = R.color.colorText
+                    holder.itemView.lastChapter.textColorResource = R.color.colorTextLight
                 }
             }.destroy(holder.itemView.toString())
             holder.itemView.bookName.text = book.name
