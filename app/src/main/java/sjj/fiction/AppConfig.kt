@@ -11,4 +11,6 @@ object AppConfig {
 
     val searchHistory by liveDataDelegate<List<String>>(listOf())
 
+    var offest by sharedPreferencesDelegate(0)
+
 }

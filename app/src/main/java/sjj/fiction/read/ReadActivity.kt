@@ -14,13 +14,11 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.SCROLL_STATE_IDLE
 import android.text.Html
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
-import android.view.ViewGroup
+import android.view.*
 import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_read.*
@@ -189,25 +187,37 @@ class ReadActivity : BaseActivity() {
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val chapter = data.get(position)
-
+            val content = holder.itemView.findViewById<TextView>(R.id.readItemChapterContent)
+            content.isClickable = false
             holder.itemView.findViewById<TextView>(R.id.readItemChapterContentTitle).text = chapter.chapterName
             if (chapter.content?.isNotEmpty() == true) {
-                val content = holder.itemView.findViewById<TextView>(R.id.readItemChapterContent)
                 content.typeface = ttf
                 content.textSize = contentTextSize
                 content.text = Html.fromHtml(chapter.content)
             }
-            if (!chapter.isLoadSuccess || chapter.content?.isEmpty() == true) {
+            if (!chapter.isLoadSuccess) {
                 holder.itemView.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+                content.text = "加载中请稍后……"
             } else {
                 holder.itemView.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
             }
-            model.getChapter(chapter.url).observeOn(AndroidSchedulers.mainThread()).subscribe {
-                val content = holder.itemView.findViewById<TextView>(R.id.readItemChapterContent)
-                content.text = Html.fromHtml(it.content)
-                holder.itemView.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
-                holder.itemView.requestLayout()
-            }.destroy("${holder.itemView}")
+
+            fun bindContent() {
+                model.getChapter(chapter.url).observeOn(AndroidSchedulers.mainThread()).subscribe({
+                    chapter.isLoadSuccess = true
+                    content.text = Html.fromHtml(it.content)
+                    holder.itemView.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+                    holder.itemView.requestLayout()
+                }, {
+                    content.text = "加载失败，点击重试……"
+                    content.setOnClickListener {
+                        bindContent()
+                        content.isClickable = false
+                    }
+                }).destroy("${holder.itemView}")
+            }
+            bindContent()
+
         }
 
     }

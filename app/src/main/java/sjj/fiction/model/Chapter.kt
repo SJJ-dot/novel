@@ -15,7 +15,4 @@ data class Chapter(
         var chapterName: String = "",
         var content: String? = "",
         var isLoadSuccess: Boolean = false
-) {
-    @Ignore
-    var isLoading = false
-}
+)

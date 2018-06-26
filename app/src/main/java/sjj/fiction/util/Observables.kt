@@ -6,11 +6,10 @@ import io.reactivex.ObservableSource
 fun <T, R> Observable<List<T>>.lazyFromIterable(mapper: (T) -> Observable<R>): Observable<Observable<R>> {
     return flatMap { list ->
         Observable.create<Observable<R>> { emitter ->
-            var emi: ((Int) -> Unit)? = null
-            emi = { index ->
+            fun emi(index: Int) {
                 if (list.size > index) {
                     emitter.onNext(mapper(list[index]).doOnComplete {
-                        emi?.invoke(index + 1)
+                        emi(index + 1)
                     })
                 } else {
                     emitter.onComplete()
