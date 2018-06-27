@@ -195,19 +195,14 @@ class ReadActivity : BaseActivity() {
                 content.textSize = contentTextSize
                 content.text = Html.fromHtml(chapter.content)
             }
-            if (!chapter.isLoadSuccess) {
-                holder.itemView.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
-                content.text = "加载中请稍后……"
-            } else {
-                holder.itemView.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
-            }
 
             fun bindContent() {
+                content.text = "加载中请稍后……"
+                holder.itemView.layoutParams.height = if (chapter.isLoadSuccess) ViewGroup.LayoutParams.WRAP_CONTENT else ViewGroup.LayoutParams.MATCH_PARENT
                 model.getChapter(chapter.url).observeOn(AndroidSchedulers.mainThread()).subscribe({
-                    chapter.isLoadSuccess = true
+                    chapter.isLoadSuccess = it.isLoadSuccess
                     content.text = Html.fromHtml(it.content)
                     holder.itemView.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
-                    holder.itemView.requestLayout()
                 }, {
                     content.text = "加载失败，点击重试……"
                     content.setOnClickListener {
