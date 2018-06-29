@@ -11,6 +11,8 @@ class ReadViewModel(val name: String, val author: String) : ViewModel() {
 
     val book = fictionDataRepository.getBookInBookSource(name, author)
 
+    private var lastReadIndex = 0
+
     fun getChapters(bookUrl: String) = fictionDataRepository.getChapters(bookUrl)
 
     fun loadChapter(chapter: Chapter): Observable<Chapter> {
@@ -21,9 +23,15 @@ class ReadViewModel(val name: String, val author: String) : ViewModel() {
         return fictionDataRepository.getChapter(url)
     }
 
-    val readIndex = fictionDataRepository.getReadIndex(name, author)
+    val readIndex = fictionDataRepository.getReadIndex(name, author).doOnNext {
+        lastReadIndex = it
+    }
 
     fun setReadIndex(index: Int): Observable<Int> {
+        if (lastReadIndex == index) {
+            return Observable.empty()
+        }
+        lastReadIndex = index
         return fictionDataRepository.setReadIndex(name, author, index)
     }
 
