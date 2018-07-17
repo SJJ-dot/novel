@@ -53,15 +53,15 @@ class LiuMaoDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
         return service.loadHtmlForGBK(url).map {
             val book = Book()
             val document = Jsoup.parse(it, url)
+            val intro = document.getElementsByClass("intro")[0]
             book.url = url
-            book.name = document.metaProp("og:novel:book_name")
-            book.author =document.metaProp("og:novel:author")
-            book.bookCoverImgUrl = document.metaProp("og:image")
-            book.intro =document.metaProp("og:description")
-            document.getElementsByClass("liebiao_bottom")[0].child(0).children().map { it.select("a[href]") }.mapIndexed { index, e ->
+            book.name = intro.getElementsByClass("title")[0].child(0).text()
+            book.author = document.metaProp("og:novel:author")
+            book.bookCoverImgUrl = intro.child(0).child(0).attr("src")
+            book.intro = document.metaProp("og:description")
+            book.chapterList = document.getElementsByClass("liebiao_bottom")[0].child(0).children().map { it.select("a[href]") }.mapIndexed { index, e ->
                 Chapter(e.attr("abs:href"), book.url, index = index, chapterName = e.text())
             }
-            book.chapterList = document.getElementById("list").select("a[href]").mapIndexed { index, e -> Chapter(e.attr("abs:href"), book.url, index = index, chapterName = e.text()) }
             book.chapterListUrl = book.url
             book
         }
