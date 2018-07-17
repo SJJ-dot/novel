@@ -7,10 +7,12 @@ import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
+import sjj.alog.Log
 import sjj.fiction.data.source.local.LocalFictionDataSource
 import sjj.fiction.data.source.remote.aszw.AszwFictionDataSource
 import sjj.fiction.data.source.remote.biquge.BiqugeDataSource
 import sjj.fiction.data.source.remote.dhzw.DhzwDataSource
+import sjj.fiction.data.source.remote.liumao.LiuMaoDataSource
 import sjj.fiction.data.source.remote.yunlaige.YunlaigeDataSource
 import sjj.fiction.model.Book
 import sjj.fiction.model.BookSourceRecord
@@ -36,6 +38,7 @@ class FictionDataRepository {
         input(YunlaigeDataSource())
         input(AszwFictionDataSource())
         input(BiqugeDataSource())
+        input(LiuMaoDataSource())
     }
 
     fun search(search: String): Single<List<Pair<BookSourceRecord, List<Book>>>> {
@@ -43,7 +46,9 @@ class FictionDataRepository {
             if (search.isBlank()) {
                 throw IllegalArgumentException("搜索内容不能为空")
             }
-            it.search(search).onErrorResumeNext(Observable.empty())
+            it.search(search).doOnError {
+                Log.e("搜索出错:$it",it)
+            }.onErrorResumeNext(Observable.empty())
         }.reduce(mutableMapOf<String, MutableList<Book>>(), { map, bs ->
             bs.forEach {
                 map.getOrPut(it.name + it.author, { mutableListOf() }).add(it)
