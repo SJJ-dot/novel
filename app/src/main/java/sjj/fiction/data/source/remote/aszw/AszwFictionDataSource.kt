@@ -25,7 +25,7 @@ class AszwFictionDataSource : HttpDataSource(), FictionDataRepository.RemoteSour
             val list = mutableListOf<Book>()
             for (i in 1 until element.size) {
                 val select = element[i].select("a[href]")
-                val url = select[0].attr("href")
+                val url = select[0].absUrl("href")
                 val name = select[0].text()
                 val author = select[2].text()
                 list.add(Book(url, name, author))
@@ -54,9 +54,9 @@ class AszwFictionDataSource : HttpDataSource(), FictionDataRepository.RemoteSour
             val btitle = parse.getElementsByClass("btitle")
             book.name = btitle[0].child(0).text()
             book.author = btitle[0].child(1).text().trim().split("：").last()
-            book.bookCoverImgUrl = parse.select("[src]")[0].attr("src")
+            book.bookCoverImgUrl = parse.select("[src]")[0].absUrl("src")
             book.intro = parse.getElementsByClass("book")[0].getElementsByClass("js")[0].text()
-            book.chapterList = body.getElementById("at").select("a[href]").mapIndexed { index, e -> Chapter(e.attr("abs:href"), book.url, index = index, chapterName = e.text()) }
+            book.chapterList = body.getElementById("at").select("a[href]").mapIndexed { index, e -> Chapter(e.absUrl("abs:href"), book.url, index = index, chapterName = e.text()) }
             book.chapterListUrl = book.url
             book
         }

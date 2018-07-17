@@ -22,7 +22,7 @@ class BiqugeDataSource() : HttpDataSource(), FictionDataRepository.RemoteSource 
             val children = Jsoup.parse(it).body().getElementsByTag("tbody")[0].children()
             children.takeLast(children.size - 1).map {
                 val element = it.select("a[href]")[0]
-                Book(element.attr("href"), element.text(), it.child(2).text())
+                Book(element.absUrl("href"), element.text(), it.child(2).text())
             }.toList()
         }
     }
@@ -46,14 +46,14 @@ class BiqugeDataSource() : HttpDataSource(), FictionDataRepository.RemoteSource 
             val info = parse.getElementById("info")
             book.name = info.child(0).text()
             book.author = info.child(1).text().trim().split("：").last()
-            book.bookCoverImgUrl = parse.getElementById("fmimg").select("[src]")[0].attr("src")
+            book.bookCoverImgUrl = parse.getElementById("fmimg").select("[src]")[0].absUrl("src")
             book.intro = parse.getElementById("intro").child(0).text()
             val children = parse.getElementById("list").child(0).children()
             val last = children.indexOfLast { it.tag().name == "dt" }
             book.chapterListUrl = url
             book.chapterList = children.subList(last+1,children.size)
-                    .map { it.select("a[href]") }
-                    .mapIndexed { index, e -> Chapter(e.attr("abs:href"),book.url,index = index, chapterName = e.text()) }
+                    .map { it.select("a[href]")[0] }
+                    .mapIndexed { index, e -> Chapter(e.absUrl("abs:href"),book.url,index = index, chapterName = e.text()) }
             book
         }
     }

@@ -24,7 +24,7 @@ class DhzwDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
                     val elementsByClass = Jsoup.parse(it).body().getElementById("newscontent").getElementsByTag("ul")[0].getElementsByTag("li")
                     val results = List(elementsByClass.size) {
                         val ahref = elementsByClass[it].child(1).select("a[href]")[0]
-                        Book(ahref.attr("href"), ahref.text(), elementsByClass[it].child(3).child(0).text())
+                        Book(ahref.absUrl("href"), ahref.text(), elementsByClass[it].child(3).child(0).text())
                     }
                     results
                 }
@@ -47,9 +47,9 @@ class DhzwDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
             val infotitle = parse.getElementsByClass("infotitle")[0]
             book.name = infotitle.child(0).text()
             book.author = infotitle.child(1).text().split("：").last()
-            book.bookCoverImgUrl = parse.getElementById("fmimg").select("[src]")[0].attr("src")
+            book.bookCoverImgUrl = parse.getElementById("fmimg").select("[src]")[0].absUrl("src")
             book.intro = parse.getElementById("info").child(1).text()
-            book.chapterList = parse.getElementById("list").select("a[href]").mapIndexed { index, e -> Chapter(e.attr("abs:href"), book.url, index = index, chapterName = e.text()) }
+            book.chapterList = parse.getElementById("list").select("a[href]").mapIndexed { index, e -> Chapter(e.absUrl("abs:href"), book.url, index = index, chapterName = e.text()) }
             book.chapterListUrl = book.url
             book
         }

@@ -58,9 +58,9 @@ class DetailsActivity : BaseActivity() {
             originWebsite.text = it.url.domain()
             originWebsite.setOnClickListener { v ->
                 v.isEnabled = false
-                model.bookSource.doOnTerminate {
+                model.bookSource.observeOn(AndroidSchedulers.mainThread()).doOnTerminate {
                     v.isEnabled = true
-                }.observeOn(AndroidSchedulers.mainThread()).subscribe { bs ->
+                }.subscribe { bs ->
                     v.isEnabled = true
                     alert {
                         items(bs.map { it.domain() }) { dialog, index ->

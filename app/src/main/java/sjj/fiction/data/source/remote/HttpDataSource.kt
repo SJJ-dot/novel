@@ -8,6 +8,7 @@ import io.reactivex.schedulers.Schedulers
 import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import okio.Buffer
+import org.jsoup.nodes.Document
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Converter
@@ -92,6 +93,9 @@ abstract class HttpDataSource : DataSourceInterface {
                 }
             }
         }
+    }
+    protected fun Document.metaProp(attrValue: String): String {
+        return getElementsByAttributeValue("property", attrValue)[0].attr("content")
     }
 }
 

@@ -2,6 +2,7 @@ package sjj.fiction.data.source.remote.yunlaige
 
 import io.reactivex.Observable
 import org.jsoup.Jsoup
+import sjj.alog.Log
 import sjj.fiction.data.repository.FictionDataRepository
 import sjj.fiction.data.source.remote.HttpDataSource
 import sjj.fiction.data.source.remote.HttpInterface
@@ -24,14 +25,14 @@ class YunlaigeDataSource : HttpDataSource(), FictionDataRepository.RemoteSource 
             try {
                 document.body().getElementsByClass("chart-dashed-list")[0].children().map {
                     val child1 = it.child(1).child(0).child(0).select("a[href]")[0]
-                    Book(child1.attr("href"), child1.text(), it.child(1).child(1).text().split("/")[0])
+                    Book(child1.absUrl("href"), child1.text(), it.child(1).child(1).text().split("/")[0])
                 }
             } catch (e: Exception) {
                 val element = document.body().getElementsByClass("book-info")[0]
                 val info = element.getElementsByClass("info")[0]
                 val name = info.child(0).child(0).text()
                 val author = info.child(1).child(0).text()
-                val split = document.getElementsByClass("book-info")[0].child(0).attr("href").split("/")
+                val split = document.metaProp("og:novel:read_url").split("/")
                 listOf(Book("$baseUrl/book/${split[split.size - 2]}.html", name, author))
             }
         }
@@ -46,9 +47,9 @@ class YunlaigeDataSource : HttpDataSource(), FictionDataRepository.RemoteSource 
             book.url = url
             book.name = info.child(0).child(0).text()
             book.author = info.child(1).child(0).text()
-            book.bookCoverImgUrl = element.select("a[href]")[0].attr("href")
+            book.bookCoverImgUrl = element.select("a[href]")[0].absUrl("href")
             book.intro = info.child(2).text()
-            book.chapterListUrl = info.child(3).select("a[href]")[0].attr("href")
+            book.chapterListUrl = info.child(3).select("a[href]")[0].absUrl("href")
             book
         }.flatMap {
             loadChapterList(it)
@@ -57,7 +58,7 @@ class YunlaigeDataSource : HttpDataSource(), FictionDataRepository.RemoteSource 
     private fun loadChapterList(book: Book): Observable<Book> {
         return service.loadHtmlForGBK(book.chapterListUrl).map {
             book.chapterList = Jsoup.parse(it, book.chapterListUrl).getElementById("contenttable").child(0).select("a[href]").mapIndexed { index, e ->
-                Chapter(e.attr("abs:href"), book.url, index, e.text())
+                Chapter(e.absUrl("abs:href"), book.url, index, e.text())
             }
             book
         }

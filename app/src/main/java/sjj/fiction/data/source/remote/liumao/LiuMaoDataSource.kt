@@ -27,7 +27,7 @@ class LiuMaoDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
                 for (i in 1 until element.size) {
                     list.add(element[i].run {
                         val href = child(0).child(0)
-                        Book(href.attr("href"), href.text(), child(2).text())
+                        Book(href.absUrl("href"), href.text(), child(2).text())
                     })
                 }
                 list
@@ -57,10 +57,10 @@ class LiuMaoDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
             book.url = url
             book.name = intro.getElementsByClass("title")[0].child(0).text()
             book.author = document.metaProp("og:novel:author")
-            book.bookCoverImgUrl = intro.child(0).child(0).attr("src")
+            book.bookCoverImgUrl = intro.child(0).child(0).absUrl("src")
             book.intro = document.metaProp("og:description")
-            book.chapterList = document.getElementsByClass("liebiao_bottom")[0].child(0).children().map { it.select("a[href]") }.mapIndexed { index, e ->
-                Chapter(e.attr("abs:href"), book.url, index = index, chapterName = e.text())
+            book.chapterList = document.getElementsByClass("liebiao_bottom")[0].child(0).children().map { it.select("a[href]")[0] }.mapIndexed { index, e ->
+                Chapter(e.absUrl("abs:href"), book.url, index = index, chapterName = e.text())
             }
             book.chapterListUrl = book.url
             book
@@ -68,8 +68,6 @@ class LiuMaoDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
     }
 
 
-    private fun Document.metaProp(attrValue: String): String {
-        return head().getElementsByAttributeValue("property", attrValue)[0].attr("content")
-    }
+
 
 }
