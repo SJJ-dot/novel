@@ -23,7 +23,7 @@ class SharedPreferencesDelegate<T>(private val def: T?, val sp: () -> SharedPref
             Float::class.java -> sp.getFloat(property.name, def as Float)
             Int::class.java -> sp.getInt(property.name, def as Int)
             Long::class.java -> sp.getLong(property.name, def as Long)
-            else -> gson.fromJson(sp.getString(property.name, json), type)
+            else -> sp.getString(property.name,def.serialize()).deSerialize()
         } as T
     }
 
@@ -35,7 +35,7 @@ class SharedPreferencesDelegate<T>(private val def: T?, val sp: () -> SharedPref
             Float::class.java -> edit.putFloat(property.name, value as Float)
             Int::class.java -> edit.putInt(property.name, value as Int)
             Long::class.java -> edit.putLong(property.name, value as Long)
-            else -> edit.putString(property.name, gson.toJson(value))
+            else -> edit.putString(property.name, value.serialize())
         }
         edit.apply()
     }
@@ -57,7 +57,7 @@ class SharedPreferencesLiveData<T>(val def: T?, val sp: () -> SharedPreferences 
                         Float::class.java -> edit.putFloat(property.name, value as Float)
                         Int::class.java -> edit.putInt(property.name, value as Int)
                         Long::class.java -> edit.putLong(property.name, value as Long)
-                        else -> edit.putString(property.name, gson.toJson(value))
+                        else -> edit.putString(property.name, value.serialize())
                     }
                     edit.apply()
                     if (Thread.currentThread() == Looper.getMainLooper().thread) {
@@ -73,7 +73,7 @@ class SharedPreferencesLiveData<T>(val def: T?, val sp: () -> SharedPreferences 
                 Float::class.java -> sp().getFloat(property.name, def as Float)
                 Int::class.java -> sp().getInt(property.name, def as Int)
                 Long::class.java -> sp().getLong(property.name, def as Long)
-                else -> gson.fromJson(sp().getString(property.name, json), type)
+                else -> sp().getString(property.name, def.serialize()).deSerialize()
             } as T
         }
         return liveData!!
