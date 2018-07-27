@@ -4,59 +4,55 @@ import android.arch.lifecycle.MutableLiveData
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Looper
-import com.google.gson.reflect.TypeToken
 import sjj.fiction.App
-import java.lang.reflect.Type
 import kotlin.reflect.KProperty
 
 val sharedPreferences by lazy { App.app.getSharedPreferences("generalDelegate", Context.MODE_PRIVATE) }
 
-inline fun <reified T : Any> sharedPreferencesDelegate(def: T?, noinline sp: () -> SharedPreferences = { sharedPreferences }) = SharedPreferencesDelegate(def, sp, type = object : TypeToken<T>() {}.type)
+inline fun <reified T : Any> sharedPreferencesDelegate(def: T?, noinline sp: () -> SharedPreferences = { sharedPreferences }) = SharedPreferencesDelegate(def, sp)
 
-class SharedPreferencesDelegate<T>(private val def: T?, val sp: () -> SharedPreferences = { sharedPreferences }, val type: Type) {
-    private val json by lazy { gson.toJson(def) }
+class SharedPreferencesDelegate<T>(private val def: T?, val sp: () -> SharedPreferences = { sharedPreferences }) {
     operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
         val sp = sp()
-        return when (type) {
-            String::class.java -> sp.getString(property.name, def as String?)
-            Boolean::class.java -> sp.getBoolean(property.name, def as Boolean)
-            Float::class.java -> sp.getFloat(property.name, def as Float)
-            Int::class.java -> sp.getInt(property.name, def as Int)
-            Long::class.java -> sp.getLong(property.name, def as Long)
+        return when (property.returnType.classifier) {
+            String::class -> sp.getString(property.name, def as String?)
+            Boolean::class -> sp.getBoolean(property.name, def as Boolean)
+            Float::class -> sp.getFloat(property.name, def as Float)
+            Int::class -> sp.getInt(property.name, def as Int)
+            Long::class -> sp.getLong(property.name, def as Long)
             else -> sp.getString(property.name,def.serialize()).deSerialize()
         } as T
     }
 
     operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T?) {
         val edit = sp().edit()
-        when (type) {
-            String::class.java -> edit.putString(property.name, value as String?)
-            Boolean::class.java -> edit.putBoolean(property.name, value as Boolean)
-            Float::class.java -> edit.putFloat(property.name, value as Float)
-            Int::class.java -> edit.putInt(property.name, value as Int)
-            Long::class.java -> edit.putLong(property.name, value as Long)
+        when (property.returnType.classifier) {
+            String::class -> edit.putString(property.name, value as String?)
+            Boolean::class -> edit.putBoolean(property.name, value as Boolean)
+            Float::class -> edit.putFloat(property.name, value as Float)
+            Int::class -> edit.putInt(property.name, value as Int)
+            Long::class -> edit.putLong(property.name, value as Long)
             else -> edit.putString(property.name, value.serialize())
         }
         edit.apply()
     }
 }
 
-inline fun <reified T : Any> liveDataDelegate(def: T?, noinline sp: () -> SharedPreferences = { sharedPreferences }) = SharedPreferencesLiveData(def, sp, type = object : TypeToken<T>() {}.type)
+inline fun <reified T : Any> liveDataDelegate(def: T?, noinline sp: () -> SharedPreferences = { sharedPreferences }) = SharedPreferencesLiveData(def, sp)
 
-class SharedPreferencesLiveData<T>(val def: T?, val sp: () -> SharedPreferences = { sharedPreferences }, val type: Type) {
-    private val json by lazy { gson.toJson(def) }
+class SharedPreferencesLiveData<T>(val def: T?, val sp: () -> SharedPreferences = { sharedPreferences }) {
     private var liveData: MutableLiveData<T>? = null
     operator fun getValue(thisRef: Any?, property: KProperty<*>): MutableLiveData<T> {
         if (liveData == null) {
             liveData = object : MutableLiveData<T>() {
                 override fun setValue(value: T) {
                     val edit = sp().edit()
-                    when (type) {
-                        String::class.java -> edit.putString(property.name, value as String?)
-                        Boolean::class.java -> edit.putBoolean(property.name, value as Boolean)
-                        Float::class.java -> edit.putFloat(property.name, value as Float)
-                        Int::class.java -> edit.putInt(property.name, value as Int)
-                        Long::class.java -> edit.putLong(property.name, value as Long)
+                    when (property.returnType.arguments[0].type?.classifier) {
+                        String::class -> edit.putString(property.name, value as String?)
+                        Boolean::class -> edit.putBoolean(property.name, value as Boolean)
+                        Float::class -> edit.putFloat(property.name, value as Float)
+                        Int::class -> edit.putInt(property.name, value as Int)
+                        Long::class -> edit.putLong(property.name, value as Long)
                         else -> edit.putString(property.name, value.serialize())
                     }
                     edit.apply()
@@ -67,12 +63,12 @@ class SharedPreferencesLiveData<T>(val def: T?, val sp: () -> SharedPreferences 
                     }
                 }
             }
-            liveData?.value = when (type) {
-                String::class.java -> sp().getString(property.name, def as String?)
-                Boolean::class.java -> sp().getBoolean(property.name, def as Boolean)
-                Float::class.java -> sp().getFloat(property.name, def as Float)
-                Int::class.java -> sp().getInt(property.name, def as Int)
-                Long::class.java -> sp().getLong(property.name, def as Long)
+            liveData?.value = when (property.returnType.arguments[0].type?.classifier) {
+                String::class -> sp().getString(property.name, def as String?)
+                Boolean::class -> sp().getBoolean(property.name, def as Boolean)
+                Float::class -> sp().getFloat(property.name, def as Float)
+                Int::class -> sp().getInt(property.name, def as Int)
+                Long::class -> sp().getLong(property.name, def as Long)
                 else -> sp().getString(property.name, def.serialize()).deSerialize()
             } as T
         }
