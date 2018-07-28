@@ -10,6 +10,7 @@ import io.reactivex.Single
 import sjj.alog.Log
 import sjj.fiction.data.source.local.LocalFictionDataSource
 import sjj.fiction.data.source.remote.aszw.AszwFictionDataSource
+import sjj.fiction.data.source.remote.baidu.BaiDuDataSource
 import sjj.fiction.data.source.remote.biquge.BiqugeDataSource
 import sjj.fiction.data.source.remote.dhzw.DhzwDataSource
 import sjj.fiction.data.source.remote.liumao.LiuMaoDataSource
@@ -18,7 +19,7 @@ import sjj.fiction.model.Book
 import sjj.fiction.model.BookSourceRecord
 import sjj.fiction.model.Chapter
 import sjj.fiction.util.concat
-import sjj.fiction.util.domain
+import sjj.fiction.util.host
 import sjj.fiction.util.lazyFromIterable
 import java.util.concurrent.TimeUnit
 
@@ -28,26 +29,27 @@ val fictionDataRepository by lazy { FictionDataRepository() }
  * Created by SJJ on 2017/9/2.
  */
 class FictionDataRepository {
-    private val sources = mutableMapOf<String, FictionDataRepository.RemoteSource>()
+    private val sources = listOf<FictionDataRepository.RemoteSource>(
+            DhzwDataSource(),
+            YunlaigeDataSource(),
+            AszwFictionDataSource(),
+            BiqugeDataSource(),
+            LiuMaoDataSource(),
+            BaiDuDataSource())
 
     private val localSource: LocalSource = LocalFictionDataSource()
 
-    init {
-        val input: (RemoteSource) -> Unit = { sources[it.domain()] = it }
-        input(DhzwDataSource())
-        input(YunlaigeDataSource())
-        input(AszwFictionDataSource())
-        input(BiqugeDataSource())
-        input(LiuMaoDataSource())
+    private fun getSource(url: String) = sources.find {
+        url.host.endsWith(it.tld,true)
     }
 
     fun search(search: String): Single<List<Pair<BookSourceRecord, List<Book>>>> {
-        return Observable.fromIterable(sources.values).flatMap {
+        return Observable.fromIterable(sources).flatMap {
             if (search.isBlank()) {
                 throw IllegalArgumentException("搜索内容不能为空")
             }
             it.search(search).doOnError {
-                Log.e("搜索出错:$it",it)
+                Log.e("搜索出错:$it", it)
             }.onErrorResumeNext(Observable.empty())
         }.reduce(mutableMapOf<String, MutableList<Book>>(), { map, bs ->
             bs.forEach {
@@ -76,7 +78,7 @@ class FictionDataRepository {
 
     fun refreshBook(url: String): Observable<Book> {
         return Observable.just(url).flatMap {
-            sources[it.domain()]?.getBook(it) ?: throw Exception("未知源 $it")
+            getSource(it)?.getBook(it) ?: throw Exception("未知源 $it")
         }.flatMap(localSource::refreshBook)
     }
 
@@ -91,7 +93,7 @@ class FictionDataRepository {
 
     fun loadChapter(chapter: Chapter): Observable<Chapter> {
         return Observable.just(chapter).flatMap {
-            sources[it.url.domain()]!!.getChapterContent(it)
+            getSource(it.url)!!.getChapterContent(it)
         }.flatMap(localSource::updateChapter)
     }
 
@@ -138,7 +140,7 @@ class FictionDataRepository {
     interface RemoteSource {
         fun getChapterContent(chapter: Chapter): Observable<Chapter>
         fun getBook(url: String): Observable<Book>
-        fun domain(): String
+        val tld: String
         fun search(search: String): Observable<List<Book>>
     }
 

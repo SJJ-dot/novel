@@ -27,7 +27,7 @@ class App : Application() {
             finishAll()
             val intent = Intent(this, CrashActivity::class.java)
             intent.putExtra(CrashActivity.THREAD_INFO, "线程：${t.name} ID：${t.id}")
-            intent.putExtra(CrashActivity.CRASH_DATA, e)
+            intent.putExtra(CrashActivity.CRASH_DATA, android.util.Log.getStackTraceString(e))
             intent.noHistory()
             startActivity(intent)
             System.exit(0)

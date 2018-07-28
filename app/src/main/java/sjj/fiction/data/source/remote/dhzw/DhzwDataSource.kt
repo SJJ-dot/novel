@@ -5,8 +5,8 @@ import org.jsoup.Jsoup
 import sjj.fiction.data.repository.FictionDataRepository
 import sjj.fiction.data.source.remote.HttpDataSource
 import sjj.fiction.data.source.remote.HttpInterface
-import sjj.fiction.model.*
-import sjj.fiction.util.domain
+import sjj.fiction.model.Book
+import sjj.fiction.model.Chapter
 import java.net.URLEncoder
 
 /**
@@ -14,8 +14,7 @@ import java.net.URLEncoder
  */
 class DhzwDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
     override val baseUrl: String = "https://www.dhzw.org/"
-    override fun domain(): String = baseUrl.domain()
-
+    override val tld: String = "dhzw.org"
     private val service = create<HttpInterface>()
 
     override fun search(search: String): Observable<List<Book>> {

@@ -18,7 +18,7 @@ class CrashActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         val supportActionBar = supportActionBar!!
         supportActionBar.title = intent.getStringExtra(THREAD_INFO)
-        val stackTraceString = (intent.getSerializableExtra(CRASH_DATA) as Throwable).stackTraceString()
+        val stackTraceString = intent.getStringExtra(CRASH_DATA)
         contentText.text = stackTraceString
         Log.e(stackTraceString)
     }

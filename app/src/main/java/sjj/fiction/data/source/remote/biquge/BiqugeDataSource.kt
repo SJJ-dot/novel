@@ -7,8 +7,6 @@ import sjj.fiction.data.source.remote.HttpDataSource
 import sjj.fiction.data.source.remote.HttpInterface
 import sjj.fiction.model.Book
 import sjj.fiction.model.Chapter
-import sjj.fiction.util.domain
-import sjj.fiction.util.log
 
 /**
  * Created by SJJ on 2017/11/3.
@@ -16,7 +14,8 @@ import sjj.fiction.util.log
 class BiqugeDataSource() : HttpDataSource(), FictionDataRepository.RemoteSource {
     override val baseUrl: String = "https://www.biquge5200.cc/"
     private val service = create<HttpInterface>()
-    override fun domain() = baseUrl.domain()
+    override val tld: String = "biquge5200.cc"
+
     override fun search(search: String): Observable<List<Book>> {
         return service.searchForGBKGET("modules/article/search.php", mapOf("searchkey" to search)).map {
             val children = Jsoup.parse(it).body().getElementsByTag("tbody")[0].children()

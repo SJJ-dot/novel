@@ -27,8 +27,8 @@ import sjj.fiction.R
 import sjj.fiction.model.Book
 import sjj.fiction.model.Chapter
 import sjj.fiction.read.ReadActivity
-import sjj.fiction.util.domain
 import sjj.fiction.util.getModel
+import sjj.fiction.util.host
 import sjj.fiction.util.log
 
 /**
@@ -55,7 +55,7 @@ class DetailsActivity : BaseActivity() {
         val adapter = ChapterListAdapter()
         model.book.observeOn(AndroidSchedulers.mainThread()).subscribe {
             bind.book = it
-            originWebsite.text = it.url.domain()
+            originWebsite.text = it.url.host
             originWebsite.setOnClickListener { v ->
                 v.isEnabled = false
                 model.bookSource.observeOn(AndroidSchedulers.mainThread()).doOnTerminate {
@@ -63,7 +63,7 @@ class DetailsActivity : BaseActivity() {
                 }.subscribe { bs ->
                     v.isEnabled = true
                     alert {
-                        items(bs.map { it.domain() }) { dialog, index ->
+                        items(bs.map { it.host }) { dialog, index ->
                             dialog.dismiss()
                             model.setBookSource(bs[index]).subscribe()
                         }

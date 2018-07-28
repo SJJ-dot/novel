@@ -3,27 +3,20 @@ package sjj.fiction.util
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import sjj.alog.Log
+import java.net.URL
 import java.util.regex.Pattern
 
 /**
  * Created by SJJ on 2017/10/15.
  */
 
-fun String.domain(): String {
-    val pattern = "(http(s)?://[a-zA-z\\d.]++)/?"
-    val r = Pattern.compile(pattern)
-    val m = r.matcher(this)
-    if (m.find()) {
-        return m.group(1)
-    }
-    return "error"
-}
+val String.host: String get() = URL(this).host
 
-fun <T> T.log():T {
+fun <T> T.log(): T {
     if (this is Throwable) {
-        Log.e(1, this,this)
+        Log.e(1, this, this)
     } else {
-        Log.e(1,this)
+        Log.e(1, this)
     }
     return this
 }

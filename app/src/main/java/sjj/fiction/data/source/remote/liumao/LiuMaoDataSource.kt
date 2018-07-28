@@ -2,20 +2,16 @@ package sjj.fiction.data.source.remote.liumao
 
 import io.reactivex.Observable
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import sjj.alog.Log
 import sjj.fiction.data.repository.FictionDataRepository
 import sjj.fiction.data.source.remote.HttpDataSource
 import sjj.fiction.data.source.remote.HttpInterface
 import sjj.fiction.model.Book
 import sjj.fiction.model.Chapter
-import sjj.fiction.util.domain
 import java.net.URLEncoder
 
 class LiuMaoDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
     override val baseUrl: String = "http://www.6mao.com/"
-    override fun domain(): String = baseUrl.domain()
-
+    override val tld: String = "6mao.com"
     private val service = create<HttpInterface>()
 
     override fun search(search: String): Observable<List<Book>> {

@@ -7,17 +7,15 @@ import sjj.fiction.data.source.remote.HttpDataSource
 import sjj.fiction.data.source.remote.HttpInterface
 import sjj.fiction.model.Book
 import sjj.fiction.model.Chapter
-import sjj.fiction.util.domain
 import java.net.URLEncoder
 
 /**
  * Created by Administrator on 2017/10/23.
  */
 class AszwFictionDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
-    override val baseUrl: String =  "https://www.aszw.org/"
+    override val baseUrl: String = "https://www.aszw.org/"
     private val service = create<HttpInterface>()
-
-    override fun domain() = baseUrl.domain()
+    override val tld: String = "aszw.org"
 
     override fun search(search: String): Observable<List<Book>> {
         return service.searchForGBK("modules/article/search.php", mapOf("searchkey" to URLEncoder.encode(search, "gbk"))).map {
@@ -38,7 +36,7 @@ class AszwFictionDataSource : HttpDataSource(), FictionDataRepository.RemoteSour
         return service.loadHtmlForGBK(chapter.url).map {
             val document = Jsoup.parse(it)
             val parse = document.getElementById("contents")
-            chapter.chapterName =document.getElementsByClass("bdb")[0].text()
+            chapter.chapterName = document.getElementsByClass("bdb")[0].text()
             chapter.content = parse.html()
             chapter.isLoadSuccess = true
             chapter
@@ -49,7 +47,7 @@ class AszwFictionDataSource : HttpDataSource(), FictionDataRepository.RemoteSour
         return service.loadHtmlForGBK(url).map {
             val body = Jsoup.parse(it, url).body()
             val parse = body.getElementsByClass("info")[0]
-            val book  = Book()
+            val book = Book()
             book.url = url
             val btitle = parse.getElementsByClass("btitle")
             book.name = btitle[0].child(0).text()
