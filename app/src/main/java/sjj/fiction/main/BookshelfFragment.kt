@@ -68,7 +68,7 @@ class BookshelfFragment : BaseFragment() {
             holder.itemView.bookName.text = book.name
             holder.itemView.author.text = book.author
             holder.itemView.originWebsite.text = book.url.host
-            holder.itemView.lastChapter.text = book.chapterList.last().chapterName
+            holder.itemView.lastChapter.text = book.chapterList.lastOrNull()?.chapterName
             holder.itemView.bookCover.setImageURI(book.bookCoverImgUrl)
             holder.itemView.setOnClickListener { v ->
                 startActivity<DetailsActivity>(DetailsActivity.BOOK_NAME to book.name, DetailsActivity.BOOK_AUTHOR to book.author)

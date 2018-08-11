@@ -9,6 +9,7 @@ import sjj.fiction.data.repository.FictionDataRepository
 import sjj.fiction.model.Book
 import sjj.fiction.model.BookSourceRecord
 import sjj.fiction.model.Chapter
+import sjj.fiction.util.fromCallableOrNull
 
 /**
  * Created by SJJ on 2017/10/15.
@@ -36,13 +37,13 @@ class LocalFictionDataSource : FictionDataRepository.LocalSource {
     }
 
     override fun getBookSource(name: String, author: String): Observable<List<String>> {
-        return Observable.fromCallable {
+        return fromCallableOrNull {
             bookDao.getBookSource(name, author)
         }.subscribeOn(Schedulers.io())
     }
 
     override fun updateBookSource(name: String, author: String, url: String): Observable<Int> {
-        return Observable.fromCallable {
+        return fromCallableOrNull {
             bookDao.updateBookSource(name, author, url)
         }.subscribeOn(Schedulers.io())
     }
@@ -61,13 +62,13 @@ class LocalFictionDataSource : FictionDataRepository.LocalSource {
     }
 
     override fun setReadIndex(name: String, author: String, index: Int): Observable<Int> {
-        return Observable.fromCallable {
+        return fromCallableOrNull {
             bookDao.setReadIndex(name, author, index)
         }.subscribeOn(Schedulers.io())
     }
 
     override fun refreshBook(book: Book): Observable<Book> {
-        return Observable.fromCallable {
+        return fromCallableOrNull {
             booksDataBase.runInTransaction {
                 bookDao.updateBook(book)
                 bookDao.insertChapters(book.chapterList)
@@ -77,13 +78,13 @@ class LocalFictionDataSource : FictionDataRepository.LocalSource {
     }
 
     override fun getLatestChapter(bookUrl: String): Observable<Chapter> {
-        return Observable.fromCallable {
+        return fromCallableOrNull {
             bookDao.getLatestChapter(bookUrl)
         }.subscribeOn(Schedulers.io())
     }
 
     override fun getChapter(url: String): Observable<Chapter> {
-        return Observable.fromCallable {
+        return fromCallableOrNull {
             bookDao.getChapter(url)
         }.subscribeOn(Schedulers.io())
     }
@@ -97,13 +98,13 @@ class LocalFictionDataSource : FictionDataRepository.LocalSource {
     }
 
     override fun getUnLoadChapters(bookUrl: String): Observable<List<Chapter>> {
-        return Observable.fromCallable {
+        return fromCallableOrNull {
             bookDao.getUnLoadChapters(bookUrl)
         }.subscribeOn(Schedulers.io())
     }
 
     override fun updateChapter(chapter: Chapter): Observable<Chapter> {
-        return Observable.fromCallable {
+        return fromCallableOrNull {
             bookDao.updateChapter(chapter)
             chapter
         }.subscribeOn(Schedulers.io())
@@ -114,7 +115,7 @@ class LocalFictionDataSource : FictionDataRepository.LocalSource {
     }
 
     override fun deleteBook(bookName: String, author: String): Observable<Int> {
-        return Observable.fromCallable {
+        return fromCallableOrNull {
             bookDao.deleteBook(bookName, author)
         }.subscribeOn(Schedulers.io())
     }

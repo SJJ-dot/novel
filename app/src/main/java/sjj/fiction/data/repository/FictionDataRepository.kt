@@ -34,13 +34,14 @@ class FictionDataRepository {
             YunlaigeDataSource(),
             AszwFictionDataSource(),
             BiqugeDataSource(),
-            LiuMaoDataSource(),
-            BaiDuDataSource())
+            LiuMaoDataSource()
+//            BaiDuDataSource()
+    )
 
     private val localSource: LocalSource = LocalFictionDataSource()
 
     private fun getSource(url: String) = sources.find {
-        url.host.endsWith(it.tld,true)
+        url.host.endsWith(it.tld, true)
     }
 
     fun search(search: String): Single<List<Pair<BookSourceRecord, List<Book>>>> {
@@ -69,11 +70,12 @@ class FictionDataRepository {
     }
 
     fun getBookInBookSource(name: String, author: String): Flowable<Book> {
-        return localSource.getBookInBookSource(name, author).doOnNext {
-            if (it.updateTime < System.currentTimeMillis() - 1000 * 60 * 10 || it.intro.isBlank()) {
-                refreshBook(it.url).subscribe()
-            }
-        }
+        return localSource.getBookInBookSource(name, author)
+//                .doOnNext {
+//                    if (it.updateTime < System.currentTimeMillis() - 1000 * 60 * 10 || it.intro.isBlank()) {
+//                        refreshBook(it.url).subscribe()
+//                    }
+//                }
     }
 
     fun refreshBook(url: String): Observable<Book> {

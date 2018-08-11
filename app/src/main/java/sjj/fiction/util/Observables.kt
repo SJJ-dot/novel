@@ -23,3 +23,23 @@ fun <T, R> Observable<List<T>>.lazyFromIterable(mapper: (T) -> Observable<R>): O
 fun <T> ObservableSource<out ObservableSource<out T>>.concat(): Observable<T> {
     return Observable.concat(this)
 }
+
+fun <T> T.toObservable(): Observable<T> {
+    return Observable.create {
+        if (this != null) {
+            it.onNext(this)
+        }
+        it.onComplete()
+        Observable.fromCallable {  }
+    }
+}
+
+fun <T> fromCallableOrNull(callable:()->T): Observable<T> {
+    return Observable.create {
+        val t = callable()
+        if (t != null) {
+            it.onNext(t)
+        }
+        it.onComplete()
+    }
+}

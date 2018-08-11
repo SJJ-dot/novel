@@ -50,8 +50,9 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:$retrofit2_version"
     implementation "com.squareup.retrofit2:converter-scalars:$retrofit2_version"
     implementation "com.squareup.okhttp3:logging-interceptor:3.9.0"
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.14'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.0'
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+    implementation 'io.reactivex.rxjava2:rxkotlin:2.3.0'
     implementation 'com.sjianjun:aLog:1.1.3'
     implementation 'org.jsoup:jsoup:1.11.1'
     implementation 'com.sjianjun:permissionUtil:1.0.0'
@@ -104,12 +105,12 @@ dependencies {
 //    testImplementation "androidx.arch.core:core-testing:$lifecycle_version"
 
 
-    def paging_version = "1.0.0"
+    def paging_version = "1.0.1"
     implementation "android.arch.paging:runtime:$paging_version"
     // optional - RxJava support, currently in release candidate
-    implementation "android.arch.paging:rxjava2:1.0.0-rc1"
+    implementation "android.arch.paging:rxjava2:1.0.1"
 
-    def nav_version = "1.0.0-alpha02"
+    def nav_version = "1.0.0-alpha05"
     implementation "android.arch.navigation:navigation-fragment:$nav_version" // use -ktx for Kotlin
     implementation "android.arch.navigation:navigation-ui:$nav_version" // use -ktx for Kotlin
 
