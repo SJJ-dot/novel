@@ -16,7 +16,23 @@ class BaiDuDataSource() : HttpDataSource(), FictionDataRepository.RemoteSource {
     }
 
     override fun getBook(url: String): Observable<Book> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return service.loadHtmlForGBK(url).map {
+            val parse = Jsoup.parse(it, url).body()
+            val book = Book()
+            book.url = url
+            val info = parse.getElementById("info")
+            book.name = info.child(0).text()
+            book.author = info.child(1).text().trim().split("：").last()
+            book.bookCoverImgUrl = parse.getElementById("fmimg").select("[src]")[0].absUrl("src")
+            book.intro = parse.getElementById("intro").child(0).text()
+            val children = parse.getElementById("list").child(0).children()
+            val last = children.indexOfLast { it.tag().name == "dt" }
+            book.chapterListUrl = url
+            book.chapterList = children.subList(last+1,children.size)
+                    .map { it.select("a[href]")[0] }
+                    .mapIndexed { index, e -> Chapter(e.absUrl("abs:href"),book.url,index = index, chapterName = e.text()) }
+            book
+        }
     }
 
     override val tld: String = "baidu.com"

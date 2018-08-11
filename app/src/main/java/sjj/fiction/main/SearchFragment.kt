@@ -1,8 +1,6 @@
 package sjj.fiction.main
 
-import android.app.ProgressDialog
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
@@ -20,8 +18,6 @@ import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.support.v4.indeterminateProgressDialog
 import org.jetbrains.anko.support.v4.startActivity
 import org.jetbrains.anko.support.v4.toast
-import sjj.alog.Log
-import sjj.fiction.AppConfig
 import sjj.fiction.AppConfig.searchHistory
 import sjj.fiction.BaseFragment
 import sjj.fiction.R
