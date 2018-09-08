@@ -3,7 +3,7 @@ package sjj.fiction.data.source.local
 import android.arch.paging.DataSource
 import android.arch.persistence.room.*
 import io.reactivex.Flowable
-import sjj.fiction.App
+import sjj.fiction.Session
 import sjj.fiction.model.Book
 import sjj.fiction.model.BookSourceRecord
 import sjj.fiction.model.Chapter
@@ -68,6 +68,6 @@ abstract class BooksDataBase : RoomDatabase() {
 }
 
 val booksDataBase by lazy {
-    Room.databaseBuilder(App.app, BooksDataBase::class.java, "books.db").fallbackToDestructiveMigration()
+    Room.databaseBuilder(Session.ctx, BooksDataBase::class.java, "books.db").fallbackToDestructiveMigration()
             .build()
 }

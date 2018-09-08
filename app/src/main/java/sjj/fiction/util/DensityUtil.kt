@@ -1,17 +1,17 @@
 package sjj.fiction.util
 
-import sjj.fiction.App
+import sjj.fiction.Session
 
 /**
  * Created by SJJ on 2017/10/8.
  */
 fun dp2Px(value: Int): Int {
-    val scale = App.app.resources.displayMetrics.density
+    val scale = Session.ctx.resources.displayMetrics.density
     return Math.round(value * scale)
 }
 
 fun sp2px(value: Int): Int {
-    val fontScale = App.app.resources.displayMetrics.scaledDensity
+    val fontScale = Session.ctx.resources.displayMetrics.scaledDensity
     return Math.round(value * fontScale)
 }
 

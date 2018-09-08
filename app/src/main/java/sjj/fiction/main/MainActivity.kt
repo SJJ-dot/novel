@@ -4,7 +4,10 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI
+import io.reactivex.*
+import io.reactivex.processors.PublishProcessor
 import kotlinx.android.synthetic.main.activity_main.*
+import sjj.alog.Log
 import sjj.fiction.BaseActivity
 import sjj.fiction.R
 

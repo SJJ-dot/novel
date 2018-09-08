@@ -5,7 +5,20 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 def shortHash = 'git log -1 --pretty=%h'.execute([], project.rootDir).text.trim().toUpperCase()
 def commitCont = 'git rev-list HEAD --count'.execute([], project.rootDir).text.trim().toInteger()
+def currentBranch = 'git symbolic-ref --short -q HEAD'.execute([], project.rootDir).text.trim()
 android {
+    signingConfigs {
+        config {
+
+            Properties properties = new Properties()
+            properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+            keyAlias properties.getProperty('KEY_ALIAS')
+            keyPassword properties.getProperty("KEY_PASSWORD")
+            storeFile file(properties.getProperty("STORE_FILE"))
+            storePassword properties.getProperty("STORE_PASSWORD")
+        }
+    }
     compileSdkVersion 27
     defaultConfig {
         applicationId "sjj.fiction"
@@ -14,23 +27,32 @@ android {
         versionCode commitCont
         versionName "1.0.$commitCont-($shortHash)"
         multiDexEnabled true
+        multiDexKeepProguard file("tinkerMultidexKeep.pro")
+    }
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "fiction-${currentBranch}-${variant.buildType.name}(${variant.versionCode})-${variant.versionName}.apk"
+        }
     }
     buildTypes {
-//        release {
+        release {
 //            shrinkResources true
 //            minifyEnabled true
 //            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-//        }
-//        debug{
+//        proguardFiles 'proguardRules.pro', getDefaultProguardFile('proguard-android.txt')
+            signingConfig signingConfigs.config
+        }
+        debug {
 //            shrinkResources true
 //            minifyEnabled true
 //            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-//        }
+            signingConfig signingConfigs.config
+        }
     }
     dataBinding {
         enabled = true
     }
-
+    buildToolsVersion '28.0.3'
 }
 def dbflow_version = "4.1.1"
 def retrofit2_version = "2.4.0"
@@ -38,18 +60,19 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support:design:27.1.1'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     implementation 'com.android.support:support-v4:27.1.1'
     implementation 'com.android.support:cardview-v7:27.1.1'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib'
     implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlin_version}"
-    implementation "org.jetbrains.anko:anko:0.10.5"
+    implementation 'org.jetbrains.anko:anko:0.10.5'
+
     //    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.18'
     implementation "com.squareup.retrofit2:retrofit:$retrofit2_version"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit2_version"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit2_version"
     implementation "com.squareup.retrofit2:converter-scalars:$retrofit2_version"
-    implementation "com.squareup.okhttp3:logging-interceptor:3.9.0"
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.9.0'
     implementation 'io.reactivex.rxjava2:rxjava:2.2.0'
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
     implementation 'io.reactivex.rxjava2:rxkotlin:2.3.0'
@@ -60,58 +83,87 @@ dependencies {
 
     // alternately - if using Java8, use the following instead of compiler
 
-//    implementation "org.jetbrains.kotlin:kotlin-reflect:'*.jar'], dir: 'libs'"
-//    kapt "com.android.databinding:compiler:${gradle_plugin}"
+    //    implementation "org.jetbrains.kotlin:kotlin-reflect:'*.jar'], dir: 'libs'"
 
-    def room_version = "1.1.1" // or, for latest rc, use "1.1.1-rc1"
+    //    kapt "com.android.databinding:compiler:${gradle_plugin}"
+    def room_version = "1.1.1"
 
+    // or, for latest rc, use "1.1.1-rc1"
     implementation "android.arch.persistence.room:runtime:$room_version"
     kapt "android.arch.persistence.room:compiler:$room_version"
+
     // optional - RxJava support for Room
     implementation "android.arch.persistence.room:rxjava2:$room_version"
-
     def lifecycle_version = "1.1.1"
+
     // ViewModel and LiveData
     implementation "android.arch.lifecycle:extensions:$lifecycle_version"
+
     // alternatively - just ViewModel
-//    implementation "android.arch.lifecycle:viewmodel-ktx:$lifecycle_version" // use -ktx for Kotlin
-//    // alternatively - just LiveData
-//    implementation "android.arch.lifecycle:livedata:$lifecycle_version"
+
+    //    implementation "android.arch.lifecycle:viewmodel-ktx:$lifecycle_version" // use -ktx for Kotlin
+
+    //    // alternatively - just LiveData
+
+    //    implementation "android.arch.lifecycle:livedata:$lifecycle_version"
     kapt "android.arch.lifecycle:compiler:$lifecycle_version"
     implementation "android.arch.lifecycle:reactivestreams:$lifecycle_version"
 
-//    def lifecycle_version = "2.0.0-alpha1"
+    //    def lifecycle_version = "2.0.0-alpha1"
 
-//    // ViewModel and LiveData
-//    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+    //    // ViewModel and LiveData
+
+    //    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+
     // alternatively - just ViewModel
-//    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
-    // use -ktx for Kotlin
-    // alternatively - just LiveData
-//    implementation "androidx.lifecycle:lifecycle-livedata:$lifecycle_version"
-    // alternatively - Lifecycles only (no ViewModel or LiveData). Some UI
-    //     AndroidX libraries use this lightweight import for Lifecycle
-//    implementation "androidx.lifecycle:lifecycle-runtime:$lifecycle_version"
 
-//    kapt "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
+    //    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+
+    // use -ktx for Kotlin
+
+    // alternatively - just LiveData
+
+    //    implementation "androidx.lifecycle:lifecycle-livedata:$lifecycle_version"
+
+    // alternatively - Lifecycles only (no ViewModel or LiveData). Some UI
+
+    //     AndroidX libraries use this lightweight import for Lifecycle
+
+    //    implementation "androidx.lifecycle:lifecycle-runtime:$lifecycle_version"
+
+    //    kapt "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
+
     // alternately - if using Java8, use the following instead of lifecycle-compiler
-//    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
+
+    //    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
 
     // optional - ReactiveStreams support for LiveData
-//    implementation "androidx.lifecycle:lifecycle-reactivestreams-ktx:$lifecycle_version"
+
+    //    implementation "androidx.lifecycle:lifecycle-reactivestreams-ktx:$lifecycle_version"
+
     // use -ktx for Kotlin
 
-//    // optional - Test helpers for LiveData
-//    testImplementation "androidx.arch.core:core-testing:$lifecycle_version"
+    //    // optional - Test helpers for LiveData
 
-
+    //    testImplementation "androidx.arch.core:core-testing:$lifecycle_version"
     def paging_version = "1.0.1"
     implementation "android.arch.paging:runtime:$paging_version"
+
     // optional - RxJava support, currently in release candidate
-    implementation "android.arch.paging:rxjava2:1.0.1"
-
+    implementation 'android.arch.paging:rxjava2:1.0.1'
     def nav_version = "1.0.0-alpha05"
-    implementation "android.arch.navigation:navigation-fragment:$nav_version" // use -ktx for Kotlin
-    implementation "android.arch.navigation:navigation-ui:$nav_version" // use -ktx for Kotlin
+    implementation "android.arch.navigation:navigation-fragment:$nav_version"
 
+    // use -ktx for Kotlin
+    implementation "android.arch.navigation:navigation-ui:$nav_version"
+    implementation 'com.android.support:multidex:1.0.3'
+    annotationProcessor("com.tinkerpatch.tinker:tinker-android-anno:1.9.8") {
+        changing = true
+    }
+    compileOnly('com.tinkerpatch.tinker:tinker-android-anno:1.9.8') { changing = true }
+    implementation('com.tinkerpatch.sdk:tinkerpatch-android-sdk:1.2.8') {
+        changing = true
+    }
 }
+
+apply from: 'tinkerpatch.gradle'

@@ -4,10 +4,10 @@ import android.arch.lifecycle.MutableLiveData
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Looper
-import sjj.fiction.App
+import sjj.fiction.Session
 import kotlin.reflect.KProperty
 
-val sharedPreferences by lazy { App.app.getSharedPreferences("generalDelegate", Context.MODE_PRIVATE) }
+val sharedPreferences by lazy { Session.ctx.getSharedPreferences("generalDelegate", Context.MODE_PRIVATE) }
 
 inline fun <reified T : Any> sharedPreferencesDelegate(def: T?, noinline sp: () -> SharedPreferences = { sharedPreferences }) = SharedPreferencesDelegate(def, sp)
 

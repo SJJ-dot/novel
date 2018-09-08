@@ -1,12 +1,8 @@
 package sjj.fiction
 
-import android.app.Fragment
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import sjj.permission.util.PermissionUtil
-import android.content.pm.PackageManager
-import android.content.pm.PackageInfo
-import android.os.PersistableBundle
 import io.reactivex.disposables.Disposable
 import org.jetbrains.anko.toast
 import sjj.alog.Log
@@ -15,6 +11,7 @@ import sjj.fiction.util.pause
 import sjj.fiction.util.stop
 import sjj.permission.PermissionCallback
 import sjj.permission.model.Permission
+import sjj.permission.util.PermissionUtil
 
 
 /**
@@ -23,7 +20,7 @@ import sjj.permission.model.Permission
 abstract class BaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        App.app.activitys.add(this)
+        Session.activitys.add(this)
         val packageInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS)
         val requestedPermissions = packageInfo.requestedPermissions
         PermissionUtil.requestPermissions(this, requestedPermissions, object : PermissionCallback {
@@ -102,7 +99,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        App.app.activitys.remove(this)
+        Session.activitys.remove(this)
         Log.i("onDestroy $this")
     }
 

@@ -3,10 +3,7 @@ package sjj.fiction.util
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.Scheduler
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import sjj.fiction.App
-import java.util.concurrent.Callable
 
 
 /**
