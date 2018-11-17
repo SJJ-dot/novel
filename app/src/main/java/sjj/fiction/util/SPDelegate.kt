@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Looper
 import sjj.fiction.Session
+import java.lang.Exception
 import kotlin.reflect.KProperty
 
 val sharedPreferences by lazy { Session.ctx.getSharedPreferences("generalDelegate", Context.MODE_PRIVATE) }
@@ -20,7 +21,7 @@ class SharedPreferencesDelegate<T>(private val def: T?, val sp: () -> SharedPref
             Float::class -> sp.getFloat(property.name, def as Float)
             Int::class -> sp.getInt(property.name, def as Int)
             Long::class -> sp.getLong(property.name, def as Long)
-            else -> sp.getString(property.name,def.serialize()).deSerialize()
+            else -> sp.getString(property.name, def.serialize()).toAny(def)
         } as T
     }
 
@@ -40,7 +41,7 @@ class SharedPreferencesDelegate<T>(private val def: T?, val sp: () -> SharedPref
 
 inline fun <reified T : Any> liveDataDelegate(def: T?, noinline sp: () -> SharedPreferences = { sharedPreferences }) = SharedPreferencesLiveData(def, sp)
 
-class SharedPreferencesLiveData<T>(val def: T?, val sp: () -> SharedPreferences = { sharedPreferences }) {
+class SharedPreferencesLiveData<T>(val def: T?, val sp: () -> SharedPreferences) {
     private var liveData: MutableLiveData<T>? = null
     operator fun getValue(thisRef: Any?, property: KProperty<*>): MutableLiveData<T> {
         if (liveData == null) {
@@ -69,9 +70,18 @@ class SharedPreferencesLiveData<T>(val def: T?, val sp: () -> SharedPreferences 
                 Float::class -> sp().getFloat(property.name, def as Float)
                 Int::class -> sp().getInt(property.name, def as Int)
                 Long::class -> sp().getLong(property.name, def as Long)
-                else -> sp().getString(property.name, def.serialize()).deSerialize()
+                else -> sp().getString(property.name, def.serialize()).toAny(def)
+
             } as T
         }
         return liveData!!
+    }
+}
+
+private fun < T>String.toAny(def: T?):T? {
+   return try {
+        deSerialize<T>()
+    } catch (e: Throwable) {
+        def
     }
 }
