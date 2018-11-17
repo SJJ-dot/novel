@@ -41,7 +41,7 @@ tinkerpatchSupport {
     def pathPrefix = "${bakPath}/${baseInfo}/${variantName}"
     def name = "${project.name}-${variantName}"
 
-    baseApkFile = "${pathPrefix}/${name}.apk"
+    baseApkFile = "D:/projects/fiction/app/release/fiction--release(225)-1.0.225-(4F64D2B).apk"
     baseProguardMappingFile = "${pathPrefix}/${name}-mapping.txt"
     baseResourceRFile = "${pathPrefix}/${name}-R.txt"
 
