@@ -43,25 +43,25 @@ class SearchFragment : BaseFragment() {
         searchCancel.setOnClickListener {
             searchInput.setText("")
         }
-        val adapter = ArrayAdapter<String>(context, R.layout.item_text_text, R.id.text1)
-        searchInput.setAdapter(adapter)
-        searchHistory.observe(this, Observer {
-            val v = it ?: return@Observer
-            adapter.clear()
-            adapter.addAll(v)
-            adapter.notifyDataSetChanged()
-        })
+//        val adapter = ArrayAdapter<String>(context, R.layout.item_text_text, R.id.text1)
+//        searchInput.setAdapter(adapter)
+//        searchHistory.observe(this, Observer {
+//            val v = it ?: return@Observer
+//            adapter.clear()
+//            adapter.addAll(v)
+//            adapter.notifyDataSetChanged()
+//        })
         searchInput.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 val dialog = indeterminateProgressDialog("搜索中……")
                 model.search(searchInput.text.toString()).observeOn(AndroidSchedulers.mainThread()).doAfterTerminate {
                     dialog.dismiss()
                 }.subscribe({ ls ->
-                    val set = searchHistory.value?.toMutableList() ?: mutableListOf()
-                    val list = ls.map { it.first.bookName }
-                    set.removeAll(list)
-                    set.addAll(list)
-                    searchHistory.value = set
+//                    val set = searchHistory.value?.toMutableList() ?: mutableListOf()
+//                    val list = ls.map { it.first.bookName }
+//                    set.removeAll(list)
+//                    set.addAll(list)
+//                    searchHistory.value = set
                     resultBookAdapter.data = ls
                     resultBookAdapter.notifyDataSetChanged()
                 }, {

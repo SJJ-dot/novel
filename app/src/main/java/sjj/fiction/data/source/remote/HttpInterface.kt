@@ -24,4 +24,7 @@ interface HttpInterface {
     @CHARSET("gbk")
     fun loadHtmlForGBK(@Url url: String): Observable<String>
 
+    @GET
+    fun loadHtml(@Url url: String): Observable<String>
+
 }

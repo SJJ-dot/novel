@@ -12,6 +12,7 @@ import sjj.fiction.data.source.local.LocalFictionDataSource
 import sjj.fiction.data.source.remote.aszw.AszwFictionDataSource
 import sjj.fiction.data.source.remote.baidu.BaiDuDataSource
 import sjj.fiction.data.source.remote.biquge.BiqugeDataSource
+import sjj.fiction.data.source.remote.biquge.XBiquge6DataSource
 import sjj.fiction.data.source.remote.dhzw.DhzwDataSource
 import sjj.fiction.data.source.remote.liumao.LiuMaoDataSource
 import sjj.fiction.data.source.remote.yunlaige.YunlaigeDataSource
@@ -34,7 +35,8 @@ class FictionDataRepository {
             YunlaigeDataSource(),
             AszwFictionDataSource(),
             BiqugeDataSource(),
-            LiuMaoDataSource()
+            LiuMaoDataSource(),
+            XBiquge6DataSource()
 //            BaiDuDataSource()
     )
 
