@@ -23,6 +23,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_read.*
 import kotlinx.android.synthetic.main.item_read_chapter_content.view.*
+import kotlinx.android.synthetic.main.item_read_chapter_content_text_line.view.*
 import org.jetbrains.anko.*
 import sjj.alog.Log
 import sjj.fiction.*
@@ -168,49 +169,32 @@ class ReadActivity : BaseActivity() {
         override fun getItemCount(): Int = data.size
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            return object : RecyclerView.ViewHolder(with(parent.context) {
-                verticalLayout {
-                    textView {
-                        id = R.id.readItemChapterContentTitle
-                        setPadding(16.toDpx(), 8.toDpx(), 16.toDpx(), 8.toDpx())
-                        textSize = 24f
-                        textColor = resources.getColor(R.color.material_textBlack_text)
-                        setBackgroundColor(resources.getColor(R.color.chapter_background))
-                    }
-                    include<TextView>(R.layout.item_read_chapter_content)
-                }.lparams<RecyclerView.LayoutParams, LinearLayout> {
-                    width = RecyclerView.LayoutParams.MATCH_PARENT
-                    height = RecyclerView.LayoutParams.MATCH_PARENT
-                }
-            }) {}
+            return object : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_read_chapter_content, parent, false)) {}
         }
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-            val chapter = data.get(position)
-            val content = holder.itemView.findViewById<TextView>(R.id.readItemChapterContent)
-            content.isClickable = false
-            holder.itemView.findViewById<TextView>(R.id.readItemChapterContentTitle).text = chapter.chapterName
-            if (chapter.content?.isNotEmpty() == true) {
-                content.typeface = ttf
-                content.textSize = contentTextSize
-                content.text = Html.fromHtml(chapter.content)
-            }
-
+            val chapter = data[position]
+            holder.itemView.readItemChapterContentTitle.text = chapter.chapterName
             fun bindContent() {
-                content.text = "加载中请稍后……"
-                content.gravity = Gravity.CENTER
-                holder.itemView.layoutParams.height = if (chapter.isLoadSuccess && holder.itemView.layoutParams.height == ViewGroup.LayoutParams.WRAP_CONTENT) ViewGroup.LayoutParams.WRAP_CONTENT else ViewGroup.LayoutParams.MATCH_PARENT
+                holder.itemView.readItemChapterContentHint.text = "加载中请稍后……"
+
                 model.getChapter(chapter.url).observeOn(AndroidSchedulers.mainThread()).subscribe({
                     chapter.isLoadSuccess = it.isLoadSuccess
-                    holder.itemView.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
-                    content.gravity = Gravity.TOP or Gravity.START
-                    content.text = Html.fromHtml(it.content)
-                }, {
-                    content.text = "加载失败，点击重试……"
-                    content.setOnClickListener {
+                    val lineAdapter = TextLineAdapter(Html.fromHtml(it.content).split("\n").mapIndexed { index, s -> TextLine(s, index, chapter.index) })
+                    holder.itemView.readItemChapterContentLines.adapter = lineAdapter
+                    lineAdapter.typeface = ttf;
+                    lineAdapter.textSize = contentTextSize
+
+                    holder.itemView.readItemChapterContentHint.visibility =View.GONE
+                    holder.itemView.readItemChapterContentLines.visibility = View.VISIBLE
+                }, { _ ->
+                    holder.itemView.readItemChapterContentHint.text = "加载失败，点击重试……"
+                    holder.itemView.readItemChapterContentHint.setOnClickListener {
                         bindContent()
-                        content.isClickable = false
+                        holder.itemView.readItemChapterContentHint.isClickable = false
                     }
+                    holder.itemView.readItemChapterContentHint.visibility =View.VISIBLE
+                    holder.itemView.readItemChapterContentLines.visibility = View.GONE
                 }).destroy("${holder.itemView}")
             }
             bindContent()
@@ -218,6 +202,34 @@ class ReadActivity : BaseActivity() {
         }
 
     }
+
+
+    class TextLineAdapter(var data: List<TextLine>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+        var typeface: Typeface?=null
+        var textSize: Float? = null
+        init {
+            Log.e(data)
+        }
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+            return object : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_read_chapter_content_text_line, parent, false)) {
+
+            }
+        }
+
+        override fun getItemCount(): Int = data.size
+
+        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+            holder.itemView.readItemChapterContentLine.text = data[position].text
+            typeface?.also {
+                holder.itemView.readItemChapterContentLine.typeface = it
+            }
+            textSize?.also {
+                holder.itemView.readItemChapterContentLine.textSize = it
+            }
+        }
+    }
+
+    class TextLine(var text: String, var lineIndex: Int, var chapterIndex: Int)
 
     private inner class ChapterListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 

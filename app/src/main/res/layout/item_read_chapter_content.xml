@@ -1,13 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:id="@id/readItemChapterContent"
-    android:layout_height="match_parent"
-    android:paddingBottom="8dp"
-    android:paddingLeft="16dp"
-    android:lineSpacingExtra="5dp"
-    android:paddingRight="16dp"
-    android:paddingTop="8dp"
-    android:background="@color/chapter_background"
-    android:textColor="@color/chapter_text_color"
-    android:textSize="24sp" />
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@id/readItemChapterContentTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/chapter_background"
+        android:lineSpacingExtra="5dp"
+        android:padding="16dp"
+        android:textColor="@color/chapter_text_color"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/readItemChapterContentHint"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/chapter_background"
+        android:gravity="center"
+        android:lineSpacingExtra="5dp"
+        android:textColor="@color/chapter_text_color"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/readItemChapterContentTitle" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/readItemChapterContentLines"
+        android:layout_width="match_parent"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/readItemChapterContentTitle" />
+
+</android.support.constraint.ConstraintLayout>

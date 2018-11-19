@@ -159,14 +159,14 @@ dependencies {
     implementation "android.arch.navigation:navigation-ui:$nav_version"
     implementation 'com.android.support:multidex:1.0.3'
 
-    //tinker热更新配置
-    annotationProcessor("com.tinkerpatch.tinker:tinker-android-anno:1.9.8") {
-        changing = true
-    }
-    compileOnly('com.tinkerpatch.tinker:tinker-android-anno:1.9.8') { changing = true }
-    implementation('com.tinkerpatch.sdk:tinkerpatch-android-sdk:1.2.8') {
-        changing = true
-    }
+//    //tinker热更新配置
+//    annotationProcessor("com.tinkerpatch.tinker:tinker-android-anno:1.9.8") {
+//        changing = true
+//    }
+//    compileOnly('com.tinkerpatch.tinker:tinker-android-anno:1.9.8') { changing = true }
+//    implementation('com.tinkerpatch.sdk:tinkerpatch-android-sdk:1.2.8') {
+//        changing = true
+//    }
 
     //360 replugin 插件
 //    implementation 'com.qihoo360.replugin:replugin-host-lib:2.3.1'
@@ -174,7 +174,7 @@ dependencies {
 //    implementation 'com.sjianjun:serialize:1.0.0'
 }
 
-apply from: 'tinkerpatch.gradle'
+//apply from: 'tinkerpatch.gradle'
 
 //apply plugin: 'replugin-host-gradle'
 
