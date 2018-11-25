@@ -176,17 +176,34 @@ class ReadActivity : BaseActivity() {
             val chapter = data[position]
             holder.itemView.readItemChapterContentTitle.text = chapter.chapterName
             fun bindContent() {
-                holder.itemView.readItemChapterContentHint.text = "加载中请稍后……"
+                holder.itemView.apply {
+                    readItemChapterContentHint.apply {
+                        text = "加载中请稍后……"
+                        visibility = View.VISIBLE
+                    }
+                    readItemChapterContentText.visibility = View.GONE
+                    layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+                }
 
                 model.getChapter(chapter.url).observeOn(AndroidSchedulers.mainThread()).subscribe({
                     chapter.isLoadSuccess = it.isLoadSuccess
-                    val lineAdapter = TextLineAdapter(Html.fromHtml(it.content).split("\n").mapIndexed { index, s -> TextLine(s, index, chapter.index) })
-                    holder.itemView.readItemChapterContentLines.adapter = lineAdapter
-                    lineAdapter.typeface = ttf;
-                    lineAdapter.textSize = contentTextSize
+//                    val lineAdapter = TextLineAdapter(Html.fromHtml(it.content).split("\n").mapIndexed { index, s -> TextLine(s, index, chapter.index) })
+//                    holder.itemView.readItemChapterContentLines.adapter = lineAdapter
+//                    lineAdapter.typeface = ttf;
+//                    lineAdapter.textSize = contentTextSize
+                    holder.itemView.apply {
+                        layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
 
-                    holder.itemView.readItemChapterContentHint.visibility =View.GONE
-                    holder.itemView.readItemChapterContentLines.visibility = View.VISIBLE
+                        readItemChapterContentHint.visibility =View.GONE
+                        readItemChapterContentText.apply {
+                            visibility = View.VISIBLE
+                            typeface = ttf
+                            textSize = contentTextSize
+                            text = Html.fromHtml(it.content)
+                        }
+                    }
+
+//                    holder.itemView.readItemChapterContentLines.visibility = View.VISIBLE
                 }, { _ ->
                     holder.itemView.readItemChapterContentHint.text = "加载失败，点击重试……"
                     holder.itemView.readItemChapterContentHint.setOnClickListener {
@@ -194,7 +211,7 @@ class ReadActivity : BaseActivity() {
                         holder.itemView.readItemChapterContentHint.isClickable = false
                     }
                     holder.itemView.readItemChapterContentHint.visibility =View.VISIBLE
-                    holder.itemView.readItemChapterContentLines.visibility = View.GONE
+//                    holder.itemView.readItemChapterContentLines.visibility = View.GONE
                 }).destroy("${holder.itemView}")
             }
             bindContent()
@@ -207,9 +224,6 @@ class ReadActivity : BaseActivity() {
     class TextLineAdapter(var data: List<TextLine>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         var typeface: Typeface?=null
         var textSize: Float? = null
-        init {
-            Log.e(data)
-        }
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             return object : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_read_chapter_content_text_line, parent, false)) {
 
