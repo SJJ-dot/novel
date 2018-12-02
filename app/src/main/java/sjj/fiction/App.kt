@@ -1,25 +1,23 @@
 package sjj.fiction
 
 import android.app.Application
-import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.StrictMode
-import android.support.multidex.MultiDex
 import com.facebook.drawee.backends.pipeline.Fresco
+import com.tencent.mmkv.MMKV
 import io.reactivex.plugins.RxJavaPlugins
-import org.jetbrains.anko.newTask
 import org.jetbrains.anko.noHistory
 import sjj.alog.Config
 import sjj.alog.Log
-import java.util.*
 
 /**
  * Created by SJJ on 2017/9/3.
  */
 //@DefaultLifeCycle(application = "sjj.fiction.App", flags = ShareConstants.TINKER_ENABLE_ALL, loadVerifyFlag = false)
-class AppTinker:Application() {
+class App:Application() {
     companion object {
-        lateinit var app: AppTinker
+        lateinit var app: App
     }
 
 
@@ -37,23 +35,7 @@ class AppTinker:Application() {
         }
         app = this
         Session.ctx = this
-
-
-//        // 我们可以从这里获得Tinker加载过程的信息
-//       val tinkerApplicationLike = TinkerPatchApplicationLike.getTinkerPatchApplicationLike();
-//
-//        // 初始化TinkerPatch SDK, 更多配置可参照API章节中的,初始化SDK
-//        TinkerPatch.init(tinkerApplicationLike)
-//                .reflectPatchLibrary()
-//                .setPatchRollbackOnScreenOff(true)
-//                .setPatchRestartOnSrceenOff(true)
-//                .setFetchPatchIntervalByHours(1);
-//
-//        // 每隔3个小时(通过setFetchPatchIntervalByHours设置)去访问后台时候有更新,通过handler实现轮训的效果
-//        TinkerPatch.with().fetchPatchUpdateAndPollWithInterval();
-
-
-//        initTinker()
+        MMKV.initialize(this)
 
 
         val logConfig = Config()
@@ -93,25 +75,16 @@ class AppTinker:Application() {
     fun exit() {
         System.exit(0)
     }
-
-
-
-
-    private fun initTinker() {
-//        if (BuildConfig.TINKER_ENABLE) {
-            //开始检查是否有补丁，这里配置的是每隔访问3小时服务器是否有更新。
-//            TinkerPatch.init(this)
-//                    .reflectPatchLibrary()
-//                    .setPatchRollbackOnScreenOff(true)
-//                    .setPatchRestartOnSrceenOff(true)
-//                    .setFetchPatchIntervalByHours(3)
-//
-//            // 获取当前的补丁版本
-//            Log.e("current patch version is " + TinkerPatch.with().patchVersion!!)
-//
-//            //每隔3个小时去访问后台时候有更新,通过handler实现轮训的效果
-//            TinkerPatch.with().fetchPatchUpdateAndPollWithInterval()
-//        }
+    //将旧版本的SharedPreferences中的数据迁移到 mmkv 中
+    override fun getSharedPreferences(name: String, mode: Int): SharedPreferences {
+        val set = AppConfig.migratedSharedPreferences
+        val mmkv = MMKV.mmkvWithID("SharedPreferences_Migrated_$name", mode)
+        if (!set.contains(name)) {
+            set.add(name)
+            AppConfig.migratedSharedPreferences = set
+            val preferences = super.getSharedPreferences(name, mode)
+            mmkv.importFromSharedPreferences(preferences)
+        }
+        return mmkv
     }
-
 }

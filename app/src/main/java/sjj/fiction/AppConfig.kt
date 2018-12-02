@@ -1,16 +1,18 @@
 package sjj.fiction
 
-import sjj.fiction.util.liveDataDelegate
-import sjj.fiction.util.sharedPreferencesDelegate
+import sjj.fiction.util.DelegateLiveData
+import sjj.fiction.util.DelegateSharedPreferences
 
 object AppConfig {
 
-    val ttf by liveDataDelegate("Roboto-Black.ttf")
+    val ttf by DelegateLiveData("Roboto-Black.ttf")
 
-    val readChapterTextSize by liveDataDelegate(24f)
+    val readChapterTextSize by DelegateLiveData(24f)
 
-    val searchHistory by liveDataDelegate<List<String>>(listOf())
+//    val searchHistory by DelegateLiveData<List<String>>(listOf())
 
-    var offest by sharedPreferencesDelegate(0)
+    var offest by DelegateSharedPreferences(0)
 
+    //已经迁移到到mmkv 的 SharedPreferences 文件记录
+    var migratedSharedPreferences by DelegateSharedPreferences<MutableSet<String>>(mutableSetOf())
 }

@@ -1,87 +1,128 @@
 package sjj.fiction.util
 
 import android.arch.lifecycle.MutableLiveData
-import android.content.Context
 import android.content.SharedPreferences
 import android.os.Looper
-import sjj.fiction.Session
-import java.lang.Exception
+import com.tencent.mmkv.MMKV
 import kotlin.reflect.KProperty
+import kotlin.reflect.jvm.jvmErasure
 
-val sharedPreferences by lazy { Session.ctx.getSharedPreferences("generalDelegate", Context.MODE_PRIVATE) }
-
-inline fun <reified T : Any> sharedPreferencesDelegate(def: T?, noinline sp: () -> SharedPreferences = { sharedPreferences }) = SharedPreferencesDelegate(def, sp)
-
-class SharedPreferencesDelegate<T>(private val def: T?, val sp: () -> SharedPreferences = { sharedPreferences }) {
+@Suppress("IMPLICIT_CAST_TO_ANY", "UNCHECKED_CAST")
+class DelegateSharedPreferences<T>(private val def: T, private val k: String? = null, val sp: () -> SharedPreferences? = { MMKV.defaultMMKV() }) {
     operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
-        val sp = sp()
+
+        val key: String = k ?: property.name
+
+        val sp = sp() ?: return def
+
         return when (property.returnType.classifier) {
-            String::class -> sp.getString(property.name, def as String?)
-            Boolean::class -> sp.getBoolean(property.name, def as Boolean)
-            Float::class -> sp.getFloat(property.name, def as Float)
-            Int::class -> sp.getInt(property.name, def as Int)
-            Long::class -> sp.getLong(property.name, def as Long)
-            else -> sp.getString(property.name, def.serialize()).toAny(def)
+            String::class -> sp.getString(key, def as? String)
+            Boolean::class -> sp.getBoolean(key, def as Boolean)
+            Float::class -> sp.getFloat(key, def as Float)
+            Int::class -> sp.getInt(key, def as Int)
+            Long::class -> sp.getLong(key, def as Long)
+            Set::class -> sp.getStringSet(key, def as? Set<String>)
+            else -> throw IllegalArgumentException("only support String、Boolean、Float、Int、Long、Set<String>")
         } as T
     }
 
-    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T?) {
-        val edit = sp().edit()
+    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
+        val edit = sp()?.edit() ?: return
+
+        val key: String = k ?: property.name
+
         when (property.returnType.classifier) {
-            String::class -> edit.putString(property.name, value as String?)
-            Boolean::class -> edit.putBoolean(property.name, value as Boolean)
-            Float::class -> edit.putFloat(property.name, value as Float)
-            Int::class -> edit.putInt(property.name, value as Int)
-            Long::class -> edit.putLong(property.name, value as Long)
-            else -> edit.putString(property.name, value.serialize())
+            String::class -> edit.putString(key, value as? String)
+            Boolean::class -> edit.putBoolean(key, value as Boolean)
+            Float::class -> edit.putFloat(key, value as Float)
+            Int::class -> edit.putInt(key, value as Int)
+            Long::class -> edit.putLong(key, value as Long)
+            Set::class -> edit.putStringSet(key, value as? Set<String>)
+            else -> throw IllegalArgumentException("only support String、Boolean、Float、Int、Long、Set<String>")
         }
         edit.apply()
     }
 }
 
-inline fun <reified T : Any> liveDataDelegate(def: T?, noinline sp: () -> SharedPreferences = { sharedPreferences }) = SharedPreferencesLiveData(def, sp)
 
-class SharedPreferencesLiveData<T>(val def: T?, val sp: () -> SharedPreferences) {
+/**
+ * only support String、Boolean、Float、Double、Int、Long、Set<String>、ByteArray
+ * mmkv Set<String> 不允许为空
+ */
+class DelegateLiveData<T>(private val def: T, private val k: String? = null, val sp: () -> SharedPreferences? = { MMKV.defaultMMKV() }) {
     private var liveData: MutableLiveData<T>? = null
+
+    @Synchronized
     operator fun getValue(thisRef: Any?, property: KProperty<*>): MutableLiveData<T> {
         if (liveData == null) {
-            liveData = object : MutableLiveData<T>() {
-                override fun setValue(value: T) {
-                    val edit = sp().edit()
-                    when (property.returnType.arguments[0].type?.classifier) {
-                        String::class -> edit.putString(property.name, value as String?)
-                        Boolean::class -> edit.putBoolean(property.name, value as Boolean)
-                        Float::class -> edit.putFloat(property.name, value as Float)
-                        Int::class -> edit.putInt(property.name, value as Int)
-                        Long::class -> edit.putLong(property.name, value as Long)
-                        else -> edit.putString(property.name, value.serialize())
-                    }
-                    edit.apply()
-                    if (Thread.currentThread() == Looper.getMainLooper().thread) {
-                        super.setValue(value)
-                    } else {
-                        super.postValue(value)
-                    }
-                }
-            }
-            liveData?.value = when (property.returnType.arguments[0].type?.classifier) {
-                String::class -> sp().getString(property.name, def as String?)
-                Boolean::class -> sp().getBoolean(property.name, def as Boolean)
-                Float::class -> sp().getFloat(property.name, def as Float)
-                Int::class -> sp().getInt(property.name, def as Int)
-                Long::class -> sp().getLong(property.name, def as Long)
-                else -> sp().getString(property.name, def.serialize()).toAny(def)
-
-            } as T
+            liveData = HoldLiveData(def, k ?: property.name, property, sp)
         }
         return liveData!!
     }
 }
 
-private fun < T>String.toAny(def: T?):T? {
-   return try {
-        deSerialize<T>()
-    } catch (e: Throwable) {
-        def
+/**
+ *
+ * only support String、Boolean、Float、Double、Int、Long、Set<String>、ByteArray
+ */
+@Suppress("IMPLICIT_CAST_TO_ANY", "UNCHECKED_CAST")
+class HoldLiveData<T>(private val def: T, private val key: String, private val property: KProperty<*>, val sp: () -> SharedPreferences?) : MutableLiveData<T>() {
+
+    init {
+
+        if (Thread.currentThread() == Looper.getMainLooper().thread) {
+            super.setValue(initValue())
+        } else {
+            super.postValue(initValue())
+        }
     }
+
+    /**
+     * 使用Java的class 类型判断需要的返回值
+     */
+    private fun initValue() = when (property.returnType.arguments[0].type!!.jvmErasure.java) {
+        String::class.java -> sp()?.getString(key, def as? String)
+        Boolean::class.java -> sp()?.getBoolean(key, def as Boolean)
+        Float::class.java -> sp()?.getFloat(key, def as Float)
+        Int::class.java -> sp()?.getInt(key, def as Int)
+        Long::class.java -> sp()?.getLong(key, def as Long)
+        Set::class.java -> sp()?.getStringSet(key, def as? Set<String>)
+        else -> throw IllegalArgumentException("only support String、Boolean、Float、Int、Long、Set<String>")
+    } as? T
+
+    /**
+     * 保存数据到 SharedPreferences 中
+     */
+    private fun saveValue(value: T) {
+        val edit = sp()?.edit()
+        when (property.returnType.arguments[0].type!!.jvmErasure.java) {
+            String::class.java -> edit?.putString(key, value as? String)
+            Boolean::class.java -> edit?.putBoolean(key, value as Boolean)
+            Float::class.java -> edit?.putFloat(key, value as Float)
+            Int::class.java -> edit?.putInt(key, value as Int)
+            Long::class.java -> edit?.putLong(key, value as Long)
+            Set::class.java -> edit?.putStringSet(key, value as? Set<String>)
+            else -> throw IllegalArgumentException("only support String、Boolean、Float、Int、Long、Set<String>")
+        }
+        edit?.apply()
+
+
+        //通知 live data 更新
+        if (Thread.currentThread() == Looper.getMainLooper().thread) {
+            super.setValue(value)
+        } else {
+            super.postValue(value)
+        }
+
+    }
+
+
+    override fun postValue(value: T) {
+        saveValue(value)
+    }
+
+    override fun setValue(value: T) {
+        saveValue(value)
+    }
+
 }

@@ -18,7 +18,6 @@ import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.support.v4.indeterminateProgressDialog
 import org.jetbrains.anko.support.v4.startActivity
 import org.jetbrains.anko.support.v4.toast
-import sjj.fiction.AppConfig.searchHistory
 import sjj.fiction.BaseFragment
 import sjj.fiction.R
 import sjj.fiction.details.DetailsActivity
