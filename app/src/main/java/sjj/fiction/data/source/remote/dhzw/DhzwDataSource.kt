@@ -18,7 +18,7 @@ class DhzwDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
     private val service = create<HttpInterface>()
 
     override fun search(search: String): Observable<List<Book>> {
-        return service.searchForGBK("modules/article/search.php", mapOf(Pair("searchkey", URLEncoder.encode(search, "gbk"))))
+        return service.searchPost("modules/article/search.php", mapOf(Pair("searchkey", URLEncoder.encode(search, "gbk"))))
                 .map {
                     val elementsByClass = Jsoup.parse(it).body().getElementById("newscontent").getElementsByTag("ul")[0].getElementsByTag("li")
                     val results = List(elementsByClass.size) {
@@ -30,7 +30,7 @@ class DhzwDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
     }
 
     override fun getChapterContent(chapter: Chapter): Observable<Chapter> {
-        return service.loadHtmlForGBK(chapter.url).map {
+        return service.loadHtml(chapter.url).map {
             val parse = Jsoup.parse(it).getElementById("BookText")
             chapter.content = parse.html()
             chapter.isLoadSuccess = true
@@ -39,7 +39,7 @@ class DhzwDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
     }
 
     override fun getBook(url: String): Observable<Book> {
-        return service.loadHtmlForGBK(url).map {
+        return service.loadHtml(url).map {
             val parse = Jsoup.parse(it, url).body()
             val book = Book()
             book.url = url

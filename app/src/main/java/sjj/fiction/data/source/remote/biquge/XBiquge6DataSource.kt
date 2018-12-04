@@ -18,7 +18,7 @@ class XBiquge6DataSource() : HttpDataSource(), FictionDataRepository.RemoteSourc
     override val tld: String = "xbiquge6.com"
 
     override fun search(search: String): Observable<List<Book>> {
-        return service.searchForGET("search.php", mapOf("keyword" to search)).map { it ->
+        return service.searchGet("search.php", mapOf("keyword" to search)).map { it ->
             Jsoup.parse(it).body().getElementsByClass("result-list").map {
                 val detail = it.getElementsByClass("result-game-item-detail")[0]
                 val title = detail.getElementsByClass("result-item-title result-game-item-title")[0].getElementsByClass("result-game-item-title-link")[0]

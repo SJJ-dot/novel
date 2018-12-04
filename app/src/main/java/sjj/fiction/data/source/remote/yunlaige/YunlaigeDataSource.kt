@@ -19,8 +19,7 @@ class YunlaigeDataSource : HttpDataSource(), FictionDataRepository.RemoteSource 
 
     override fun search(search: String): Observable<List<Book>> {
         val url = "http://www.yunlaige.com/modules/article/search.php"
-        val encode = URLEncoder.encode(search, "gbk");
-        return service.searchForGBK(url, mapOf("searchkey" to encode)).map {
+        return service.searchPost(url, mapOf("searchkey" to URLEncoder.encode(search, "gbk"))).map {
             val document = Jsoup.parse(it)
             try {
                 document.body().getElementsByClass("chart-dashed-list")[0].children().map {
@@ -39,7 +38,7 @@ class YunlaigeDataSource : HttpDataSource(), FictionDataRepository.RemoteSource 
     }
 
     override fun getBook(url: String): Observable<Book> {
-        return service.loadHtmlForGBK(url).map {
+        return service.loadHtml(url).map {
             //            val name: String, val author: String, val coverImgUrl: Url, val intro: String, val latestChapter: Chapter, val chapterList: List<Chapter>
             val element = Jsoup.parse(it).body().getElementsByClass("book-info")[0]
             val info = element.getElementsByClass("info")[0]
@@ -56,7 +55,7 @@ class YunlaigeDataSource : HttpDataSource(), FictionDataRepository.RemoteSource 
         }
     }
     private fun loadChapterList(book: Book): Observable<Book> {
-        return service.loadHtmlForGBK(book.chapterListUrl).map {
+        return service.loadHtml(book.chapterListUrl).map {
             book.chapterList = Jsoup.parse(it, book.chapterListUrl).getElementById("contenttable").child(0).select("a[href]").mapIndexed { index, e ->
                 Chapter(e.absUrl("abs:href"), book.url, index, e.text())
             }
@@ -65,7 +64,7 @@ class YunlaigeDataSource : HttpDataSource(), FictionDataRepository.RemoteSource 
     }
 
     override fun getChapterContent(chapter: Chapter): Observable<Chapter> {
-        return service.loadHtmlForGBK(chapter.url).map {
+        return service.loadHtml(chapter.url).map {
             val element = Jsoup.parse(it).getElementById("content")
             chapter.content = element.html()
             chapter.isLoadSuccess = true

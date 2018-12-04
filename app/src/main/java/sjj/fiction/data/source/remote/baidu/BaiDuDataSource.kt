@@ -16,7 +16,7 @@ class BaiDuDataSource() : HttpDataSource(), FictionDataRepository.RemoteSource {
     }
 
     override fun getBook(url: String): Observable<Book> {
-        return service.loadHtmlForGBK(url).map {
+        return service.loadHtml(url).map {
             val parse = Jsoup.parse(it, url).body()
             val book = Book()
             book.url = url
@@ -38,7 +38,7 @@ class BaiDuDataSource() : HttpDataSource(), FictionDataRepository.RemoteSource {
     override val tld: String = "baidu.com"
 
     override fun search(search: String): Observable<List<Book>> {
-        return service.searchForGET("s", mapOf("word" to search)).map {
+        return service.searchGet("s", mapOf("word" to search)).map {
             val content = Jsoup.parse(it, baseUrl).getElementsByAttributeValue("srcid", "nvl_trans")[0].getElementsByClass("c-result-content")[0]
             val url = content.getElementsByClass("wa-nvl-trans-btn-wrap c-span3").select("a[href]")[0].absUrl("href")
             val name = content.getElementsByTag("header")[0].getElementsByTag("em")[0].text()

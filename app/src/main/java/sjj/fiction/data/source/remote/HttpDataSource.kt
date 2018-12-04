@@ -1,23 +1,20 @@
 package sjj.fiction.data.source.remote
 
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
-import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
 import okio.Buffer
 import org.jsoup.nodes.Document
 import retrofit2.Call
 import retrofit2.CallAdapter
-import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import sjj.fiction.data.source.DataSourceInterface
+import sjj.fiction.data.source.remote.charset.HtmlEncodeConverter
 import java.io.EOFException
 import java.lang.reflect.Type
 import java.util.concurrent.TimeUnit
@@ -32,7 +29,7 @@ abstract class HttpDataSource : DataSourceInterface {
         Retrofit.Builder()
                 .client(client)
                 .baseUrl(baseUrl)
-                .addConverterFactory(CharsetStringConverterFactory())
+                .addConverterFactory(HtmlEncodeConverter.create())
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
 //                .addCallAdapterFactory(ObserveOnMainCallAdapterFactory())
@@ -41,28 +38,6 @@ abstract class HttpDataSource : DataSourceInterface {
     }
     protected inline fun <reified T> create(): T {
         return retrofit.create(T::class.java)
-    }
-
-    private class CharsetStringConverterFactory : Converter.Factory() {
-        private val gson = Gson()
-        override fun responseBodyConverter(type: Type?, annotations: Array<out Annotation>?, retrofit: Retrofit?): Converter<ResponseBody, *>? {
-            val charset = annotations?.find { it is CHARSET } as? CHARSET
-            if (charset != null)
-                return if (type == String::class.java) {
-                    Converter<ResponseBody, String> {
-                        responseCharset(it, charset)
-                    }
-                } else {
-                    val adapter = gson.getAdapter(TypeToken.get(type))
-                    Converter<ResponseBody, Any> {
-                        adapter.fromJson(responseCharset(it, charset))
-                    }
-                }
-            return null
-        }
-
-        fun responseCharset(responseBody: ResponseBody, charset: CHARSET) = responseBody.bytes().toString(kotlin.text.charset(charset.charset))
-
     }
 
     private class ObserveOnMainCallAdapterFactory : CallAdapter.Factory() {
