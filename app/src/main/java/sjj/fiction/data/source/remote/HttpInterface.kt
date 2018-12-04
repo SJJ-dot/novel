@@ -9,12 +9,15 @@ import retrofit2.http.*
 interface HttpInterface {
     @FormUrlEncoded
     @POST
+    @Html
     fun searchPost(@Url url: String, @FieldMap(encoded = true) map: Map<String, String>): Observable<String>
 
     @GET
+    @Html
     fun searchGet(@Url url: String, @QueryMap map: Map<String, String>): Observable<String>
 
     @GET
+    @Html
     fun loadHtml(@Url url: String): Observable<String>
 
 }
