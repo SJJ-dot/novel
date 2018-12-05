@@ -2,6 +2,7 @@ package sjj.fiction.data.source.remote
 
 import io.reactivex.Observable
 import retrofit2.http.*
+import sjj.fiction.data.source.remote.retrofit.Html
 
 /**
  * Created by sjj on 2017/10/9.

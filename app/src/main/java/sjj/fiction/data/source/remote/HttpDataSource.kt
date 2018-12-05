@@ -3,21 +3,13 @@ package sjj.fiction.data.source.remote
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import okio.Buffer
 import org.jsoup.nodes.Document
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.converter.scalars.ScalarsConverterFactory
 import sjj.fiction.data.source.DataSourceInterface
-import sjj.fiction.data.source.remote.charset.HtmlEncodeConverter
-import java.io.EOFException
+import sjj.fiction.data.source.remote.retrofit.RetrofitInstance
 import java.lang.reflect.Type
-import java.util.concurrent.TimeUnit
 
 /**
  * Created by SJJ on 2017/9/3.
@@ -26,15 +18,7 @@ abstract class HttpDataSource : DataSourceInterface {
     abstract val baseUrl: String
 
     protected val retrofit: Retrofit by lazy {
-        Retrofit.Builder()
-                .client(client)
-                .baseUrl(baseUrl)
-                .addConverterFactory(HtmlEncodeConverter.create())
-                .addConverterFactory(ScalarsConverterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-//                .addCallAdapterFactory(ObserveOnMainCallAdapterFactory())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
-                .build()
+        RetrofitInstance.defRetrofit(baseUrl)
     }
     protected inline fun <reified T> create(): T {
         return retrofit.create(T::class.java)
@@ -66,49 +50,14 @@ abstract class HttpDataSource : DataSourceInterface {
             }
         }
     }
+
+    /**
+     * 获取 html 网页meta 属性值
+     */
     protected fun Document.metaProp(attrValue: String): String {
         return getElementsByAttributeValue("property", attrValue)[0].attr("content")
     }
 }
 
-private val client by lazy {
-    OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .writeTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
-//            .addNetworkInterceptor {
-//                val response = it.proceed(it.request())
-//                if (response.code() == HttpURLConnection.HTTP_MOVED_TEMP) {
-//                    val buffer = Buffer()
-//                    it.request().body()?.writeTo(buffer)
-//                    val utf8 = Charset.forName("UTF-8")
-//                    val charset: Charset = it.request().body()?.contentType()?.charset(utf8) ?: utf8
-//                    val body = if (isPlaintext(buffer)) buffer.readString(charset) else ""
-//                    App.app.config.setHttp302Url(it.request().url().toString(), response.header("Location") ?: "", body)
-//                }
-//                response
-//            }
-            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS))
-            .build()
-}
 
-internal fun isPlaintext(buffer: Buffer): Boolean {
-    try {
-        val prefix = Buffer()
-        val byteCount = if (buffer.size() < 64) buffer.size() else 64
-        buffer.copyTo(prefix, 0, byteCount)
-        for (i in 0..15) {
-            if (prefix.exhausted()) {
-                break
-            }
-            val codePoint = prefix.readUtf8CodePoint()
-            if (Character.isISOControl(codePoint) && !Character.isWhitespace(codePoint)) {
-                return false
-            }
-        }
-        return true
-    } catch (e: EOFException) {
-        return false // Truncated UTF-8 sequence.
-    }
 
-}

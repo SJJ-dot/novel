@@ -1,6 +1,4 @@
-package sjj.fiction.data.source.remote.charset;
-
-import android.text.TextUtils;
+package sjj.fiction.data.source.remote.retrofit.charset;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -17,14 +15,12 @@ import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Collections;
 
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
-import sjj.alog.Log;
-import sjj.fiction.data.source.remote.Html;
+import sjj.fiction.data.source.remote.retrofit.Html;
 
 import static android.text.TextUtils.isEmpty;
 

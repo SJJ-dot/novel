@@ -1,4 +1,4 @@
-package sjj.fiction.data.source.remote
+package sjj.fiction.data.source.remote.retrofit
 
 /**
  * 标记返回的数据是html 需要使用 HtmlEncodeConverter 转换

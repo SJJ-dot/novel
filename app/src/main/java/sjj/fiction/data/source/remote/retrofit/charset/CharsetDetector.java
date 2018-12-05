@@ -1,4 +1,4 @@
-package sjj.fiction.data.source.remote.charset;
+package sjj.fiction.data.source.remote.retrofit.charset;
 
 import org.mozilla.intl.chardet.nsDetector;
 

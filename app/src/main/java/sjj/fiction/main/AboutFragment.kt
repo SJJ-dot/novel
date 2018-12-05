@@ -17,5 +17,8 @@ class AboutFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         versionCode.text = "版本号：${BuildConfig.VERSION_NAME}"
+
+
+
     }
 }
