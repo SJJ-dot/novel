@@ -25,7 +25,7 @@ class App:Application() {
         Session.ctx = this
         MMKV.initialize(this)
         Bugly.init(this, "6dbb38183e", BuildConfig.DEBUG)
-
+        ActivityLifecycle.setActivityLifecycleCallback(this)
 
 //        val logConfig = Config()
 //        logConfig.hold = false
