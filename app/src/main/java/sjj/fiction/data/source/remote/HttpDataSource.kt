@@ -6,6 +6,7 @@ import io.reactivex.schedulers.Schedulers
 import org.jsoup.nodes.Document
 import retrofit2.Call
 import retrofit2.CallAdapter
+import retrofit2.Response
 import retrofit2.Retrofit
 import sjj.fiction.data.source.DataSourceInterface
 import sjj.fiction.data.source.remote.retrofit.RetrofitInstance
@@ -57,6 +58,19 @@ abstract class HttpDataSource : DataSourceInterface {
     protected fun Document.metaProp(attrValue: String): String {
         return getElementsByAttributeValue("property", attrValue)[0].attr("content")
     }
+
+    /**
+     * 获取请求的baseurl 不能为空
+     */
+    val Response<*>.baseUrl: String
+     get() {
+         var baseUrl = raw()?.networkResponse()?.request()?.url()?.toString()
+         if (baseUrl.isNullOrBlank()) {
+             baseUrl = raw()?.request()?.url()?.toString()
+         }
+         return baseUrl!!
+     }
+
 }
 
 

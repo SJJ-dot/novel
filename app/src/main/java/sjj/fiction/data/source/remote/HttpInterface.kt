@@ -1,6 +1,7 @@
 package sjj.fiction.data.source.remote
 
 import io.reactivex.Observable
+import retrofit2.Response
 import retrofit2.http.*
 import sjj.fiction.data.source.remote.retrofit.Html
 
@@ -11,14 +12,14 @@ interface HttpInterface {
     @FormUrlEncoded
     @POST
     @Html
-    fun searchPost(@Url url: String, @FieldMap(encoded = true) map: Map<String, String>): Observable<String>
+    fun searchPost(@Url url: String, @FieldMap(encoded = true) map: Map<String, String>): Observable<Response<String>>
 
     @GET
     @Html
-    fun searchGet(@Url url: String, @QueryMap map: Map<String, String>): Observable<String>
+    fun searchGet(@Url url: String, @QueryMap map: Map<String, String>): Observable<Response<String>>
 
     @GET
     @Html
-    fun loadHtml(@Url url: String): Observable<String>
+    fun loadHtml(@Url url: String): Observable<Response<String>>
 
 }

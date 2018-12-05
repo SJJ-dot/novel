@@ -19,7 +19,7 @@ class XBiquge6DataSource() : HttpDataSource(), FictionDataRepository.RemoteSourc
 
     override fun search(search: String): Observable<List<Book>> {
         return service.searchGet("search.php", mapOf("keyword" to search)).map { it ->
-            Jsoup.parse(it).body().getElementsByClass("result-list").map {
+            Jsoup.parse(it.body()).body().getElementsByClass("result-list").map {
                 val detail = it.getElementsByClass("result-game-item-detail")[0]
                 val title = detail.getElementsByClass("result-item-title result-game-item-title")[0].getElementsByClass("result-game-item-title-link")[0]
                 val bookUrl = title.absUrl("href")
@@ -32,7 +32,7 @@ class XBiquge6DataSource() : HttpDataSource(), FictionDataRepository.RemoteSourc
 
     override fun getChapterContent(chapter: Chapter): Observable<Chapter> {
         return service.loadHtml(chapter.url).map {
-            val get = Jsoup.parse(it)
+            val get = Jsoup.parse(it.body())
             chapter.chapterName = get.getElementsByClass("box_con")[0].getElementsByClass("bookname")[0].child(0).text()
             val parse = get.getElementById("content")
             chapter.content = parse.html()
@@ -43,7 +43,7 @@ class XBiquge6DataSource() : HttpDataSource(), FictionDataRepository.RemoteSourc
 
     override fun getBook(url: String): Observable<Book> {
         return service.loadHtml(url).map { it ->
-            val parse = Jsoup.parse(it, url).body()
+            val parse = Jsoup.parse(it.body(), it.baseUrl).body()
             val book = Book()
             book.url = url
             val info = parse.getElementById("maininfo")

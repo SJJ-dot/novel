@@ -16,7 +16,7 @@ class LiuMaoDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
 
     override fun search(search: String): Observable<List<Book>> {
         return service.searchPost("/modules/article/ss.php", mapOf(Pair("searchkey", URLEncoder.encode(search, "gbk")))).map {
-            val document = Jsoup.parse(it)
+            val document = Jsoup.parse(it.body())
             try {
                 val element = document.body().getElementsByClass("_content")[0].getElementsByClass("grid")[0].child(0).children()
                 val list = mutableListOf<Book>()
@@ -38,7 +38,7 @@ class LiuMaoDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
 
     override fun getChapterContent(chapter: Chapter): Observable<Chapter> {
         return service.loadHtml(chapter.url).map {
-            val element = Jsoup.parse(it).getElementById("neirong")
+            val element = Jsoup.parse(it.body()).getElementById("neirong")
             chapter.content = element.html()
             chapter.isLoadSuccess = true
             chapter
@@ -48,7 +48,7 @@ class LiuMaoDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
     override fun getBook(url: String): Observable<Book> {
         return service.loadHtml(url).map {
             val book = Book()
-            val document = Jsoup.parse(it, url)
+            val document = Jsoup.parse(it.body(), it.baseUrl)
             val intro = document.getElementsByClass("intro")[0]
             book.url = url
             book.name = intro.getElementsByClass("title")[0].child(0).text()

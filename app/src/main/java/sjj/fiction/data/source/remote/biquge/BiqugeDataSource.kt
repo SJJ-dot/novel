@@ -18,7 +18,7 @@ class BiqugeDataSource() : HttpDataSource(), FictionDataRepository.RemoteSource 
 
     override fun search(search: String): Observable<List<Book>> {
         return service.searchGet("modules/article/search.php", mapOf("searchkey" to search)).map {
-            val children = Jsoup.parse(it).body().getElementsByTag("tbody")[0].children()
+            val children = Jsoup.parse(it.body()).body().getElementsByTag("tbody")[0].children()
             children.takeLast(children.size - 1).map {
                 val element = it.select("a[href]")[0]
                 Book(element.absUrl("href"), element.text(), it.child(2).text())
@@ -28,7 +28,7 @@ class BiqugeDataSource() : HttpDataSource(), FictionDataRepository.RemoteSource 
 
     override fun getChapterContent(chapter: Chapter): Observable<Chapter> {
         return service.loadHtml(chapter.url).map {
-            val get = Jsoup.parse(it)
+            val get = Jsoup.parse(it.body())
             val parse = get.getElementById("content")
             chapter.chapterName =get.getElementsByClass("bookname")[0].child(0).text()
             chapter.content = parse.html()
@@ -39,7 +39,7 @@ class BiqugeDataSource() : HttpDataSource(), FictionDataRepository.RemoteSource 
 
     override fun getBook(url: String): Observable<Book> {
         return service.loadHtml(url).map {
-            val parse = Jsoup.parse(it, url).body()
+            val parse = Jsoup.parse(it.body(), it.baseUrl).body()
             val book = Book()
             book.url = url
             val info = parse.getElementById("info")

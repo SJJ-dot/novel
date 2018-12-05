@@ -19,7 +19,7 @@ class AszwFictionDataSource : HttpDataSource(), FictionDataRepository.RemoteSour
 
     override fun search(search: String): Observable<List<Book>> {
         return service.searchPost("modules/article/search.php", mapOf("searchkey" to URLEncoder.encode(search, "gbk"))).map {
-            val element = Jsoup.parse(it).body().getElementById("content").getElementsByTag("tbody")[0].getElementsByTag("tr")
+            val element = Jsoup.parse(it.body()).body().getElementById("content").getElementsByTag("tbody")[0].getElementsByTag("tr")
             val list = mutableListOf<Book>()
             for (i in 1 until element.size) {
                 val select = element[i].select("a[href]")
@@ -34,7 +34,7 @@ class AszwFictionDataSource : HttpDataSource(), FictionDataRepository.RemoteSour
 
     override fun getChapterContent(chapter: Chapter): Observable<Chapter> {
         return service.loadHtml(chapter.url).map {
-            val document = Jsoup.parse(it)
+            val document = Jsoup.parse(it.body())
             val parse = document.getElementById("contents")
             chapter.chapterName = document.getElementsByClass("bdb")[0].text()
             chapter.content = parse.html()
@@ -45,7 +45,7 @@ class AszwFictionDataSource : HttpDataSource(), FictionDataRepository.RemoteSour
 
     override fun getBook(url: String): Observable<Book> {
         return service.loadHtml(url).map {
-            val body = Jsoup.parse(it, url).body()
+            val body = Jsoup.parse(it.body(), url).body()
             val parse = body.getElementsByClass("info")[0]
             val book = Book()
             book.url = url
