@@ -22,37 +22,6 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Session.activitys.add(this)
-        val packageInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS)
-        val requestedPermissions = packageInfo.requestedPermissions
-
-        PermissionUtil.requestPermissions(this, requestedPermissions, object : PermissionCallback {
-
-            override fun onGranted(permissions: Permission) {
-                val set = AppConfig.deniedPermissions
-                set.remove(permissions.name)
-                AppConfig.deniedPermissions = set
-            }
-
-            override fun onDenied(permissions: Permission) {
-                if (Manifest.permission.READ_LOGS == permissions.name) {
-                    //忽略Manifest.permission.READ_LOGS 系统权限
-                    return
-                }
-                val s = "权限申请被拒绝：$permissions"
-                Log.i(s)
-
-                val set = AppConfig.deniedPermissions
-                if (set.contains(permissions.name))
-                    return
-                set.add(permissions.name)
-                AppConfig.deniedPermissions = set
-
-                //如果权限被拒绝提醒一次
-
-                longToast(s)
-
-            }
-        })
         Log.i("onCreate $this")
     }
 
