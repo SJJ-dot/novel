@@ -2,7 +2,6 @@ package sjj.fiction.data.source.remote.biquge
 
 import io.reactivex.Observable
 import org.jsoup.Jsoup
-import sjj.alog.Log
 import sjj.fiction.data.repository.FictionDataRepository
 import sjj.fiction.data.source.remote.HttpDataSource
 import sjj.fiction.data.source.remote.HttpInterface
@@ -56,7 +55,6 @@ class XBiquge6DataSource() : HttpDataSource(), FictionDataRepository.RemoteSourc
             book.chapterList = children.subList(1, children.size)
                     .map { it.select("a[href]")[0] }
                     .mapIndexed { index, e -> Chapter(e.absUrl("abs:href"), book.url, index = index, chapterName = e.text()) }
-            Log.e(book)
             book
         }
     }

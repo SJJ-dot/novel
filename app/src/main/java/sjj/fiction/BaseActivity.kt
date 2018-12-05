@@ -1,10 +1,11 @@
 package sjj.fiction
 
+import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import io.reactivex.disposables.Disposable
-import org.jetbrains.anko.toast
+import org.jetbrains.anko.longToast
 import sjj.alog.Log
 import sjj.fiction.util.destroy
 import sjj.fiction.util.pause
@@ -23,15 +24,33 @@ abstract class BaseActivity : AppCompatActivity() {
         Session.activitys.add(this)
         val packageInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS)
         val requestedPermissions = packageInfo.requestedPermissions
+
         PermissionUtil.requestPermissions(this, requestedPermissions, object : PermissionCallback {
 
-            override fun onGranted(permissions: Permission?) {
+            override fun onGranted(permissions: Permission) {
+                val set = AppConfig.deniedPermissions
+                set.remove(permissions.name)
+                AppConfig.deniedPermissions = set
             }
 
-            override fun onDenied(permissions: Permission?) {
-                val s = "权限申请被拒绝：${permissions.toString()}"
-                toast(s)
+            override fun onDenied(permissions: Permission) {
+                if (Manifest.permission.READ_LOGS == permissions.name) {
+                    //忽略Manifest.permission.READ_LOGS 系统权限
+                    return
+                }
+                val s = "权限申请被拒绝：$permissions"
                 Log.i(s)
+
+                val set = AppConfig.deniedPermissions
+                if (set.contains(permissions.name))
+                    return
+                set.add(permissions.name)
+                AppConfig.deniedPermissions = set
+
+                //如果权限被拒绝提醒一次
+
+                longToast(s)
+
             }
         })
         Log.i("onCreate $this")

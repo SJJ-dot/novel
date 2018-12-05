@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.StrictMode
 import com.facebook.drawee.backends.pipeline.Fresco
+import com.tencent.bugly.crashreport.CrashReport
 import com.tencent.mmkv.MMKV
 import io.reactivex.plugins.RxJavaPlugins
 import org.jetbrains.anko.noHistory
@@ -23,19 +24,10 @@ class App:Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Thread.setDefaultUncaughtExceptionHandler { t, e ->
-            Log.e("UncaughtException",e)
-            Session.finishAllActivity()
-            val intent = Intent(Session.ctx, CrashActivity::class.java)
-            intent.putExtra(CrashActivity.THREAD_INFO, "线程：${t.name} ID：${t.id}")
-            intent.putExtra(CrashActivity.CRASH_DATA, android.util.Log.getStackTraceString(e))
-            intent.noHistory()
-            Session.ctx.startActivity(intent)
-            System.exit(0)
-        }
         app = this
         Session.ctx = this
         MMKV.initialize(this)
+        CrashReport.initCrashReport(this, "6dbb38183e", BuildConfig.DEBUG)
 
 
 //        val logConfig = Config()
