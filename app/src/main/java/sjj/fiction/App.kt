@@ -1,15 +1,12 @@
 package sjj.fiction
 
 import android.app.Application
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.StrictMode
 import com.facebook.drawee.backends.pipeline.Fresco
-import com.tencent.bugly.crashreport.CrashReport
+import com.tencent.bugly.Bugly
 import com.tencent.mmkv.MMKV
 import io.reactivex.plugins.RxJavaPlugins
-import org.jetbrains.anko.noHistory
-import sjj.alog.Config
 import sjj.alog.Log
 
 /**
@@ -27,7 +24,7 @@ class App:Application() {
         app = this
         Session.ctx = this
         MMKV.initialize(this)
-        CrashReport.initCrashReport(this, "6dbb38183e", BuildConfig.DEBUG)
+        Bugly.init(this, "6dbb38183e", BuildConfig.DEBUG)
 
 
 //        val logConfig = Config()

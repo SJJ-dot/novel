@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.tencent.bugly.crashreport.CrashReport
 import kotlinx.android.synthetic.main.fragment_about.*
 import sjj.fiction.BaseFragment
 import sjj.fiction.BuildConfig
@@ -17,5 +18,8 @@ class AboutFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         versionCode.text = "版本号：${BuildConfig.VERSION_NAME}"
+        versionCode.setOnClickListener {
+            CrashReport.testJavaCrash()
+        }
     }
 }
