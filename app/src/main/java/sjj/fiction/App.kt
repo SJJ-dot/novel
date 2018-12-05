@@ -38,16 +38,16 @@ class App:Application() {
         MMKV.initialize(this)
 
 
-        val logConfig = Config()
-        logConfig.hold = true
-        logConfig.holdMultiple = false
-        logConfig.holdLev = Config.ERROR
-        Config.init(logConfig)
+//        val logConfig = Config()
+//        logConfig.hold = false
+//        logConfig.holdMultiple = false
+//        logConfig.holdLev = Config.ERROR
+//        Config.init(logConfig)
 
         Fresco.initialize(Session.ctx);
 
         // 分别为MainThread和VM设置Strict Mode
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && false) {
             StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder()
                     .detectDiskReads()
                     .detectDiskWrites()
