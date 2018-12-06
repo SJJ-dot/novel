@@ -31,12 +31,12 @@ val fictionDataRepository by lazy { FictionDataRepository() }
  */
 class FictionDataRepository {
     private val sources = listOf<FictionDataRepository.RemoteSource>(
-            DhzwDataSource(),
-            YunlaigeDataSource(),
-            AszwFictionDataSource(),
-            BiqugeDataSource(),
-            LiuMaoDataSource(),
-            XBiquge6DataSource()
+//            DhzwDataSource(),
+            YunlaigeDataSource()
+//            AszwFictionDataSource(),
+//            BiqugeDataSource(),
+//            LiuMaoDataSource(),
+//            XBiquge6DataSource()
 //            BaiDuDataSource()
     )
 
