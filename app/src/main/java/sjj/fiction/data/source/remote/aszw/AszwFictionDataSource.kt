@@ -2,6 +2,7 @@ package sjj.fiction.data.source.remote.aszw
 
 import io.reactivex.Observable
 import org.jsoup.Jsoup
+import sjj.alog.Log
 import sjj.fiction.data.repository.FictionDataRepository
 import sjj.fiction.data.source.remote.HttpDataSource
 import sjj.fiction.data.source.remote.HttpInterface
@@ -19,7 +20,11 @@ class AszwFictionDataSource : HttpDataSource(), FictionDataRepository.RemoteSour
 
     override fun search(search: String): Observable<List<Book>> {
         return service.searchPost("modules/article/search.php", mapOf("searchkey" to URLEncoder.encode(search, "gbk"))).map {
-            val element = Jsoup.parse(it.body()).body().getElementById("content").getElementsByTag("tbody")[0].getElementsByTag("tr")
+            val parse = Jsoup.parse(it.body())
+            val select1 = parse.select("#content>tbody:first-child>.tr")
+            Log.e(select1)
+            val element = parse.body().getElementById("content").getElementsByTag("tbody")[0].getElementsByTag("tr")
+            Log.e(element)
             val list = mutableListOf<Book>()
             for (i in 1 until element.size) {
                 val select = element[i].select("a[href]")
