@@ -16,7 +16,7 @@ import java.net.URLEncoder
 class AszwFictionDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
     override val baseUrl: String = "https://www.aszw.org/"
     private val service = create<HttpInterface>()
-    override val tld: String = "aszw.org"
+    override val topLevelDomain: String = "aszw.org"
 
     override fun search(search: String): Observable<List<Book>> {
         return service.searchPost("modules/article/search.php", mapOf("searchkey" to URLEncoder.encode(search, "gbk"))).map {

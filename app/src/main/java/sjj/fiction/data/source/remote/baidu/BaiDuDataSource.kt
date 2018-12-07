@@ -35,7 +35,7 @@ class BaiDuDataSource() : HttpDataSource(), FictionDataRepository.RemoteSource {
         }
     }
 
-    override val tld: String = "baidu.com"
+    override val topLevelDomain: String = "baidu.com"
 
     override fun search(search: String): Observable<List<Book>> {
         return service.searchGet("s", mapOf("word" to search)).map {

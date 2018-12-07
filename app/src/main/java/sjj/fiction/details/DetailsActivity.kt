@@ -1,10 +1,8 @@
 package sjj.fiction.details
 
-import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.paging.PagedListAdapter
-import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.util.DiffUtil
@@ -17,19 +15,17 @@ import android.view.ViewGroup
 import android.widget.TextView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_details.*
-import org.jetbrains.anko.*
-import org.jetbrains.anko.sdk25.coroutines.onClick
-import org.jetbrains.anko.support.v4.indeterminateProgressDialog
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.find
+import org.jetbrains.anko.startActivity
 import sjj.fiction.BaseActivity
 import sjj.fiction.DISPOSABLE_ACTIVITY_DETAILS_REFRESH
 import sjj.fiction.Details
 import sjj.fiction.R
-import sjj.fiction.model.Book
 import sjj.fiction.model.Chapter
 import sjj.fiction.read.ReadActivity
 import sjj.fiction.util.getModel
 import sjj.fiction.util.host
-import sjj.fiction.util.log
 
 /**
  * Created by SJJ on 2017/10/10.

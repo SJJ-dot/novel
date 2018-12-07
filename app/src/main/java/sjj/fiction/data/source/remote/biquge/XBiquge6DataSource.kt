@@ -14,7 +14,7 @@ import sjj.fiction.model.Chapter
 class XBiquge6DataSource() : HttpDataSource(), FictionDataRepository.RemoteSource {
     override val baseUrl: String = "https://www.xbiquge6.com/"
     private val service = create<HttpInterface>()
-    override val tld: String = "xbiquge6.com"
+    override val topLevelDomain: String = "xbiquge6.com"
 
     override fun search(search: String): Observable<List<Book>> {
         return service.searchGet("search.php", mapOf("keyword" to search)).map { it ->

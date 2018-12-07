@@ -28,6 +28,6 @@ class SearchRule {
      * 获取搜索结果的规则
      * 可能存在多种情况。一组规则没有获得结果 则使用后一组规则获取
      */
-    val resultRule: List<List<ElementRule>>? = null
+    var resultRules: List<SearchResultRule>? = null
 
 }

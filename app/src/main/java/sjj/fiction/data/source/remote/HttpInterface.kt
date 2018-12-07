@@ -16,7 +16,7 @@ interface HttpInterface {
 
     @GET
     @Html
-    fun searchGet(@Url url: String, @QueryMap map: Map<String, String>): Observable<Response<String>>
+    fun searchGet(@Url url: String, @QueryMap(encoded = true) map: Map<String, String>): Observable<Response<String>>
 
     @GET
     @Html

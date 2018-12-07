@@ -14,7 +14,7 @@ import java.net.URLEncoder
  */
 class DhzwDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
     override val baseUrl: String = "https://www.dhzw.org/"
-    override val tld: String = "dhzw.org"
+    override val topLevelDomain: String = "dhzw.org"
     private val service = create<HttpInterface>()
 
     override fun search(search: String): Observable<List<Book>> {

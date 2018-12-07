@@ -9,13 +9,8 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import sjj.alog.Log
 import sjj.fiction.data.source.local.LocalFictionDataSource
-import sjj.fiction.data.source.remote.aszw.AszwFictionDataSource
-import sjj.fiction.data.source.remote.baidu.BaiDuDataSource
-import sjj.fiction.data.source.remote.biquge.BiqugeDataSource
-import sjj.fiction.data.source.remote.biquge.XBiquge6DataSource
-import sjj.fiction.data.source.remote.dhzw.DhzwDataSource
-import sjj.fiction.data.source.remote.liumao.LiuMaoDataSource
-import sjj.fiction.data.source.remote.yunlaige.YunlaigeDataSource
+import sjj.fiction.data.source.remote.CommonBookEngine
+import sjj.fiction.data.source.remote.rule.*
 import sjj.fiction.model.Book
 import sjj.fiction.model.BookSourceRecord
 import sjj.fiction.model.Chapter
@@ -32,18 +27,33 @@ val fictionDataRepository by lazy { FictionDataRepository() }
 class FictionDataRepository {
     private val sources = listOf<FictionDataRepository.RemoteSource>(
 //            DhzwDataSource(),
-            YunlaigeDataSource()
+//            YunlaigeDataSource(),
 //            AszwFictionDataSource(),
 //            BiqugeDataSource(),
 //            LiuMaoDataSource(),
 //            XBiquge6DataSource()
 //            BaiDuDataSource()
+            CommonBookEngine(BookParseRule().apply {
+                topLevelDomain = "yunlaige.com"
+                baseUrl = "http://www.yunlaige.com/"
+                searchRule = SearchRule().apply {
+                    charset = Charset.GBK
+                    method = Method.POST
+                    serverUrl = "http://www.yunlaige.com/modules/article/search.php"
+                    searchKey = "searchkey"
+                    resultRules = listOf(SearchResultRule().apply {
+                        bookInfos = "chart-dashed-list > *"
+                        name = "> :nth-child(2) > :nth-child(1) > :nth-child(1) a[href]"
+                        author = ""
+                    })
+                }
+            })
     )
 
     private val localSource: LocalSource = LocalFictionDataSource()
 
     private fun getSource(url: String) = sources.find {
-        url.host.endsWith(it.tld, true)
+        url.host.endsWith(it.topLevelDomain, true)
     }
 
     fun search(search: String): Single<List<Pair<BookSourceRecord, List<Book>>>> {
@@ -144,7 +154,11 @@ class FictionDataRepository {
     interface RemoteSource {
         fun getChapterContent(chapter: Chapter): Observable<Chapter>
         fun getBook(url: String): Observable<Book>
-        val tld: String
+        /**
+         *  top-level domain
+         */
+        val topLevelDomain: String
+
         fun search(search: String): Observable<List<Book>>
     }
 

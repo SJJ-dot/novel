@@ -11,7 +11,7 @@ import java.net.URLEncoder
 
 class LiuMaoDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
     override val baseUrl: String = "http://www.6mao.com/"
-    override val tld: String = "6mao.com"
+    override val topLevelDomain: String = "6mao.com"
     private val service = create<HttpInterface>()
 
     override fun search(search: String): Observable<List<Book>> {

@@ -15,15 +15,13 @@ import java.net.URLEncoder
 class YunlaigeDataSource : HttpDataSource(), FictionDataRepository.RemoteSource {
     override val baseUrl: String = "http://www.yunlaige.com/"
     private val service = create<HttpInterface>()
-    override val tld: String = "yunlaige.com"
+    override val topLevelDomain: String = "yunlaige.com"
 
     override fun search(search: String): Observable<List<Book>> {
         val url = "http://www.yunlaige.com/modules/article/search.php"
         return service.searchPost(url, mapOf("searchkey" to URLEncoder.encode(search, "gbk"))).map {
             val document = Jsoup.parse(it.body())
             try {
-                val elements = document.select(".chart-dashed-list > *")
-
                 document.body().getElementsByClass("chart-dashed-list")[0].children().map {
                     val child1 = it.child(1).child(0).child(0).select("a[href]")[0]
                     Book(child1.absUrl("href"), child1.text(), it.child(1).child(1).text().split("/")[0])
