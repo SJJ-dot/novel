@@ -9,4 +9,6 @@
     <color name="chapter_text_color">#252525</color>
     <color name="colorText">#212121</color>
     <color name="colorTextLight">#686868</color>
+    <color name="tv_text_default">#de000000</color>
+    <color name="btn_bg_press">#c4c4c4</color>
 </resources>

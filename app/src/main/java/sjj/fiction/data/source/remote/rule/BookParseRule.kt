@@ -5,6 +5,15 @@ package sjj.fiction.data.source.remote.rule
  */
 class BookParseRule {
     /**
+     * 书源名称
+     */
+    var sourceName = ""
+    /**
+     * 书源的优先级排序 暂时没什么用
+     */
+    var sequence = 1.0;
+
+    /**
      * 网站标识（顶级域名）
      */
     var topLevelDomain: String = ""
