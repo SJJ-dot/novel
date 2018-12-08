@@ -11,7 +11,10 @@ import kotlinx.android.synthetic.main.item_book_source.view.*
 import sjj.alog.Log
 import sjj.novel.BaseFragment
 import sjj.novel.R
+import sjj.novel.data.repository.novelSourceRepository
+import sjj.novel.data.source.remote.CommonBookEngine
 import sjj.novel.data.source.remote.rule.*
+import sjj.novel.util.fromJson
 import sjj.novel.util.getModel
 import sjj.novel.util.gson
 

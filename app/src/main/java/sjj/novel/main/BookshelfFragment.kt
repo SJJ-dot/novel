@@ -58,13 +58,15 @@ class BookshelfFragment : BaseFragment() {
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val book = data!![position]
-            model.getReadIndex(book.name, book.author).firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
-                if (it < book.chapterList.last().index) {
-                    holder.itemView.lastChapter.textColorResource = R.color.colorText
-                } else {
-                    holder.itemView.lastChapter.textColorResource = R.color.colorTextLight
-                }
-            }.destroy(holder.itemView.toString())
+            if (book.chapterList.isNotEmpty()) {
+                model.getReadIndex(book.name, book.author).firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
+                    if (it < book.chapterList.last().index) {
+                        holder.itemView.lastChapter.textColorResource = R.color.colorText
+                    } else {
+                        holder.itemView.lastChapter.textColorResource = R.color.colorTextLight
+                    }
+                }.destroy(holder.itemView.toString())
+            }
             holder.itemView.bookName.text = book.name
             holder.itemView.author.text = book.author
             holder.itemView.originWebsite.text = book.url.host
