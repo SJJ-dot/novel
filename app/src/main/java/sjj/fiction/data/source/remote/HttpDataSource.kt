@@ -93,7 +93,7 @@ abstract class HttpDataSource : DataSourceInterface {
     }
 
     /**
-     *
+     *只有在url 可能为网页本身的时候才使用这个方法
      */
     fun Element.absUrl(cssQuery: String, response: Response<String>): String {
         return if (cssQuery.isBlank()) {
@@ -104,6 +104,17 @@ abstract class HttpDataSource : DataSourceInterface {
         }
     }
 
+    /**
+     *只有在url 可能为网页本身的时候才使用这个方法
+     */
+    fun Elements.absUrl(cssQuery: String, response: Response<String>): String {
+        return if (cssQuery.isBlank()) {
+            response.baseUrl
+        } else {
+            select(cssQuery).first()?.absUrl("href")
+                    ?: response.baseUrl
+        }
+    }
 }
 
 

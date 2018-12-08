@@ -17,13 +17,19 @@ class BookParseRule {
      */
     var searchRule: SearchRule? = null
     /**
-     * 书籍简介与章节列表
+     * 书籍简介
      */
-    var bookIntroRule:BookIntroRule?=null
+    var introRule: BookIntroRule? = null
+
+    /**
+     * 章节列表解析规则
+     */
+    var chapterListRule: BookChapterListRule? = null
+
     /**
      * 章节内容解析
      */
-    var chapterContentRule:ChapterContentRule?=null
+    var chapterContentRule: ChapterContentRule? = null
 }
 
 

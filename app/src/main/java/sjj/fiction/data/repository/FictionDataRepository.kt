@@ -55,6 +55,25 @@ class FictionDataRepository {
                         author = "> :nth-child(2) > :nth-child(1)"
                     })
                 }
+                introRule = BookIntroRule().apply {
+                    bookInfo = ".book-info"
+                    bookName = ".info > :nth-child(1) > :nth-child(1)"
+                    bookAuthor = ".info > :nth-child(2) > :nth-child(1)"
+                    bookCoverImgUrl = "> :nth-child(1) > :nth-child(1)"
+                    bookIntro = ".info > :nth-child(3)"
+                    bookChapterListUrl = ".info > :nth-child(4) a[href]"
+                }
+
+                chapterListRule = BookChapterListRule().apply {
+                    bookChapterList = "#contenttable > :nth-child(1) a[href]"
+                    bookChapterUrl = "a"
+                    bookChapterName = "a"
+                }
+
+                chapterContentRule = ChapterContentRule().apply {
+                    bookChapterContent="#content"
+                }
+
             })
     )
 
