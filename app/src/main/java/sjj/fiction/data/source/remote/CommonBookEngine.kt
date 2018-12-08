@@ -2,6 +2,7 @@ package sjj.fiction.data.source.remote
 
 import io.reactivex.Observable
 import org.jsoup.Jsoup
+import sjj.alog.Log
 import sjj.fiction.data.repository.FictionDataRepository
 import sjj.fiction.data.source.remote.rule.BookParseRule
 import sjj.fiction.data.source.remote.rule.Method
@@ -12,9 +13,9 @@ import java.net.URLEncoder
 
 class CommonBookEngine(private val rule: BookParseRule) : FictionDataRepository.RemoteSource, HttpDataSource() {
 
-    private val service = create<HttpInterface>()
-
     override val baseUrl: String = rule.baseUrl
+
+    private val service by lazy { create<HttpInterface>() }
 
     override fun getChapterContent(chapter: Chapter): Observable<Chapter> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -44,13 +45,16 @@ class CommonBookEngine(private val rule: BookParseRule) : FictionDataRepository.
                 val elements = document.select(resultRule.bookInfos)
                 val books = mutableListOf<Book>()
                 elements.forEach { element ->
-                    val bookName = element.select(resultRule.name).text()
-                    Regex(resultRule.nameRegex)
-                    val bookAuthor = element.select(resultRule.author).text()
+
+                    val bookName = element.select(resultRule.name).text(resultRule.nameRegex)
+
+                    val bookAuthor = element.select(resultRule.author).text(resultRule.authorRegex)
+
                     val bookUrl = if (resultRule.bookUrl.isBlank()) {
                         response.baseUrl
                     } else {
-                        element.select(resultRule.bookUrl).first()?.absUrl("href") ?: response.baseUrl
+                        element.select(resultRule.bookUrl).first()?.absUrl("href")
+                                ?: response.baseUrl
                     }
                     element.select(resultRule.bookUrl).text()
                     if (bookName.isNotBlank() || bookAuthor.isNotBlank()) {
@@ -63,6 +67,6 @@ class CommonBookEngine(private val rule: BookParseRule) : FictionDataRepository.
             }
 
             return@map listOf<Book>()
-        }
+        }.doOnNext(Log::e)
     }
 }

@@ -4,10 +4,12 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import org.jsoup.nodes.Document
+import org.jsoup.select.Elements
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Response
 import retrofit2.Retrofit
+import sjj.alog.Log
 import sjj.fiction.data.source.DataSourceInterface
 import sjj.fiction.data.source.remote.retrofit.RetrofitInstance
 import java.lang.reflect.Type
@@ -21,6 +23,7 @@ abstract class HttpDataSource : DataSourceInterface {
     protected val retrofit: Retrofit by lazy {
         RetrofitInstance.defRetrofit(baseUrl)
     }
+
     protected inline fun <reified T> create(): T {
         return retrofit.create(T::class.java)
     }
@@ -63,14 +66,30 @@ abstract class HttpDataSource : DataSourceInterface {
      * 获取请求的baseurl 不能为空
      */
     val Response<*>.baseUrl: String
-     get() {
-         var baseUrl = raw()?.networkResponse()?.request()?.url()?.toString()
-         if (baseUrl.isNullOrBlank()) {
-             baseUrl = raw()?.request()?.url()?.toString()
-         }
-         return baseUrl!!
-     }
+        get() {
+            var baseUrl = raw()?.networkResponse()?.request()?.url()?.toString()
+            if (baseUrl.isNullOrBlank()) {
+                baseUrl = raw()?.request()?.url()?.toString()
+            }
+            return baseUrl!!
+        }
 
+    /**
+     * 通过给定的正则表达式匹配输出 第一个元组
+     */
+    fun Elements.text(regex: String): String {
+        val text = text()
+        //如果没有正则表达式设置 直接返回文本
+        if (regex.isEmpty()) {
+            return text.trim()
+        }
+        return try {
+            val result = Regex(regex).find(text)
+            result!!.groups[1]!!.value.trim()
+        } catch (e: Exception) {
+            text.trim()
+        }
+    }
 }
 
 

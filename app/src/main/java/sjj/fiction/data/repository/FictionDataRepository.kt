@@ -11,6 +11,7 @@ import sjj.alog.Log
 import sjj.fiction.data.source.local.LocalFictionDataSource
 import sjj.fiction.data.source.remote.CommonBookEngine
 import sjj.fiction.data.source.remote.rule.*
+import sjj.fiction.data.source.remote.yunlaige.YunlaigeDataSource
 import sjj.fiction.model.Book
 import sjj.fiction.model.BookSourceRecord
 import sjj.fiction.model.Chapter
@@ -42,9 +43,12 @@ class FictionDataRepository {
                     serverUrl = "http://www.yunlaige.com/modules/article/search.php"
                     searchKey = "searchkey"
                     resultRules = listOf(SearchResultRule().apply {
-                        bookInfos = "chart-dashed-list > *"
+                        bookInfos = ".chart-dashed-list > *"
                         name = "> :nth-child(2) > :nth-child(1) > :nth-child(1) a[href]"
-                        author = ""
+                        author = "> :nth-child(2) > :nth-child(2)"
+                        authorRegex = "(.*)/.*"
+                        //书籍的名字是一个超链接
+                        bookUrl = name
                     })
                 }
             })
@@ -56,7 +60,7 @@ class FictionDataRepository {
         url.host.endsWith(it.topLevelDomain, true)
     }
 
-    fun search(search: String): Single<List<Pair<BookSourceRecord, List<Book>>>> {
+    fun search(search: String): Observable<List<Pair<BookSourceRecord, List<Book>>>> {
         return Observable.fromIterable(sources).flatMap {
             if (search.isBlank()) {
                 throw IllegalArgumentException("搜索内容不能为空")
@@ -64,12 +68,12 @@ class FictionDataRepository {
             it.search(search).doOnError {
                 Log.e("搜索出错:$it", it)
             }.onErrorResumeNext(Observable.empty())
-        }.reduce(mutableMapOf<String, MutableList<Book>>(), { map, bs ->
+        }.reduce(mutableMapOf<String, MutableList<Book>>()) { map, bs ->
             bs.forEach {
-                map.getOrPut(it.name + it.author, { mutableListOf() }).add(it)
+                map.getOrPut(it.name + it.author) { mutableListOf() }.add(it)
             }
             map
-        }).map {
+        }.toObservable().map {
             it.map { entry ->
                 Pair(BookSourceRecord().apply {
                     val first = entry.value.first()

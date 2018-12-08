@@ -133,30 +133,4 @@ class DetailsActivity : BaseActivity() {
         }
     }
 
-    private inner class ChapterListPageAdapter : PagedListAdapter<Chapter, ViewHolder>(object : DiffUtil.ItemCallback<Chapter>() {
-        override fun areItemsTheSame(oldItem: Chapter?, newItem: Chapter?): Boolean {
-            return oldItem?.url == newItem?.url
-        }
-
-        override fun areContentsTheSame(oldItem: Chapter?, newItem: Chapter?): Boolean {
-            return oldItem?.chapterName == newItem?.chapterName
-        }
-    }) {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            return object : ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_text_text, parent, false)) {}
-        }
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val book = getItem(position) ?: return
-            holder.itemView.find<TextView>(R.id.text1).text = book.chapterName
-            holder.itemView.setOnClickListener {
-                it.isEnabled = false
-                model.setReadIndex(position).observeOn(AndroidSchedulers.mainThread()).doOnTerminate {
-                    it.isEnabled = true
-                }.subscribe {
-                    startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)
-                }
-            }
-        }
-    }
 }
