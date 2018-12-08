@@ -50,13 +50,8 @@ class CommonBookEngine(private val rule: BookParseRule) : FictionDataRepository.
 
                     val bookAuthor = element.select(resultRule.author).text(resultRule.authorRegex)
 
-                    val bookUrl = if (resultRule.bookUrl.isBlank()) {
-                        response.baseUrl
-                    } else {
-                        element.select(resultRule.bookUrl).first()?.absUrl("href")
-                                ?: response.baseUrl
-                    }
-                    element.select(resultRule.bookUrl).text()
+                    val bookUrl = element.absUrl(resultRule.bookUrl,response)
+
                     if (bookName.isNotBlank() || bookAuthor.isNotBlank()) {
                         books.add(Book(bookUrl, bookName, bookAuthor))
                     }

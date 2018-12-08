@@ -49,6 +49,10 @@ class FictionDataRepository {
                         authorRegex = "(.*)/.*"
                         //书籍的名字是一个超链接
                         bookUrl = name
+                    }, SearchResultRule().apply {
+                        bookInfos = ".book-info .info"
+                        name = "> :nth-child(1) > :nth-child(1)"
+                        author = "> :nth-child(2) > :nth-child(1)"
                     })
                 }
             })

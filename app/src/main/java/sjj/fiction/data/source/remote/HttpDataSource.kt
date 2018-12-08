@@ -4,6 +4,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import org.jsoup.nodes.Document
+import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 import retrofit2.Call
 import retrofit2.CallAdapter
@@ -90,6 +91,19 @@ abstract class HttpDataSource : DataSourceInterface {
             text.trim()
         }
     }
+
+    /**
+     *
+     */
+    fun Element.absUrl(cssQuery: String, response: Response<String>): String {
+        return if (cssQuery.isBlank()) {
+            response.baseUrl
+        } else {
+            select(cssQuery).first()?.absUrl("href")
+                    ?: response.baseUrl
+        }
+    }
+
 }
 
 
