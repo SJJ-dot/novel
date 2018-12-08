@@ -26,55 +26,6 @@ class NovelSourceFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-        model.saveBookParseRule(BookParseRule().apply {
-
-            sourceName = "笔趣阁"
-
-            topLevelDomain = "yunlaige.com"
-            baseUrl = "http://www.yunlaige.com/"
-            searchRule = SearchRule().apply {
-                charset = Charset.GBK
-                method = Method.POST
-                serverUrl = "http://www.yunlaige.com/modules/article/search.php"
-                searchKey = "searchkey"
-                resultRules = listOf(SearchResultRule().apply {
-                    bookInfos = ".chart-dashed-list > *"
-                    name = "> :nth-child(2) > :nth-child(1) > :nth-child(1) a[href]"
-                    author = "> :nth-child(2) > :nth-child(2)"
-                    authorRegex = "(.*)/.*"
-                    //书籍的名字是一个超链接
-                    bookUrl = name
-                }, SearchResultRule().apply {
-                    bookInfos = ".book-info .info"
-                    name = "> :nth-child(1) > :nth-child(1)"
-                    author = "> :nth-child(2) > :nth-child(1)"
-                })
-            }
-            introRule = BookIntroRule().apply {
-                bookInfo = ".book-info"
-                bookName = ".info > :nth-child(1) > :nth-child(1)"
-                bookAuthor = ".info > :nth-child(2) > :nth-child(1)"
-                bookCoverImgUrl = "> :nth-child(1) > :nth-child(1)"
-                bookIntro = ".info > :nth-child(3)"
-                bookChapterListUrl = ".info > :nth-child(4) a[href]"
-            }
-
-            chapterListRule = BookChapterListRule().apply {
-                bookChapterList = "#contenttable > :nth-child(1) a[href]"
-                bookChapterUrl = "a"
-                bookChapterName = "a"
-            }
-
-            chapterContentRule = ChapterContentRule().apply {
-                bookChapterContent="#content"
-            }
-
-        }).subscribe {
-            Log.e(gson.toJson(it))
-        }.destroy()
-
-
         novel_source.adapter = adapter
         model.getAllBookParseRule()
                 .observeOn(AndroidSchedulers.mainThread())
