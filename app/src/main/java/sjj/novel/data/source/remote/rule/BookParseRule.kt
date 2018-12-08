@@ -1,8 +1,12 @@
 package sjj.novel.data.source.remote.rule
 
+import android.arch.persistence.room.Entity
+import android.arch.persistence.room.PrimaryKey
+
 /**
  * 小说网站解析
  */
+@Entity
 class BookParseRule {
     /**
      * 书源名称
@@ -14,8 +18,13 @@ class BookParseRule {
     var sequence = 1.0;
 
     /**
+     * 激活使用
+     */
+    var enable = true
+    /**
      * 网站标识（顶级域名）
      */
+    @PrimaryKey
     var topLevelDomain: String = ""
     /**
      * 网站域名地址

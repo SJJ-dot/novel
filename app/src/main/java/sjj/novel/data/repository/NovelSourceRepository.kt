@@ -1,6 +1,10 @@
 package sjj.novel.data.repository
 
+import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.Scheduler
+import io.reactivex.schedulers.Schedulers
+import sjj.novel.data.source.local.booksDataBase
 import sjj.novel.data.source.remote.rule.BookParseRule
 
 
@@ -10,24 +14,22 @@ val novelSourceRepository by lazy { NovelSourceRepository() }
  */
 class NovelSourceRepository {
 
-    fun getAllBookParseRule(): Observable<List<BookParseRule>> {
-        return Observable.fromCallable {
-            NovelSourceConfig.getAllBookParseRule()
-        }
+    fun getAllBookParseRule(): Flowable<List<BookParseRule>> {
+        return booksDataBase.novelSourceDao().getAllBookParseRule().subscribeOn(Schedulers.io())
     }
 
     fun saveBookParseRule(rule: BookParseRule): Observable<BookParseRule> {
         return Observable.fromCallable {
-            NovelSourceConfig.saveBookParseRule(rule)
+            booksDataBase.novelSourceDao().saveBookParseRule(rule)
             rule
-        }
+        }.subscribeOn(Schedulers.io())
     }
 
     fun deleteBookParseRule(rule: BookParseRule): Observable<BookParseRule> {
         return Observable.fromCallable {
-            NovelSourceConfig.deleteBookParseRule(rule)
+            booksDataBase.novelSourceDao().deleteBookParseRule(rule)
             rule
-        }
+        }.subscribeOn(Schedulers.io())
     }
 
 

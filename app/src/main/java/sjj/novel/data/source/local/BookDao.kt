@@ -3,7 +3,6 @@ package sjj.novel.data.source.local
 import android.arch.paging.DataSource
 import android.arch.persistence.room.*
 import io.reactivex.Flowable
-import sjj.novel.Session
 import sjj.novel.model.Book
 import sjj.novel.model.BookSourceRecord
 import sjj.novel.model.Chapter
@@ -59,15 +58,4 @@ interface BookDao {
     @Query("select url,bookUrl,`index`,chapterName,isLoadSuccess from Chapter where bookUrl=:bookUrl order by `index`")
     fun getChapterIntro(bookUrl: String): Flowable<List<Chapter>>
 
-}
-
-
-@Database(entities = [Book::class, BookSourceRecord::class, Chapter::class], version = 2)
-abstract class BooksDataBase : RoomDatabase() {
-    abstract fun bookDao(): BookDao
-}
-
-val booksDataBase by lazy {
-    Room.databaseBuilder(Session.ctx, BooksDataBase::class.java, "books.db").fallbackToDestructiveMigration()
-            .build()
 }

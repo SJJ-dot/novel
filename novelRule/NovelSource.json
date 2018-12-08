@@ -1,0 +1,53 @@
+{
+  "baseUrl": "http://www.yunlaige.com/",
+  "chapterContentRule": {
+    "bookChapterContent": "#content"
+  },
+  "chapterListRule": {
+    "bookChapterList": "#contenttable \u003e :nth-child(1) a[href]",
+    "bookChapterListUrl": "",
+    "bookChapterName": "a",
+    "bookChapterNameRegex": "",
+    "bookChapterUrl": "a"
+  },
+  "enable": true,
+  "introRule": {
+    "bookAuthor": ".info \u003e :nth-child(2) \u003e :nth-child(1)",
+    "bookAuthorRegex": "",
+    "bookChapterListUrl": ".info \u003e :nth-child(4) a[href]",
+    "bookCoverImgUrl": "\u003e :nth-child(1) \u003e :nth-child(1)",
+    "bookInfo": ".book-info",
+    "bookIntro": ".info \u003e :nth-child(3)",
+    "bookIntroRegex": "",
+    "bookName": ".info \u003e :nth-child(1) \u003e :nth-child(1)",
+    "bookNameRegex": "",
+    "bookUrl": ""
+  },
+  "searchRule": {
+    "charset": "GBK",
+    "method": "POST",
+    "resultRules": [
+      {
+        "author": "\u003e :nth-child(2) \u003e :nth-child(2)",
+        "authorRegex": "(.*)/.*",
+        "bookInfos": ".chart-dashed-list \u003e *",
+        "bookUrl": "\u003e :nth-child(2) \u003e :nth-child(1) \u003e :nth-child(1) a[href]",
+        "name": "\u003e :nth-child(2) \u003e :nth-child(1) \u003e :nth-child(1) a[href]",
+        "nameRegex": ""
+      },
+      {
+        "author": "\u003e :nth-child(2) \u003e :nth-child(1)",
+        "authorRegex": "*",
+        "bookInfos": ".book-info .info",
+        "bookUrl": "",
+        "name": "\u003e :nth-child(1) \u003e :nth-child(1)",
+        "nameRegex": ""
+      }
+    ],
+    "searchKey": "searchkey",
+    "serverUrl": "http://www.yunlaige.com/modules/article/search.php"
+  },
+  "sequence": 1.0,
+  "sourceName": "笔趣阁",
+  "topLevelDomain": "yunlaige.com"
+}

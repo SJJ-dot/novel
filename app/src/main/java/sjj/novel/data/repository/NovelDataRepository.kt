@@ -25,7 +25,7 @@ val novelDataRepository by lazy { NovelDataRepository() }
  * Created by SJJ on 2017/9/2.
  */
 class NovelDataRepository {
-    private val sources = listOf<NovelDataRepository.RemoteSource>(
+//    private val sources = listOf<NovelDataRepository.RemoteSource>(
 //            DhzwDataSource(),
 //            YunlaigeDataSource(),
 //            AszwFictionDataSource(),
@@ -33,63 +33,40 @@ class NovelDataRepository {
 //            LiuMaoDataSource(),
 //            XBiquge6DataSource()
 //            BaiDuDataSource()
-            CommonBookEngine(BookParseRule().apply {
-                topLevelDomain = "yunlaige.com"
-                baseUrl = "http://www.yunlaige.com/"
-                searchRule = SearchRule().apply {
-                    charset = Charset.GBK
-                    method = Method.POST
-                    serverUrl = "http://www.yunlaige.com/modules/article/search.php"
-                    searchKey = "searchkey"
-                    resultRules = listOf(SearchResultRule().apply {
-                        bookInfos = ".chart-dashed-list > *"
-                        name = "> :nth-child(2) > :nth-child(1) > :nth-child(1) a[href]"
-                        author = "> :nth-child(2) > :nth-child(2)"
-                        authorRegex = "(.*)/.*"
-                        //书籍的名字是一个超链接
-                        bookUrl = name
-                    }, SearchResultRule().apply {
-                        bookInfos = ".book-info .info"
-                        name = "> :nth-child(1) > :nth-child(1)"
-                        author = "> :nth-child(2) > :nth-child(1)"
-                    })
-                }
-                introRule = BookIntroRule().apply {
-                    bookInfo = ".book-info"
-                    bookName = ".info > :nth-child(1) > :nth-child(1)"
-                    bookAuthor = ".info > :nth-child(2) > :nth-child(1)"
-                    bookCoverImgUrl = "> :nth-child(1) > :nth-child(1)"
-                    bookIntro = ".info > :nth-child(3)"
-                    bookChapterListUrl = ".info > :nth-child(4) a[href]"
-                }
+//            CommonBookEngine()
+//    )
 
-                chapterListRule = BookChapterListRule().apply {
-                    bookChapterList = "#contenttable > :nth-child(1) a[href]"
-                    bookChapterUrl = "a"
-                    bookChapterName = "a"
-                }
-
-                chapterContentRule = ChapterContentRule().apply {
-                    bookChapterContent="#content"
-                }
-
-            })
-    )
+//    private val sources = multable
 
     private val localSource: LocalSource = LocalFictionDataSource()
 
-    private fun getSource(url: String) = sources.find {
-        url.host.endsWith(it.topLevelDomain, true)
+    private fun getSources(): Observable<List<CommonBookEngine>> {
+        return novelSourceRepository.getAllBookParseRule().map {
+            it.map {
+                CommonBookEngine(it)
+            }
+        }.firstElement().toObservable()
+    }
+
+    private fun getSource(url: String):Observable<NovelDataRepository.RemoteSource> = getSources().map { list ->
+        list.forEach {
+            if (url.host.endsWith(it.topLevelDomain, true)) {
+                return@map it
+            }
+        }
+        throw IllegalArgumentException("未知源")
     }
 
     fun search(search: String): Observable<List<Pair<BookSourceRecord, List<Book>>>> {
-        return Observable.fromIterable(sources).flatMap {
+        return getSources().flatMap {
             if (search.isBlank()) {
                 throw IllegalArgumentException("搜索内容不能为空")
             }
-            it.search(search).doOnError {
-                Log.e("搜索出错:$it", it)
-            }.onErrorResumeNext(Observable.empty())
+            Observable.fromIterable(it).flatMap {
+                it.search(search).doOnError {
+                    Log.e("搜索出错:$it", it)
+                }.onErrorResumeNext(Observable.empty())
+            }
         }.reduce(mutableMapOf<String, MutableList<Book>>()) { map, bs ->
             bs.forEach {
                 map.getOrPut(it.name + it.author) { mutableListOf() }.add(it)
@@ -117,8 +94,8 @@ class NovelDataRepository {
     }
 
     fun refreshBook(url: String): Observable<Book> {
-        return Observable.just(url).flatMap {
-            getSource(it)?.getBook(it) ?: throw Exception("未知源 $it")
+        return getSource(url).flatMap {
+            it.getBook(url)
         }.flatMap(localSource::refreshBook)
     }
 
@@ -132,8 +109,8 @@ class NovelDataRepository {
     }
 
     fun loadChapter(chapter: Chapter): Observable<Chapter> {
-        return Observable.just(chapter).flatMap {
-            getSource(it.url)!!.getChapterContent(it)
+        return getSource(chapter.url).flatMap {
+            it.getChapterContent(chapter)
         }.flatMap(localSource::updateChapter)
     }
 
