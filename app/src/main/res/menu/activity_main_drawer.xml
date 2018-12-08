@@ -9,6 +9,9 @@
         android:id="@+id/searchFragment"
         android:title="搜索" />
     <item
+        android:id="@+id/novelSourceFragment"
+        android:title="书源管理" />
+    <item
         android:id="@+id/aboutFragment"
         android:title="关于" />
 

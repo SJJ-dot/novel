@@ -1,0 +1,2 @@
+package sjj.novel.util
+

@@ -7,14 +7,14 @@
 
         <variable
             name="book"
-            type="sjj.fiction.model.Book" />
+            type="sjj.novel.model.Book" />
 
-        <import type="sjj.fiction.model.Book" />
+        <import type="sjj.novel.model.Book" />
 
 
     </data>
 
-    <sjj.fiction.view.SwipeRefreshLayout_
+    <sjj.novel.view.SwipeRefreshLayout_
         android:id="@+id/detailsRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -241,6 +241,6 @@
             </android.support.constraint.ConstraintLayout>
 
 
-    </sjj.fiction.view.SwipeRefreshLayout_>
+    </sjj.novel.view.SwipeRefreshLayout_>
 
 </layout>

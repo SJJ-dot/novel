@@ -21,7 +21,7 @@ android {
     }
     compileSdkVersion 28
     defaultConfig {
-        applicationId "sjj.fiction"
+        applicationId "sjj.novel"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode commitCont
@@ -32,7 +32,7 @@ android {
     }
     android.applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "fiction-${currentBranch}-${variant.buildType.name}(${variant.versionCode})-${variant.versionName}.apk"
+            outputFileName = "novel-${currentBranch}-${variant.buildType.name}(${variant.versionCode})-${variant.versionName}.apk"
         }
     }
     buildTypes {
