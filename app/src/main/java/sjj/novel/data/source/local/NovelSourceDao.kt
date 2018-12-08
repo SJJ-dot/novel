@@ -1,9 +1,6 @@
 package sjj.novel.data.source.local
 
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Delete
-import android.arch.persistence.room.Insert
-import android.arch.persistence.room.Query
+import android.arch.persistence.room.*
 import io.reactivex.Flowable
 import sjj.novel.data.source.remote.rule.BookParseRule
 
@@ -14,7 +11,7 @@ interface NovelSourceDao {
     fun getAllBookParseRule(): Flowable<List<BookParseRule>>
 
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun saveBookParseRule(rule: BookParseRule)
 
     @Delete
