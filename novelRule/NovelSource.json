@@ -96,25 +96,23 @@
   {
     "baseUrl": "https://www.biquge5200.cc/",
     "chapterContentRule": {
-      "bookChapterContent": "qqq"
+      "bookChapterContent": "#content"
     },
     "chapterListRule": {
-      "bookChapterList": "#list",
-      "bookChapterListUrl": "",
-      "bookChapterName": "qqq",
+      "bookChapterList": "#list div ~ dd a",
+      "bookChapterName": "a",
       "bookChapterNameRegex": "",
-      "bookChapterUrl": "qqq"
+      "bookChapterUrl": "a"
     },
     "enable": true,
     "introRule": {
-      "bookAuthor": ".box_top .maininfo \u003e :nth-child(2)",
+      "bookAuthor": "#info > :nth-child(2)",
       "bookAuthorRegex": ".*：(.*)",
       "bookChapterListUrl": "",
       "bookCoverImgUrl": "#fmimg img",
-      "bookInfo": "box_con",
-      "bookIntro": ".box_top .maininfo #intro",
+      "bookIntro": "#intro p",
       "bookIntroRegex": "",
-      "bookName": ".box_top .maininfo h1",
+      "bookName": "#info > h1",
       "bookNameRegex": "",
       "bookUrl": ""
     },
@@ -123,11 +121,11 @@
       "method": "GET",
       "resultRules": [
         {
-          "author": "\u003e :nth-child(3)",
+          "author": "> :nth-child(3)",
           "authorRegex": "",
-          "bookInfos": "tbody \u003e tr",
-          "bookUrl": "\u003e :nth-child(1) a",
-          "name": "\u003e :nth-child(1) a",
+          "bookInfos": "tbody > tr",
+          "bookUrl": "> :nth-child(1) a",
+          "name": "> :nth-child(1) a",
           "nameRegex": ""
         }
       ],

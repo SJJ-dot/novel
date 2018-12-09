@@ -50,9 +50,6 @@ class NovelSourceFragment : BaseFragment() {
         model.getAllBookParseRule()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    it.forEach {
-                        Log.e(gson.toJson(it))
-                    }
                     adapter.data = it
                     adapter.notifyDataSetChanged()
                 }.destroy()
