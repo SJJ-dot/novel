@@ -66,7 +66,7 @@
       "bookAuthor": ".info .btitle > :nth-child(2)",
       "bookAuthorRegex": ".*：(.*)",
       "bookChapterListUrl": "",
-      "bookCoverImgUrl": ".info [src]",
+      "bookCoverImgUrl": ".info .pic img",
       "bookIntro": ".info .book > .js",
       "bookIntroRegex": "",
       "bookName": ".info .btitle > :nth-child(1)",
