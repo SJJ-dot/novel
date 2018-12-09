@@ -51,5 +51,50 @@
     "sequence": 1.0,
     "sourceName": "云来阁",
     "topLevelDomain": "yunlaige.com"
+  },
+  {
+    "baseUrl": "https://www.aszw.org/",
+    "chapterContentRule": {
+      "bookChapterContent": "#contents"
+    },
+    "chapterListRule": {
+      "bookChapterList": "#at a[href]",
+      "bookChapterListUrl": "",
+      "bookChapterName": "a",
+      "bookChapterNameRegex": "",
+      "bookChapterUrl": "a"
+    },
+    "enable": true,
+    "introRule": {
+      "bookAuthor": ".btitle > :nth-child(2)",
+      "bookAuthorRegex": ".*：(.*)",
+      "bookChapterListUrl": "",
+      "bookCoverImgUrl": "[src]",
+      "bookInfo": ".info",
+      "bookIntro": ".book > .js",
+      "bookIntroRegex": "",
+      "bookName": ".btitle > :nth-child(1)",
+      "bookNameRegex": "",
+      "bookUrl": ""
+    },
+    "searchRule": {
+      "charset": "GBK",
+      "method": "POST",
+      "resultRules": [
+        {
+          "author": "> :nth-child(3) a[href]",
+          "authorRegex": "",
+          "bookInfos": "#content tbody tr",
+          "bookUrl": "> :nth-child(1) a[href]",
+          "name": "> :nth-child(1) a[href]",
+          "nameRegex": ""
+        }
+      ],
+      "searchKey": "searchkey",
+      "serverUrl": "modules/article/search.php"
+    },
+    "sequence": 1.0,
+    "sourceName": "爱上中文",
+    "topLevelDomain": "aszw.org"
   }
 ]
