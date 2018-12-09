@@ -101,9 +101,11 @@ class EditNovelSourceActivity : BaseActivity() {
             bind?.delete?.setOnClickListener {
                 model.deleteSearchResultViewModel(data!![p1])
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe{
+                        .subscribe({
                             notifyDataSetChanged()
-                        }
+                        }, {
+                            toast(it.message ?: "删除失败")
+                        })
                         .destroy("deleteSearchResultViewModel")
 
             }
