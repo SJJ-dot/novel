@@ -51,7 +51,7 @@ class NovelSourceFragment : BaseFragment() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     it.forEach {
-                        Log.e(gson.toJson(it))
+                        Log.i(gson.toJson(it))
                     }
                     adapter.data = it
                     adapter.notifyDataSetChanged()

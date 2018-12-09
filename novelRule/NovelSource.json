@@ -104,7 +104,7 @@
       "bookChapterNameRegex": "",
       "bookChapterUrl": "a"
     },
-    "enable": true,
+    "enable": false,
     "introRule": {
       "bookAuthor": "#info > :nth-child(2)",
       "bookAuthorRegex": ".*：(.*)",
@@ -135,5 +135,48 @@
     "sequence": 1.0,
     "sourceName": "笔趣阁5200",
     "topLevelDomain": "biquge5200.cc"
+  },
+  {
+    "baseUrl": "https://www.xbiquge6.com/",
+    "chapterContentRule": {
+      "bookChapterContent": "#content"
+    },
+    "chapterListRule": {
+      "bookChapterList": "#list dt ~ dd a",
+      "bookChapterName": "a",
+      "bookChapterNameRegex": "",
+      "bookChapterUrl": "a"
+    },
+    "enable": true,
+    "introRule": {
+      "bookAuthor": "#info > :nth-child(2)",
+      "bookAuthorRegex": ".*：(.*)",
+      "bookChapterListUrl": "",
+      "bookCoverImgUrl": "#fmimg img",
+      "bookIntro": "#intro",
+      "bookIntroRegex": "",
+      "bookName": "#info > :nth-child(1)",
+      "bookNameRegex": "",
+      "bookUrl": ""
+    },
+    "searchRule": {
+      "charset": "UTF8",
+      "method": "GET",
+      "resultRules": [
+        {
+          "author": ".result-game-item-info > :nth-child(1) > :nth-child(2)",
+          "authorRegex": "",
+          "bookInfos": ".result-list > *",
+          "bookUrl": ".result-game-item-title-link",
+          "name": ".result-game-item-title-link span",
+          "nameRegex": ""
+        }
+      ],
+      "searchKey": "keyword",
+      "serverUrl": "search.php"
+    },
+    "sequence": 1.0,
+    "sourceName": "笔趣阁6",
+    "topLevelDomain": "xbiquge6.com"
   }
 ]
