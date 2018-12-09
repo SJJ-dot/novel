@@ -101,12 +101,7 @@ abstract class HttpDataSource : DataSourceInterface {
         return if (cssQuery.isBlank()) {
             response.baseUrl
         } else {
-            val first = select(cssQuery).first()
-            if (first == null) {
-                getRoot(this).select(cssQuery).first()?.absUrl("href") ?: response.baseUrl
-            } else {
-                first.absUrl("href") ?: response.baseUrl
-            }
+            select(cssQuery).first()?.absUrl("href") ?: response.baseUrl
         }
     }
 
@@ -117,12 +112,7 @@ abstract class HttpDataSource : DataSourceInterface {
         return if (cssQuery.isBlank()) {
             response.baseUrl
         } else {
-            val first = select(cssQuery).first()
-            if (first == null) {
-                getRoot(this).select(cssQuery).first()?.absUrl("href") ?: response.baseUrl
-            } else {
-                first.absUrl("href") ?: response.baseUrl
-            }
+            select(cssQuery).first()?.absUrl("href") ?: response.baseUrl
         }
     }
 

@@ -22,7 +22,6 @@ class EditNovelSourceViewModel(private val TOP_LEVEL_DOMAIN: String?) : ViewMode
     val searchKey = ObservableField("searchKey")
     val searchResultViewModels = mutableListOf<SearchResultViewModel>()
     //简介
-    val info = ObservableField<String>()
     val bookUrl = ObservableField<String>()
     val bookName = ObservableField<String>()
     val bookNameRegex = ObservableField<String>()
@@ -33,7 +32,6 @@ class EditNovelSourceViewModel(private val TOP_LEVEL_DOMAIN: String?) : ViewMode
     val bookCoverImgUrl = ObservableField<String>()
     val bookChapterListUrl = ObservableField<String>()
     //章节列表解析
-    val bookChapterListUrl2 = ObservableField<String>()
     val bookChapterListScope = ObservableField<String>()
     val bookChapterName = ObservableField<String>()
     val bookChapterNameRegex = ObservableField<String>()
@@ -81,7 +79,6 @@ class EditNovelSourceViewModel(private val TOP_LEVEL_DOMAIN: String?) : ViewMode
             }
 
             rule.introRule?.also {
-                info.set(it.bookInfo)
                 bookUrl.set(it.bookUrl)
                 bookName.set(it.bookName)
                 bookNameRegex.set(it.bookNameRegex)
@@ -93,7 +90,6 @@ class EditNovelSourceViewModel(private val TOP_LEVEL_DOMAIN: String?) : ViewMode
                 bookChapterListUrl.set(it.bookChapterListUrl)
             }
             rule.chapterListRule?.also {
-                bookChapterListUrl2.set(it.bookChapterListUrl)
                 bookChapterListScope.set(it.bookChapterList)
                 bookChapterName.set(it.bookChapterName)
                 bookChapterNameRegex.set(it.bookChapterNameRegex)
@@ -123,7 +119,6 @@ class EditNovelSourceViewModel(private val TOP_LEVEL_DOMAIN: String?) : ViewMode
             }
             val rule = bookParseRule.introRule ?: BookIntroRule()
             bookParseRule.introRule = rule
-            rule.bookInfo = info.get()!!
             rule.bookUrl = bookUrl.get()?:""
             rule.bookName = bookName.get()!!
             rule.bookNameRegex = bookNameRegex.get() ?: ""
@@ -136,7 +131,6 @@ class EditNovelSourceViewModel(private val TOP_LEVEL_DOMAIN: String?) : ViewMode
 
             val chapterListRule = bookParseRule.chapterListRule ?: BookChapterListRule()
             bookParseRule.chapterListRule = chapterListRule
-            chapterListRule.bookChapterListUrl = bookChapterListUrl2.get() ?: ""
             chapterListRule.bookChapterList = bookChapterListScope.get() ?: ""
             chapterListRule.bookChapterName = bookChapterName.get()!!
             chapterListRule.bookChapterNameRegex = bookChapterNameRegex.get() ?: ""

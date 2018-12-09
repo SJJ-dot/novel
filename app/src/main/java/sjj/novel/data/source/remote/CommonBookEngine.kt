@@ -59,13 +59,12 @@ class CommonBookEngine(val rule: BookParseRule) : NovelDataRepository.RemoteSour
         return service.loadHtml(url).map { response ->
             val document = Jsoup.parse(response.body(), response.baseUrl)
             val introRule = rule.introRule!!
-            val bookInfo = document.select(introRule.bookInfo)
-            val bookUrl = bookInfo.absUrl(introRule.bookUrl, response)
-            val bookName = bookInfo.select(introRule.bookName).text(introRule.bookNameRegex)
-            val bookAuthor = bookInfo.select(introRule.bookAuthor).text(introRule.bookAuthorRegex)
-            val bookCoverSrc = bookInfo.select(introRule.bookCoverImgUrl).first().absUrl("src")
-            val bookIntro = bookInfo.select(introRule.bookIntro).text(introRule.bookIntroRegex)
-            val bookChapterListUrl = bookInfo.absUrl(introRule.bookChapterListUrl, response)
+            val bookUrl = document.absUrl(introRule.bookUrl, response)
+            val bookName = document.select(introRule.bookName).text(introRule.bookNameRegex)
+            val bookAuthor = document.select(introRule.bookAuthor).text(introRule.bookAuthorRegex)
+            val bookCoverSrc = document.select(introRule.bookCoverImgUrl).first().absUrl("src")
+            val bookIntro = document.select(introRule.bookIntro).text(introRule.bookIntroRegex)
+            val bookChapterListUrl = document.absUrl(introRule.bookChapterListUrl, response)
             val book = Book(bookUrl, bookName, bookAuthor, bookCoverSrc, bookIntro, bookChapterListUrl)
             if (bookChapterListUrl == bookUrl) {
                 //如果完整的章节列表与简介在同一页

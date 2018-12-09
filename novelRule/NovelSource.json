@@ -6,21 +6,19 @@
     },
     "chapterListRule": {
       "bookChapterList": "#contenttable > :nth-child(1) a[href]",
-      "bookChapterListUrl": "",
       "bookChapterName": "a",
       "bookChapterNameRegex": "",
       "bookChapterUrl": "a"
     },
     "enable": true,
     "introRule": {
-      "bookAuthor": ".info > :nth-child(2) > :nth-child(1)",
+      "bookAuthor": ".book-info .info > :nth-child(2) > :nth-child(1)",
       "bookAuthorRegex": "",
-      "bookChapterListUrl": ".info > :nth-child(4) a[href]",
-      "bookCoverImgUrl": "> :nth-child(1) > :nth-child(1)",
-      "bookInfo": ".book-info",
-      "bookIntro": ".info > :nth-child(3)",
+      "bookChapterListUrl": ".book-info .info > :nth-child(4) a[href]",
+      "bookCoverImgUrl": ".book-info > :nth-child(1) > :nth-child(1)",
+      "bookIntro": ".book-info .info > :nth-child(3)",
       "bookIntroRegex": "",
-      "bookName": ".info > :nth-child(1) > :nth-child(1)",
+      "bookName": ".book-info .info > :nth-child(1) > :nth-child(1)",
       "bookNameRegex": "",
       "bookUrl": ""
     },
@@ -59,21 +57,19 @@
     },
     "chapterListRule": {
       "bookChapterList": "#at a[href]",
-      "bookChapterListUrl": "",
       "bookChapterName": "a",
       "bookChapterNameRegex": "",
       "bookChapterUrl": "a"
     },
     "enable": true,
     "introRule": {
-      "bookAuthor": ".btitle > :nth-child(2)",
+      "bookAuthor": ".info .btitle > :nth-child(2)",
       "bookAuthorRegex": ".*：(.*)",
       "bookChapterListUrl": "",
-      "bookCoverImgUrl": "[src]",
-      "bookInfo": ".info",
-      "bookIntro": ".book > .js",
+      "bookCoverImgUrl": ".info [src]",
+      "bookIntro": ".info .book > .js",
       "bookIntroRegex": "",
-      "bookName": ".btitle > :nth-child(1)",
+      "bookName": ".info .btitle > :nth-child(1)",
       "bookNameRegex": "",
       "bookUrl": ""
     },
@@ -96,5 +92,50 @@
     "sequence": 1.0,
     "sourceName": "爱上中文",
     "topLevelDomain": "aszw.org"
+  },
+  {
+    "baseUrl": "https://www.biquge5200.cc/",
+    "chapterContentRule": {
+      "bookChapterContent": "qqq"
+    },
+    "chapterListRule": {
+      "bookChapterList": "#list",
+      "bookChapterListUrl": "",
+      "bookChapterName": "qqq",
+      "bookChapterNameRegex": "",
+      "bookChapterUrl": "qqq"
+    },
+    "enable": true,
+    "introRule": {
+      "bookAuthor": ".box_top .maininfo \u003e :nth-child(2)",
+      "bookAuthorRegex": ".*：(.*)",
+      "bookChapterListUrl": "",
+      "bookCoverImgUrl": "#fmimg img",
+      "bookInfo": "box_con",
+      "bookIntro": ".box_top .maininfo #intro",
+      "bookIntroRegex": "",
+      "bookName": ".box_top .maininfo h1",
+      "bookNameRegex": "",
+      "bookUrl": ""
+    },
+    "searchRule": {
+      "charset": "UTF8",
+      "method": "GET",
+      "resultRules": [
+        {
+          "author": "\u003e :nth-child(3)",
+          "authorRegex": "",
+          "bookInfos": "tbody \u003e tr",
+          "bookUrl": "\u003e :nth-child(1) a",
+          "name": "\u003e :nth-child(1) a",
+          "nameRegex": ""
+        }
+      ],
+      "searchKey": "searchkey",
+      "serverUrl": "modules/article/search.php"
+    },
+    "sequence": 1.0,
+    "sourceName": "笔趣阁5200",
+    "topLevelDomain": "biquge5200.cc"
   }
 ]

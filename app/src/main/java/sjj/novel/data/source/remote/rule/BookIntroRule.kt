@@ -4,11 +4,6 @@ package sjj.novel.data.source.remote.rule
  *书籍简介解析规则（css选择器）
  */
 class BookIntroRule {
-    /**
-     * 简介内容位置。
-     * 先尽量缩小范围以提高查询效率
-     */
-    var bookInfo = ""
 
     /**
      * 书籍简介的url 通常是当前的这个请求的url

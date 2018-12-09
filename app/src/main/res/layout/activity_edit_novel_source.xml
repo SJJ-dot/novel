@@ -186,19 +186,6 @@
                     android:layout_height="wrap_content">
 
                     <android.support.design.widget.TextInputEditText
-                        android:id="@+id/info"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="简介区域(css:e.g:.book-info)"
-                        android:singleLine="true"
-                        android:text="@={model.info}" />
-                </android.support.design.widget.TextInputLayout>
-
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <android.support.design.widget.TextInputEditText
                         android:id="@+id/book_url"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -315,19 +302,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="章节列表解析规则" />
-
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/book_chapter_list_url_2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="章节列表url可不填(css:e.g:)"
-                        android:singleLine="true"
-                        android:text="@={model.bookChapterListUrl2}" />
-                </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
