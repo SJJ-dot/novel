@@ -41,6 +41,8 @@ class EditNovelSourceActivity : BaseActivity() {
         val supportActionBar = supportActionBar!!
         supportActionBar.setDisplayHomeAsUpEnabled(true)
 
+        title = "编辑解析规则"
+
         binding.model = model
 
         search_rule_result.adapter = adapter
