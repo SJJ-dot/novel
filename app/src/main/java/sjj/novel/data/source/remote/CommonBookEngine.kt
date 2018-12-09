@@ -42,8 +42,7 @@ class CommonBookEngine(val rule: BookParseRule) : NovelDataRepository.RemoteSour
                     val bookAuthor = element.select(resultRule.author).text(resultRule.authorRegex)
 
                     val bookUrl = element.absUrl(resultRule.bookUrl, response)
-
-                    if (bookName.isNotBlank() || bookAuthor.isNotBlank() || bookUrl.isNotBlank()) {
+                    if (bookName.isNotBlank() && bookAuthor.isNotBlank() && bookUrl.isNotBlank()) {
                         books.add(Book(bookUrl, bookName, bookAuthor))
                     }
                 }

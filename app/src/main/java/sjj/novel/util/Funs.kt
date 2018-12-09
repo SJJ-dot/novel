@@ -3,13 +3,19 @@ package sjj.novel.util
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import sjj.alog.Log
+import java.lang.Exception
 import java.net.URL
 
 /**
  * Created by SJJ on 2017/10/15.
  */
 
-val String.host: String get() = URL(this).host
+val String.host: String
+    get() = try {
+        URL(this).host
+    } catch (e: Exception) {
+        "http://a"
+    }
 
 fun <T> T.log(): T {
     if (this is Throwable) {
