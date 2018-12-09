@@ -16,4 +16,11 @@ class NovelSourceViewModel : ViewModel() {
     fun deleteBookParseRule(rule: BookParseRule): Observable<BookParseRule> {
         return novelSourceRepository.deleteBookParseRule(rule)
     }
+
+    fun syncNovelSource(): Observable<BookParseRule> {
+        return novelSourceRepository.getDefaultNovelSourceRule().flatMap {
+            Observable.fromIterable(it).flatMap(novelSourceRepository::saveBookParseRule)
+        }
+    }
+
 }

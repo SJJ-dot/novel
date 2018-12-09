@@ -8,15 +8,16 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import sjj.alog.Log
+import sjj.novel.R
 import sjj.novel.data.source.local.LocalFictionDataSource
 import sjj.novel.data.source.remote.CommonBookEngine
-import sjj.novel.data.source.remote.rule.*
 import sjj.novel.model.Book
 import sjj.novel.model.BookSourceRecord
 import sjj.novel.model.Chapter
 import sjj.novel.util.concat
 import sjj.novel.util.host
 import sjj.novel.util.lazyFromIterable
+import sjj.novel.util.resStr
 import java.util.concurrent.TimeUnit
 
 val novelDataRepository by lazy { NovelDataRepository() }
@@ -54,17 +55,19 @@ class NovelDataRepository {
                 return@map it
             }
         }
-        throw IllegalArgumentException("未知源")
+        throw IllegalArgumentException(R.string.unknown_source.resStr)
     }
 
     fun search(search: String): Observable<List<Pair<BookSourceRecord, List<Book>>>> {
-        return getSources().flatMap {
+        return getSources().flatMap { list ->
             if (search.isBlank()) {
-                throw IllegalArgumentException("搜索内容不能为空")
+                throw IllegalArgumentException(R.string.Search_content_cannot_be_empty.resStr)
             }
-            Observable.fromIterable(it).flatMap {
-                it.search(search).doOnError {
-                    Log.e("搜索出错:$it", it)
+            Observable.fromIterable(list).filter {
+                it.rule.enable
+            }.switchIfEmpty(Observable.error(Exception(R.string.no_source_available.resStr))).flatMap { commonBookEngine ->
+                commonBookEngine.search(search).doOnError {
+                    Log.e(R.string.search_error.resStr(it.message), it)
                 }.onErrorResumeNext(Observable.empty())
             }
         }.reduce(mutableMapOf<String, MutableList<Book>>()) { map, bs ->

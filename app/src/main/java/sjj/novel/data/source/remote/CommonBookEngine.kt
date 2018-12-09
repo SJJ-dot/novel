@@ -10,7 +10,7 @@ import sjj.novel.model.Book
 import sjj.novel.model.Chapter
 import java.net.URLEncoder
 
-class CommonBookEngine(private val rule: BookParseRule) : NovelDataRepository.RemoteSource, HttpDataSource() {
+class CommonBookEngine(val rule: BookParseRule) : NovelDataRepository.RemoteSource, HttpDataSource() {
 
     override val baseUrl: String = rule.baseUrl
 

@@ -111,4 +111,10 @@
     <string name="edit">编辑</string>
     <string name="delete">删除</string>
     <string name="to_top">置顶</string>
+    <string name="novel_source_manager">书源管理</string>
+    <string name="create_novel_source">新建书源</string>
+    <string name="no_source_available">无可用书源</string>
+    <string name="Search_content_cannot_be_empty">搜索内容不能为空</string>
+    <string name="unknown_source">未知书源</string>
+    <string name="search_error">搜索出错:%$1s</string>
 </resources>

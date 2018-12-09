@@ -2,12 +2,12 @@ package sjj.novel.source
 
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_novel_source.*
 import kotlinx.android.synthetic.main.item_book_source.view.*
+import org.jetbrains.anko.appcompat.v7.coroutines.onMenuItemClick
+import org.jetbrains.anko.support.v4.toast
 import sjj.alog.Log
 import sjj.novel.BaseFragment
 import sjj.novel.R
@@ -27,8 +27,24 @@ class NovelSourceFragment : BaseFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+        toolbar.inflateMenu(R.menu.fragment_novel_source_menu)
+        toolbar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.menu_create_novel_source -> {
+                    toast(getString(R.string.create_novel_source))
+                    true
+                }
+                R.id.menu_load_default_novel_source -> {
+                    //同步书源。退出后就会停止同步。体验可能不是很好但我并不关心
+                    model.syncNovelSource()
+                            .subscribe()
+                            .destroy("sync novel source")
+                    true
+                }
+                else -> false
+            }
+        }
+        toolbar.title = getString(R.string.novel_source_manager)
         novel_source.adapter = adapter
         model.getAllBookParseRule()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -50,11 +66,17 @@ class NovelSourceFragment : BaseFragment() {
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, p1: Int) {
             val rule = data[p1]
             holder.itemView.cb_book_source.text = rule.sourceName
+
             holder.itemView.cb_book_source.isChecked = rule.enable
             holder.itemView.iv_del_source.setOnClickListener {
                 model.deleteBookParseRule(rule)
                         .subscribe()
                         .destroy()
+            }
+            holder.itemView.cb_book_source.setOnCheckedChangeListener { buttonView, isChecked ->
+                rule.enable = isChecked
+                model.saveBookParseRule(rule)
+                        .subscribe()
             }
 
         }
