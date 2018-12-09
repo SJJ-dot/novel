@@ -1,5 +1,6 @@
 package sjj.novel.data.source.remote.retrofit
 
+import com.facebook.stetho.okhttp3.StethoInterceptor
 import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -43,6 +44,7 @@ object RetrofitInstance {
 //                }
 //                response
 //            }
+                .addNetworkInterceptor(StethoInterceptor())
                 .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                 .build()
     }

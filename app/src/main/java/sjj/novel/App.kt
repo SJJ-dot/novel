@@ -4,10 +4,15 @@ import android.app.Application
 import android.content.SharedPreferences
 import android.os.StrictMode
 import com.facebook.drawee.backends.pipeline.Fresco
+import com.facebook.stetho.Stetho
 import com.tencent.bugly.Bugly
 import com.tencent.mmkv.MMKV
 import io.reactivex.plugins.RxJavaPlugins
 import sjj.alog.Log
+import com.facebook.stetho.dumpapp.DumperPlugin
+import com.facebook.stetho.DumperPluginsProvider
+
+
 
 /**
  * Created by SJJ on 2017/9/3.
@@ -59,6 +64,9 @@ class App:Application() {
         }
 
         RxJavaPlugins.setErrorHandler { Log.e("error $it",it) }
+
+        Stetho.initializeWithDefaults(this);
+
     }
 
     fun exit() {
