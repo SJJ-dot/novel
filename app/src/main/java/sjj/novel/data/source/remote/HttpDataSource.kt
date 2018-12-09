@@ -101,8 +101,12 @@ abstract class HttpDataSource : DataSourceInterface {
         return if (cssQuery.isBlank()) {
             response.baseUrl
         } else {
-            select(cssQuery).first()?.absUrl("href")
-                    ?: response.baseUrl
+            val first = select(cssQuery).first()
+            if (first == null) {
+                getRoot(this).select(cssQuery).first()?.absUrl("href") ?: response.baseUrl
+            } else {
+                first.absUrl("href") ?: response.baseUrl
+            }
         }
     }
 
@@ -113,9 +117,24 @@ abstract class HttpDataSource : DataSourceInterface {
         return if (cssQuery.isBlank()) {
             response.baseUrl
         } else {
-            select(cssQuery).first()?.absUrl("href")
-                    ?: response.baseUrl
+            val first = select(cssQuery).first()
+            if (first == null) {
+                getRoot(this).select(cssQuery).first()?.absUrl("href") ?: response.baseUrl
+            } else {
+                first.absUrl("href") ?: response.baseUrl
+            }
         }
+    }
+
+    private fun getRoot(elements: Elements): Element {
+        return getRoot(elements.first())
+    }
+
+    private fun getRoot(element: Element): Element {
+        if (element is Document) {
+            return element
+        }
+        return getRoot(element.parent())
     }
 }
 
