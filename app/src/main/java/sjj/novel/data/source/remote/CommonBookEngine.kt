@@ -68,7 +68,8 @@ class CommonBookEngine(val rule: BookParseRule) : NovelDataRepository.RemoteSour
             val document = Jsoup.parse(response.body(), response.baseUrl)
             val introRule = rule.introRule!!
             Log.i("getBook bookUrl introRule:$introRule")
-            val bookUrl = document.absUrl(introRule.bookUrl, response).trim()
+//            val bookUrl = document.absUrl(introRule.bookUrl, response).trim()
+            val bookUrl = url
             Log.i("getBook bookName bookUrl:$bookUrl")
             val bookName = document.select(introRule.bookName).text(introRule.bookNameRegex).trim()
             Log.i("getBook bookAuthor bookName:$bookName")
