@@ -117,4 +117,26 @@
     <string name="Search_content_cannot_be_empty">搜索内容不能为空</string>
     <string name="unknown_source">未知书源</string>
     <string name="search_error">搜索出错:%$1s</string>
+    <string name="search_rule">搜索规则</string>
+    <string name="website_address_e_g_https_github_com">网站地址(e.g:https://github.com/)</string>
+    <string name="t_l_d_e_g_baidu_com">顶级域名(e.g:baidu.com)</string>
+    <string name="novel_source_name">书源名称</string>
+    <string name="novel_source">书源</string>
+    <string name="utf_8">UTF-8</string>
+    <string name="gbk">GBK</string>
+    <string name="get">GET</string>
+    <string name="post">POST</string>
+    <string name="s_s_j_k_url_e_g_http_www_yunlaige_com_modules_article_search_php">搜索接口url(e.g:http://www.yunlaige.com/modules/article/search.php)</string>
+    <string name="searchkey">searchKey</string>
+    <string name="sjlb"><![CDATA[书籍列表(css:e.g:.chart-dashed-list > *)]]></string>
+    <string name="sjm"><![CDATA[书籍名(css:e.g:> :nth-child(2) > :nth-child(1) > :nth-child(1) a[href])]]></string>
+    <string name="sjmtq">书籍名提取(regex:e.g:(.*)/.*)</string>
+    <string name="zhuozhe"><![CDATA[作者(css:e.g:> :nth-child(2) > :nth-child(2))]]></string>
+    <string name="zzmtq">作者名提取(regex:e.g:(.*)/.*)</string>
+    <string name="sjlj"><![CDATA[书籍链接(css:e.g:> :nth-child(2) > :nth-child(1) > :nth-child(1) a[href])]]></string>
+    <string name="book_url">书籍链接提取，可不填(css:e.g:)</string>
+    <string name="zhuozhe2"><![CDATA[作者(css:e.g:.info > :nth-child(2) > :nth-child(1)]]></string>
+    <string name="shuming"><![CDATA[书名(css:e.g:.info > :nth-child(1) > :nth-child(1))]]></string>
+    <string name="smtq">书名提取(regex:e.g:)</string>
+    <string name="zzmtq2">作者名提取(regex:e.g:)</string>
 </resources>

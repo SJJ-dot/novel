@@ -13,3 +13,7 @@ inline fun <reified T : ViewModel> Fragment.getModel(factory: ViewModelProvider.
 inline fun <reified T : ViewModel> FragmentActivity.getModel(factory: ViewModelProvider.Factory? = null): T {
     return ViewModelProviders.of(this, factory).get(T::class.java)
 }
+
+//inline fun <reified T : ViewModel> FragmentActivity.getModel(noinline factory: ((Class<T>) -> T)? = null): T {
+//    return ViewModelProviders.of(this, factory).get(T::class.java)
+//}

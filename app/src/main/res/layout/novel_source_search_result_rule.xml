@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="model"
+            type="sjj.novel.source.EditNovelSourceViewModel.SearchResultViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/book_infos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/sjlb"
+                android:singleLine="true"
+                android:text="@={model.bookInfos}" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/sjm"
+                android:singleLine="true"
+                android:text="@={model.name}" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/name_regex"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/sjmtq"
+                android:singleLine="true"
+                android:text="@={model.nameRegex}" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/author"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/zhuozhe"
+                android:singleLine="true"
+                android:text="@={model.author}" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/author_regex"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/zzmtq"
+                android:singleLine="true"
+                android:text="@={model.authorRegex}" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/book_url"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/sjlj"
+                android:singleLine="true"
+                android:text="@={model.bookUrl}" />
+        </android.support.design.widget.TextInputLayout>
+
+        <Button
+            android:id="@+id/delete"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_gravity="end"
+            android:background="@drawable/btn_default"
+            android:text="删除"
+            android:textColor="@color/material_white" />
+    </LinearLayout>
+</layout>

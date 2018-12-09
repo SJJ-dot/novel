@@ -7,6 +7,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_novel_source.*
 import kotlinx.android.synthetic.main.item_book_source.view.*
 import org.jetbrains.anko.appcompat.v7.coroutines.onMenuItemClick
+import org.jetbrains.anko.support.v4.startActivity
 import org.jetbrains.anko.support.v4.toast
 import sjj.alog.Log
 import sjj.novel.BaseFragment
@@ -31,7 +32,7 @@ class NovelSourceFragment : BaseFragment() {
         toolbar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.menu_create_novel_source -> {
-                    toast(getString(R.string.create_novel_source))
+                    startActivity<EditNovelSourceActivity>()
                     true
                 }
                 R.id.menu_load_default_novel_source -> {
@@ -72,6 +73,9 @@ class NovelSourceFragment : BaseFragment() {
                 model.deleteBookParseRule(rule)
                         .subscribe()
                         .destroy()
+            }
+            holder.itemView.iv_edit_source.setOnClickListener {
+                startActivity<EditNovelSourceActivity>(EditNovelSourceActivity.NOVEL_SOURCE_TOP_LEVEL_DOMAIN to rule.topLevelDomain)
             }
             holder.itemView.cb_book_source.setOnCheckedChangeListener { buttonView, isChecked ->
                 rule.enable = isChecked

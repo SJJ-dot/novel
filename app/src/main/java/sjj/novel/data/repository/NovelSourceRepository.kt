@@ -16,7 +16,14 @@ val novelSourceRepository by lazy { NovelSourceRepository() }
 class NovelSourceRepository {
     private val source by lazy { DefaultNovelSource() }
     fun getAllBookParseRule(): Flowable<List<BookParseRule>> {
-        return booksDataBase.novelSourceDao().getAllBookParseRule().subscribeOn(Schedulers.io())
+        return booksDataBase.novelSourceDao().getAllBookParseRule()
+                .subscribeOn(Schedulers.io())
+    }
+
+    fun getBookParseRule(tld: String): Observable<BookParseRule> {
+        return Observable.fromCallable {
+            booksDataBase.novelSourceDao().getBookParseRule(tld)
+        }.subscribeOn(Schedulers.io())
     }
 
     fun saveBookParseRule(rule: BookParseRule): Observable<BookParseRule> {

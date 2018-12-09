@@ -14,22 +14,23 @@
         tools:ignore="ProtectedPermissions" />
 
     <application
-        android:name="sjj.novel.App"
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher2"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name="sjj.novel.main.MainActivity">
+        <activity android:name=".source.EditNovelSourceActivity"/>
+        <activity android:name=".main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="sjj.novel.details.DetailsActivity" />
-        <activity android:name="sjj.novel.read.ReadActivity" />
+        <activity android:name=".details.DetailsActivity" />
+        <activity android:name=".read.ReadActivity" />
         <activity
             android:name="com.tencent.bugly.beta.ui.BetaActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|locale"

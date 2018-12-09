@@ -1,8 +1,10 @@
 package sjj.novel.data.source.remote
 
+import android.text.Html
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
@@ -78,16 +80,17 @@ abstract class HttpDataSource : DataSourceInterface {
      * 通过给定的正则表达式匹配输出 第一个元组
      */
     fun Elements.text(regex: String): String {
-        val text = text()
+        val text = html()
         //如果没有正则表达式设置 直接返回文本
         if (regex.isEmpty()) {
-            return text.trim()
+            return Html.fromHtml(text).toString()
         }
         return try {
             val result = Regex(regex).find(text)
-            result!!.groups[1]!!.value.trim()
+            val trim = result!!.groups[1]!!.value
+            Html.fromHtml(trim).toString()
         } catch (e: Exception) {
-            text.trim()
+            Html.fromHtml(text).toString()
         }
     }
 

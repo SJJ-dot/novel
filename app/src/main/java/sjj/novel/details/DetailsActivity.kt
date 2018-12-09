@@ -18,8 +18,8 @@ import org.jetbrains.anko.find
 import org.jetbrains.anko.startActivity
 import sjj.novel.BaseActivity
 import sjj.novel.DISPOSABLE_ACTIVITY_DETAILS_REFRESH
-import sjj.novel.Details
 import sjj.novel.R
+import sjj.novel.databinding.ActivityDetailsBinding
 import sjj.novel.model.Chapter
 import sjj.novel.read.ReadActivity
 import sjj.novel.util.getModel
@@ -45,7 +45,7 @@ class DetailsActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val bind = DataBindingUtil.setContentView<Details>(this, R.layout.activity_details)
+        val bind: ActivityDetailsBinding = DataBindingUtil.setContentView(this, R.layout.activity_details)
         val adapter = ChapterListAdapter()
         model.book.observeOn(AndroidSchedulers.mainThread()).subscribe {
             bind.book = it
