@@ -4,12 +4,12 @@ import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
 import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v4.view.PagerAdapter
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_edit_novel_source.*
-import sjj.alog.Log
+import org.jetbrains.anko.toast
 import sjj.novel.BaseActivity
 import sjj.novel.R
 import sjj.novel.databinding.ActivityEditNovelSourceBinding
@@ -49,7 +49,7 @@ class EditNovelSourceActivity : BaseActivity() {
 
     private fun initData() {
         model.fillViewModel().subscribe {
-            adapter.data = model.searchResultViewModel
+            adapter.data = model.searchResultViewModels
             adapter.notifyDataSetChanged()
 
             add_search_result_rule.setOnClickListener {
@@ -61,7 +61,7 @@ class EditNovelSourceActivity : BaseActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.activity_read_menu, menu)
+        menuInflater.inflate(R.menu.activity_edit_novel_source_menu, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -73,7 +73,11 @@ class EditNovelSourceActivity : BaseActivity() {
             }
             R.id.menu_save_novel_source -> {
                 model.saveNovelSourceParseRule()
-                        .subscribe()
+                        .subscribe({
+                            finish()
+                        }, {
+                            toast(it.message ?: "保存失败")
+                        })
                         .destroy("menu_save_novel_source")
                 true
             }
@@ -95,8 +99,13 @@ class EditNovelSourceActivity : BaseActivity() {
             val bind = DataBindingUtil.bind<NovelSourceSearchResultRuleBinding>(p0.itemView)
             bind?.model = data!![p1]
             bind?.delete?.setOnClickListener {
-                data!!.removeAt(p1)
-                notifyDataSetChanged()
+                model.deleteSearchResultViewModel(data!![p1])
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe{
+                            notifyDataSetChanged()
+                        }
+                        .destroy("deleteSearchResultViewModel")
+
             }
         }
     }

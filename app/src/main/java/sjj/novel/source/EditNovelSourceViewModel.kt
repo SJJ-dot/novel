@@ -4,10 +4,11 @@ import android.arch.lifecycle.ViewModel
 import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
 import io.reactivex.Observable
-import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Function
 import sjj.novel.data.repository.novelSourceRepository
 import sjj.novel.data.source.remote.rule.*
+import java.lang.IllegalArgumentException
+import java.lang.IllegalStateException
 
 class EditNovelSourceViewModel(private val TOP_LEVEL_DOMAIN: String?) : ViewModel() {
 
@@ -19,7 +20,7 @@ class EditNovelSourceViewModel(private val TOP_LEVEL_DOMAIN: String?) : ViewMode
     val isUtf8 = ObservableBoolean()
     val serverUrl = ObservableField<String>()
     val searchKey = ObservableField("searchKey")
-    val searchResultViewModel = mutableListOf<SearchResultViewModel>()
+    val searchResultViewModels = mutableListOf<SearchResultViewModel>()
     //简介
     val info = ObservableField<String>()
     val bookUrl = ObservableField<String>()
@@ -71,9 +72,14 @@ class EditNovelSourceViewModel(private val TOP_LEVEL_DOMAIN: String?) : ViewMode
                 searchKey.set(it.searchKey)
 
                 it.resultRules?.forEach {
-                    searchResultViewModel.add(SearchResultViewModel(it))
+                    searchResultViewModels.add(SearchResultViewModel(it))
                 }
             }
+            //至少需要一个搜索结果解析规则
+            if (searchResultViewModels.isEmpty()) {
+                searchResultViewModels.add(SearchResultViewModel())
+            }
+
             rule.introRule?.also {
                 info.set(it.bookInfo)
                 bookUrl.set(it.bookUrl)
@@ -112,7 +118,7 @@ class EditNovelSourceViewModel(private val TOP_LEVEL_DOMAIN: String?) : ViewMode
             searchRule.serverUrl = serverUrl.get()!!
             searchRule.searchKey = searchKey.get()!!
 
-            searchRule.resultRules = searchResultViewModel.map { resultViewModel ->
+            searchRule.resultRules = searchResultViewModels.map { resultViewModel ->
                 resultViewModel.fillData(SearchResultRule())
             }
             val rule = bookParseRule.introRule ?: BookIntroRule()
@@ -139,6 +145,16 @@ class EditNovelSourceViewModel(private val TOP_LEVEL_DOMAIN: String?) : ViewMode
             val contentRule = bookParseRule.chapterContentRule ?: ChapterContentRule()
             bookParseRule.chapterContentRule = contentRule
             contentRule.bookChapterContent = bookChapterContent.get()!!
+        }
+    }
+
+    fun deleteSearchResultViewModel(searchResultViewModel: SearchResultViewModel):Observable<SearchResultViewModel> {
+        return Observable.fromCallable {
+            if (searchResultViewModels.size < 2) {
+                throw IllegalStateException("至少需要一个搜索结果解析规则，禁止删除")
+            }
+            searchResultViewModels.remove(searchResultViewModel)
+            searchResultViewModel
         }
     }
 
