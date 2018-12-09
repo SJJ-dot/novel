@@ -124,7 +124,7 @@ class EditNovelSourceViewModel(private val TOP_LEVEL_DOMAIN: String?) : ViewMode
             val rule = bookParseRule.introRule ?: BookIntroRule()
             bookParseRule.introRule = rule
             rule.bookInfo = info.get()!!
-            rule.bookUrl = bookUrl.get()!!
+            rule.bookUrl = bookUrl.get()?:""
             rule.bookName = bookName.get()!!
             rule.bookNameRegex = bookNameRegex.get() ?: ""
             rule.bookAuthor = bookAuthor.get()!!
@@ -145,6 +145,8 @@ class EditNovelSourceViewModel(private val TOP_LEVEL_DOMAIN: String?) : ViewMode
             val contentRule = bookParseRule.chapterContentRule ?: ChapterContentRule()
             bookParseRule.chapterContentRule = contentRule
             contentRule.bookChapterContent = bookChapterContent.get()!!
+        }.flatMap {
+            novelSourceRepository.saveBookParseRule(it)
         }
     }
 

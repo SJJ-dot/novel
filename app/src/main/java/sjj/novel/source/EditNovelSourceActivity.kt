@@ -10,6 +10,7 @@ import android.view.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_edit_novel_source.*
 import org.jetbrains.anko.toast
+import sjj.alog.Log
 import sjj.novel.BaseActivity
 import sjj.novel.R
 import sjj.novel.databinding.ActivityEditNovelSourceBinding
@@ -77,6 +78,7 @@ class EditNovelSourceActivity : BaseActivity() {
                             finish()
                         }, {
                             toast(it.message ?: "保存失败")
+                            Log.e("save failed ",it)
                         })
                         .destroy("menu_save_novel_source")
                 true
