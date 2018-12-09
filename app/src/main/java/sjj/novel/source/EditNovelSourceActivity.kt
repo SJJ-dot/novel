@@ -68,6 +68,10 @@ class EditNovelSourceActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
+            android.R.id.home -> {
+                finish()
+                true
+            }
             R.id.menu_reset_novel_source -> {
                 initData()
                 true

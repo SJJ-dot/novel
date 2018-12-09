@@ -14,9 +14,11 @@ interface NovelSourceDao {
     @Query("select * from BookParseRule where topLevelDomain = :tld")
     fun getBookParseRule(tld: String): BookParseRule
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun saveBookParseRule(rule: BookParseRule)
+    @Insert
+    fun insertBookParseRule(rule: BookParseRule)
 
+    @Update
+    fun updateBookParseRule(rule: BookParseRule)
     @Delete
     fun deleteBookParseRule(rule: BookParseRule)
 }

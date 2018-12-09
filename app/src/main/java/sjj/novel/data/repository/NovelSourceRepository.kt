@@ -28,7 +28,11 @@ class NovelSourceRepository {
 
     fun saveBookParseRule(rule: BookParseRule): Observable<BookParseRule> {
         return Observable.fromCallable {
-            booksDataBase.novelSourceDao().saveBookParseRule(rule)
+            try {
+                booksDataBase.novelSourceDao().insertBookParseRule(rule)
+            } catch (e: Exception) {
+                booksDataBase.novelSourceDao().updateBookParseRule(rule)
+            }
             rule
         }.subscribeOn(Schedulers.io())
     }

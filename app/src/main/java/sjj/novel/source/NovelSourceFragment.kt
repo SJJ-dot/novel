@@ -68,7 +68,6 @@ class NovelSourceFragment : BaseFragment() {
             val rule = data[p1]
             holder.itemView.cb_book_source.text = rule.sourceName
 
-            holder.itemView.cb_book_source.isChecked = rule.enable
             holder.itemView.iv_del_source.setOnClickListener {
                 model.deleteBookParseRule(rule)
                         .subscribe()
@@ -82,6 +81,8 @@ class NovelSourceFragment : BaseFragment() {
                 model.saveBookParseRule(rule)
                         .subscribe()
             }
+
+            holder.itemView.cb_book_source.isChecked = rule.enable
 
         }
     }
