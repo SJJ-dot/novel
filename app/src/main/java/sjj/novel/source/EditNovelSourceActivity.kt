@@ -58,6 +58,7 @@ class EditNovelSourceActivity : BaseActivity() {
             add_search_result_rule.setOnClickListener {
                 adapter.data?.add(EditNovelSourceViewModel.SearchResultViewModel())
                 adapter.notifyDataSetChanged()
+                search_rule_result.smoothScrollToPosition((adapter.data?.size ?: 1) - 1)
             }
 
         }.destroy("menu_reset_novel_source")
@@ -84,7 +85,7 @@ class EditNovelSourceActivity : BaseActivity() {
                             finish()
                         }, {
                             toast(it.message ?: "保存失败")
-                            Log.e("save failed ",it)
+                            Log.e("save failed ", it)
                         })
                         .destroy("menu_save_novel_source")
                 true
