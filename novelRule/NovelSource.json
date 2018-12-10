@@ -192,7 +192,7 @@
     },
     "enable": true,
     "introRule": {
-      "bookAuthor": "#info .infotitle \u003e :nth-child(2)",
+      "bookAuthor": "#info .infotitle > :nth-child(2)",
       "bookAuthorRegex": ".*：(.*)",
       "bookChapterListUrl": "",
       "bookCoverImgUrl": "#fmimg img",
@@ -207,11 +207,11 @@
       "method": "POST",
       "resultRules": [
         {
-          "author": "\u003e :nth-child(4) a",
+          "author": "> :nth-child(4) a",
           "authorRegex": "",
-          "bookInfos": "#newscontent ul \u003e li",
-          "bookUrl": "\u003e :nth-child(2) a",
-          "name": "\u003e :nth-child(2) a",
+          "bookInfos": "#newscontent ul > li",
+          "bookUrl": "> :nth-child(2) a",
+          "name": "> :nth-child(2) a",
           "nameRegex": ""
         }
       ],
@@ -221,5 +221,48 @@
     "sequence": 1.0,
     "sourceName": "大海中文",
     "topLevelDomain": "dhzw.org"
+  },
+  {
+    "baseUrl": "http://www.6mao.com/",
+    "chapterContentRule": {
+      "bookChapterContent": "#neirong"
+    },
+    "chapterListRule": {
+      "bookChapterList": ".liebiao_bottom a",
+      "bookChapterName": "a",
+      "bookChapterNameRegex": "",
+      "bookChapterUrl": "a"
+    },
+    "enable": true,
+    "introRule": {
+      "bookAuthor": ".intro .author",
+      "bookAuthorRegex": ".*：(.*)",
+      "bookChapterListUrl": "",
+      "bookCoverImgUrl": ".intro .l img",
+      "bookIntro": ".intro .jieshao",
+      "bookIntroRegex": "",
+      "bookName": ".intro .title h2",
+      "bookNameRegex": "",
+      "bookUrl": ""
+    },
+    "searchRule": {
+      "charset": "GBK",
+      "method": "POST",
+      "resultRules": [
+        {
+          "author": "> :nth-child(3)",
+          "authorRegex": "",
+          "bookInfos": "._content tbody tr:gt(1)",
+          "bookUrl": "> :nth-child(1) a",
+          "name": "> :nth-child(1) a",
+          "nameRegex": ""
+        }
+      ],
+      "searchKey": "searchkey",
+      "serverUrl": "/modules/article/ss.php"
+    },
+    "sequence": 1.0,
+    "sourceName": "6毛",
+    "topLevelDomain": "6mao.com"
   }
 ]

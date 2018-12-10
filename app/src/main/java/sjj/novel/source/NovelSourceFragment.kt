@@ -2,20 +2,17 @@ package sjj.novel.source
 
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_novel_source.*
 import kotlinx.android.synthetic.main.item_book_source.view.*
-import org.jetbrains.anko.appcompat.v7.coroutines.onMenuItemClick
 import org.jetbrains.anko.support.v4.startActivity
-import org.jetbrains.anko.support.v4.toast
 import sjj.alog.Log
 import sjj.novel.BaseFragment
 import sjj.novel.R
-import sjj.novel.data.repository.novelSourceRepository
-import sjj.novel.data.source.remote.CommonBookEngine
-import sjj.novel.data.source.remote.rule.*
-import sjj.novel.util.fromJson
+import sjj.novel.data.source.remote.rule.BookParseRule
 import sjj.novel.util.getModel
 import sjj.novel.util.gson
 
@@ -51,6 +48,7 @@ class NovelSourceFragment : BaseFragment() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     it.forEach {
+                        if(it.enable)
                         Log.i(gson.toJson(it))
                     }
                     adapter.data = it
@@ -80,9 +78,11 @@ class NovelSourceFragment : BaseFragment() {
                 startActivity<EditNovelSourceActivity>(EditNovelSourceActivity.NOVEL_SOURCE_TOP_LEVEL_DOMAIN to rule.topLevelDomain)
             }
             holder.itemView.cb_book_source.setOnCheckedChangeListener { buttonView, isChecked ->
-                rule.enable = isChecked
-                model.saveBookParseRule(rule)
-                        .subscribe()
+                if (rule.enable != isChecked) {
+                    rule.enable = isChecked
+                    model.saveBookParseRule(rule)
+                            .subscribe()
+                }
             }
 
             holder.itemView.cb_book_source.isChecked = rule.enable
