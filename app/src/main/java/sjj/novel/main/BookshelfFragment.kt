@@ -1,6 +1,7 @@
 package sjj.novel.main
 
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -42,11 +43,14 @@ class BookshelfFragment : BaseFragment() {
             adapter.notifyDataSetChanged()
         }.destroy()
         bookListRefreshLayout.setOnRefreshListener {
-            model.refresh().observeOn(AndroidSchedulers.mainThread()).doOnError {
-                toast("$it")
-            }.doOnTerminate {
-                bookListRefreshLayout.isRefreshing = false
-            }.subscribe().destroy(DISPOSABLE_ACTIVITY_MAIN_REFRESH)
+            model.refresh()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnError {
+                        toast("$it")
+                    }.doOnTerminate {
+                        bookListRefreshLayout.isRefreshing = false
+                    }.subscribe()
+                    .destroy(DISPOSABLE_ACTIVITY_MAIN_REFRESH)
         }
     }
 

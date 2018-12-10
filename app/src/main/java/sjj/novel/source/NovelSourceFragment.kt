@@ -35,13 +35,13 @@ class NovelSourceFragment : BaseFragment() {
                 }
                 R.id.menu_load_default_novel_source -> {
                     //同步书源。退出后就会停止同步。体验可能不是很好但我并不关心
-                    Snackbar.make(novel_source,"正在同步书源，请稍后……",Snackbar.LENGTH_INDEFINITE).show()
+                    newSnackbar(novel_source, "正在同步书源，请稍后……", Snackbar.LENGTH_INDEFINITE)
                     model.syncNovelSource()
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe({
-                                Snackbar.make(novel_source,"同步成功",Snackbar.LENGTH_SHORT).show()
-                            },{
-                                Snackbar.make(novel_source,"同步失败：${it.message}",Snackbar.LENGTH_LONG).show()
+                                newSnackbar(novel_source, "同步成功", Snackbar.LENGTH_SHORT)
+                            }, {
+                                newSnackbar(novel_source, "同步失败：${it.message}", Snackbar.LENGTH_SHORT)
                             })
                             .destroy("sync novel source")
                     true
