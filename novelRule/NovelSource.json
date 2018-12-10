@@ -178,5 +178,48 @@
     "sequence": 1.0,
     "sourceName": "笔趣阁6",
     "topLevelDomain": "xbiquge6.com"
+  },
+  {
+    "baseUrl": "https://www.dhzw.org/",
+    "chapterContentRule": {
+      "bookChapterContent": "#BookText"
+    },
+    "chapterListRule": {
+      "bookChapterList": "#list a",
+      "bookChapterName": "a",
+      "bookChapterNameRegex": "",
+      "bookChapterUrl": "a"
+    },
+    "enable": true,
+    "introRule": {
+      "bookAuthor": "#info .infotitle \u003e :nth-child(2)",
+      "bookAuthorRegex": ".*：(.*)",
+      "bookChapterListUrl": "",
+      "bookCoverImgUrl": "#fmimg img",
+      "bookIntro": "#info .intro",
+      "bookIntroRegex": "",
+      "bookName": "#info .infotitle h1",
+      "bookNameRegex": "",
+      "bookUrl": ""
+    },
+    "searchRule": {
+      "charset": "GBK",
+      "method": "POST",
+      "resultRules": [
+        {
+          "author": "\u003e :nth-child(4) a",
+          "authorRegex": "",
+          "bookInfos": "#newscontent ul \u003e li",
+          "bookUrl": "\u003e :nth-child(2) a",
+          "name": "\u003e :nth-child(2) a",
+          "nameRegex": ""
+        }
+      ],
+      "searchKey": "searchkey",
+      "serverUrl": "modules/article/search.php"
+    },
+    "sequence": 1.0,
+    "sourceName": "大海中文",
+    "topLevelDomain": "dhzw.org"
   }
 ]
