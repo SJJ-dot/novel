@@ -48,9 +48,9 @@
                     app:layout_constraintVertical_bias="0.0"
                     app:progressBarImage="@drawable/ic_wait" />
 
-                <TextView
+                <sjj.novel.view.AutofitTextView
                     android:id="@+id/bookName"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="27dp"
                     android:layout_marginBottom="8dp"
                     android:layout_marginEnd="16dp"
@@ -126,11 +126,9 @@
                 <TextView
                     android:id="@+id/originWebsite"
                     android:layout_width="wrap_content"
-                    android:layout_height="19dp"
-                    android:layout_marginBottom="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:padding="8dp"
                     android:textColor="@color/colorTextLight"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -158,7 +156,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/authorTitle"
                     app:layout_constraintVertical_bias="0.0" />
 
-                <TextView
+                <sjj.novel.view.AutofitTextView
                     android:id="@+id/latestChapter"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
