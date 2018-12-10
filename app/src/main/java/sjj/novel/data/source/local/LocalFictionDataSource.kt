@@ -77,6 +77,17 @@ class LocalFictionDataSource : NovelDataRepository.LocalSource {
         }.subscribeOn(Schedulers.io())
     }
 
+    override fun batchUpdate(book: List<Book>): Observable<List<Book>> {
+        return fromCallableOrNull {
+            booksDataBase.runInTransaction {
+                book.forEach {
+                    bookDao.updateBook(it)
+                }
+            }
+            book
+        }.subscribeOn(Schedulers.io())
+    }
+
     override fun getLatestChapter(bookUrl: String): Observable<Chapter> {
         return fromCallableOrNull {
             bookDao.getLatestChapter(bookUrl)

@@ -42,8 +42,8 @@ class NovelDataRepository {
     private val localSource: LocalSource = LocalFictionDataSource()
 
     private fun getSources(): Observable<List<CommonBookEngine>> {
-        return novelSourceRepository.getAllBookParseRule().map {
-            it.map {
+        return novelSourceRepository.getAllBookParseRule().map { list ->
+            list.map {
                 CommonBookEngine(it)
             }
         }.firstElement().toObservable()
@@ -100,6 +100,10 @@ class NovelDataRepository {
         return getSource(url).flatMap {
             it.getBook(url)
         }.flatMap(localSource::refreshBook)
+    }
+
+    fun batchUpdate(book:List<Book>): Observable<List<Book>> {
+        return localSource.batchUpdate(book)
     }
 
     fun getBooks(): Flowable<List<Book>> = localSource.getAllReadingBook()
@@ -172,6 +176,7 @@ class NovelDataRepository {
         fun saveBookSourceRecord(books: List<Pair<BookSourceRecord, List<Book>>>): Single<List<Book>>
         fun getBookInBookSource(name: String, author: String): Flowable<Book>
         fun refreshBook(book: Book): Observable<Book>
+        fun batchUpdate(book: List<Book>): Observable<List<Book>>
         fun getChapter(url: String): Observable<Chapter>
         fun updateChapter(chapter: Chapter): Observable<Chapter>
         fun getAllReadingBook(): Flowable<List<Book>>

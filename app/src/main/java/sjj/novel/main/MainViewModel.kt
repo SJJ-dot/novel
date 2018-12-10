@@ -16,8 +16,16 @@ class MainViewModel : ViewModel() {
             getLatestChapter(b.url).map {
                 b.chapterList = listOf(it)
                 b
+            }.flatMap {
+                novelDataRepository.getReadIndex(it.name, it.author)
+                        .firstElement()
+                        .map {
+                            b.index = it
+                            b
+                        }
+                        .toObservable()
             }
-        }.reduce(list, { _, _ -> list }).toFlowable()
+        }.reduce(list) { _, _ -> list }.toFlowable()
     }
 
     fun delete(book: Book) {
@@ -36,7 +44,12 @@ class MainViewModel : ViewModel() {
     fun getReadIndex(name: String, author: String) = novelDataRepository.getReadIndex(name, author)
 
     fun refresh(): Observable<Book> {
-        return novelDataRepository.getBooks().firstElement().toObservable().lazyFromIterable {
+        return novelDataRepository.getBooks().firstElement().toObservable().flatMap { list ->
+            list.forEach {
+                it.isLoading = true
+            }
+            novelDataRepository.batchUpdate(list)
+        }.lazyFromIterable {
             novelDataRepository.refreshBook(it.url).delay(500, TimeUnit.MILLISECONDS)
         }.concat()
     }

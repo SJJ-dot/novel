@@ -11,4 +11,7 @@
     <color name="colorTextLight">#686868</color>
     <color name="tv_text_default">#de000000</color>
     <color name="btn_bg_press">#c4c4c4</color>
+
+    <color name="highlight">#d3321b</color>
+    <color name="darker_gray">#aaaaaaaa</color>
 </resources>

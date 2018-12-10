@@ -1,7 +1,6 @@
 package sjj.novel.main
 
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -13,7 +12,7 @@ import kotlinx.android.synthetic.main.item_book_list.view.*
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.startActivity
 import org.jetbrains.anko.support.v4.toast
-import org.jetbrains.anko.textColorResource
+import sjj.alog.Log
 import sjj.novel.BaseFragment
 import sjj.novel.DISPOSABLE_ACTIVITY_MAIN_REFRESH
 import sjj.novel.R
@@ -62,15 +61,6 @@ class BookshelfFragment : BaseFragment() {
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val book = data!![position]
-            if (book.chapterList.isNotEmpty()) {
-                model.getReadIndex(book.name, book.author).firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
-                    if (it < book.chapterList.last().index) {
-                        holder.itemView.lastChapter.textColorResource = R.color.colorText
-                    } else {
-                        holder.itemView.lastChapter.textColorResource = R.color.colorTextLight
-                    }
-                }.destroy(holder.itemView.toString())
-            }
             holder.itemView.bookName.text = book.name
             holder.itemView.author.text = book.author
             holder.itemView.originWebsite.text = book.url.host
@@ -83,12 +73,23 @@ class BookshelfFragment : BaseFragment() {
                 alert {
                     title = "确认删除？"
                     message = "确认删除书籍：${book.name}？"
-                    negativeButton("取消", {})
+                    negativeButton("取消") {}
                     positiveButton("删除") {
                         model.delete(book)
                     }
                 }.show()
                 true
+            }
+
+            if (book.isLoading) {
+                holder.itemView.bv_unread.visibility = View.INVISIBLE
+                holder.itemView.rl_loading.visibility = View.VISIBLE
+                holder.itemView.rl_loading.start()
+            } else {
+                holder.itemView.bv_unread.visibility = View.VISIBLE
+                holder.itemView.bv_unread.badgeCount = maxOf((book.chapterList.lastOrNull()?.index?:0) - book.index,0)
+                holder.itemView.rl_loading.visibility = View.INVISIBLE
+                holder.itemView.rl_loading.stop()
             }
         }
 

@@ -6,7 +6,7 @@ import android.arch.persistence.room.ForeignKey.CASCADE
 /**
  * Created by SJJ on 2017/10/7.
  */
-@Entity(indices = [(Index("name", "author"))],foreignKeys = [(ForeignKey(entity = BookSourceRecord::class, parentColumns = ["bookName", "author"], childColumns = ["name", "author"],onDelete = CASCADE))])
+@Entity(indices = [(Index("name", "author"))], foreignKeys = [(ForeignKey(entity = BookSourceRecord::class, parentColumns = ["bookName", "author"], childColumns = ["name", "author"], onDelete = CASCADE))])
 data class Book(
         @PrimaryKey
         var url: String = "",
@@ -17,5 +17,13 @@ data class Book(
         var chapterListUrl: String = "",
         @Ignore
         var chapterList: List<Chapter> = mutableListOf(),
-        var updateTime:Long = System.currentTimeMillis()
+        var updateTime: Long = System.currentTimeMillis(),
+
+        var isLoading: Boolean = false,
+        /**
+         * 阅读的章节
+         */
+        @Ignore
+        var index: Int = 0
+
 )
