@@ -256,6 +256,14 @@
           "bookUrl": "> :nth-child(1) a",
           "name": "> :nth-child(1) a",
           "nameRegex": ""
+        },
+        {
+          "author": ".author",
+          "authorRegex": ".*：(.*)",
+          "bookInfos": ".intro",
+          "bookUrl": "",
+          "name": ".title h2",
+          "nameRegex": ""
         }
       ],
       "searchKey": "searchkey",
