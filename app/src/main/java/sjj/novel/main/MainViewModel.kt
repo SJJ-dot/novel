@@ -3,12 +3,10 @@ package sjj.novel.main
 import android.arch.lifecycle.ViewModel
 import io.reactivex.Observable
 import io.reactivex.functions.Function
-import sjj.alog.Log
 import sjj.novel.data.repository.novelDataRepository
 import sjj.novel.model.Book
 import sjj.novel.model.BookSourceRecord
 import sjj.novel.model.Chapter
-import sjj.novel.util.concat
 import sjj.novel.util.host
 import sjj.novel.util.lazyFromIterable
 import java.util.concurrent.TimeUnit
@@ -59,15 +57,16 @@ class MainViewModel : ViewModel() {
                             map.getOrPut(it.url.host) { mutableListOf() }.add(it)
                         }
                         Observable.fromIterable(map.values)
+                                .lazyFromIterable { book ->
+                                    novelDataRepository.refreshBook(book.url)
+                                            .delay(500, TimeUnit.MILLISECONDS)
+                                            .onErrorResumeNext(Function { _ ->
+                                                book.loadStatus = Book.LoadState.LoadFailed
+                                                novelDataRepository.batchUpdate(listOf(book)).map { it.first() }
+                                            })
+                                }.flatMap { it }
                     }
-        }.lazyFromIterable {book->
-            novelDataRepository.refreshBook(book.url)
-                    .delay(500, TimeUnit.MILLISECONDS)
-                    .onErrorResumeNext(Function{ _ ->
-                        book.loadStatus = Book.LoadState.LoadFailed
-                        novelDataRepository.batchUpdate(listOf(book)).map { it.first() }
-                    })
-        }.concat()
+        }
     }
 
 }
