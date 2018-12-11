@@ -19,7 +19,7 @@ class EditNovelSourceViewModel(private val TOP_LEVEL_DOMAIN: String?) : ViewMode
     val isGet = ObservableBoolean()
     val isUtf8 = ObservableBoolean()
     val serverUrl = ObservableField<String>()
-    val searchKey = ObservableField("searchKey")
+    val searchKey = ObservableField("searchkey")
     val searchResultViewModels = mutableListOf<SearchResultViewModel>()
     //简介
     val bookUrl = ObservableField<String>()

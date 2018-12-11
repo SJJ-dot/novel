@@ -2,11 +2,13 @@ package sjj.novel.main
 
 import android.arch.lifecycle.ViewModel
 import io.reactivex.Observable
+import sjj.alog.Log
 import sjj.novel.data.repository.novelDataRepository
 import sjj.novel.model.Book
 import sjj.novel.model.BookSourceRecord
 import sjj.novel.model.Chapter
 import sjj.novel.util.concat
+import sjj.novel.util.host
 import sjj.novel.util.lazyFromIterable
 import java.util.concurrent.TimeUnit
 
@@ -16,8 +18,8 @@ class MainViewModel : ViewModel() {
             getLatestChapter(b.url).map {
                 b.chapterList = listOf(it)
                 b
-            }.flatMap {
-                novelDataRepository.getReadIndex(it.name, it.author)
+            }.flatMap { book ->
+                novelDataRepository.getReadIndex(book.name, book.author)
                         .firstElement()
                         .map {
                             b.index = it
@@ -49,6 +51,14 @@ class MainViewModel : ViewModel() {
                 it.isLoading = true
             }
             novelDataRepository.batchUpdate(list)
+                    .flatMap { bookList ->
+                        //对小说进行分组使同同一来源的小说一次性发射出去
+                        val map = mutableMapOf<String, MutableList<Book>>()
+                        bookList.forEach {
+                            map.getOrPut(it.url.host) { mutableListOf() }.add(it)
+                        }
+                        Observable.fromIterable(map.values)
+                    }
         }.lazyFromIterable {
             novelDataRepository.refreshBook(it.url).delay(500, TimeUnit.MILLISECONDS)
         }.concat()

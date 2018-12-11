@@ -3,7 +3,7 @@ package sjj.novel.util
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
 
-fun <T, R> Observable<List<T>>.lazyFromIterable(mapper: (T) -> Observable<R>): Observable<Observable<R>> {
+fun <T, R> Observable<out List<T>>.lazyFromIterable(mapper: (T) -> Observable<R>): Observable<Observable<R>> {
     return flatMap { list ->
         Observable.create<Observable<R>> { emitter ->
             fun emi(index: Int) {
