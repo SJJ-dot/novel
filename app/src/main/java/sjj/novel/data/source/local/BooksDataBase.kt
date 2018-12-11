@@ -11,7 +11,7 @@ import sjj.novel.model.BookSourceRecord
 import sjj.novel.model.Chapter
 
 
-@Database(entities = [Book::class, BookSourceRecord::class, Chapter::class, BookParseRule::class], version = 1)
+@Database(entities = [Book::class, BookSourceRecord::class, Chapter::class, BookParseRule::class], version = 2)
 @TypeConverters(Converters::class)
 abstract class BooksDataBase : RoomDatabase() {
     abstract fun bookDao(): BookDao

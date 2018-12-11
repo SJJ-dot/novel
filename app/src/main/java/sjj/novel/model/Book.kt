@@ -19,11 +19,15 @@ data class Book(
         var chapterList: List<Chapter> = mutableListOf(),
         var updateTime: Long = System.currentTimeMillis(),
 
-        var isLoading: Boolean = false,
+        var loadStatus: LoadState = LoadState.Loaded,
         /**
          * 阅读的章节
          */
         @Ignore
         var index: Int = 0
 
-)
+){
+        enum class LoadState{
+                UnLoad,Loading,Loaded,LoadFailed
+        }
+}

@@ -81,7 +81,7 @@ class BookshelfFragment : BaseFragment() {
                 true
             }
 
-            if (book.isLoading) {
+            if (book.loadStatus == Book.LoadState.Loaded) {
                 holder.itemView.bv_unread.visibility = View.INVISIBLE
                 holder.itemView.rl_loading.visibility = View.VISIBLE
                 holder.itemView.rl_loading.start()

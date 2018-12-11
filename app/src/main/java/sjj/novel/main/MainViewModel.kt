@@ -2,6 +2,7 @@ package sjj.novel.main
 
 import android.arch.lifecycle.ViewModel
 import io.reactivex.Observable
+import io.reactivex.functions.Function
 import sjj.alog.Log
 import sjj.novel.data.repository.novelDataRepository
 import sjj.novel.model.Book
@@ -48,7 +49,7 @@ class MainViewModel : ViewModel() {
     fun refresh(): Observable<Book> {
         return novelDataRepository.getBooks().firstElement().toObservable().flatMap { list ->
             list.forEach {
-                it.isLoading = true
+                it.loadStatus = Book.LoadState.Loading
             }
             novelDataRepository.batchUpdate(list)
                     .flatMap { bookList ->
@@ -59,8 +60,13 @@ class MainViewModel : ViewModel() {
                         }
                         Observable.fromIterable(map.values)
                     }
-        }.lazyFromIterable {
-            novelDataRepository.refreshBook(it.url).delay(500, TimeUnit.MILLISECONDS)
+        }.lazyFromIterable {book->
+            novelDataRepository.refreshBook(book.url)
+                    .delay(500, TimeUnit.MILLISECONDS)
+                    .onErrorResumeNext(Function{ _ ->
+                        book.loadStatus = Book.LoadState.LoadFailed
+                        novelDataRepository.batchUpdate(listOf(book)).map { it.first() }
+                    })
         }.concat()
     }
 
