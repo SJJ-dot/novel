@@ -17,7 +17,6 @@ data class Book(
         var chapterListUrl: String = "",
         @Ignore
         var chapterList: List<Chapter> = mutableListOf(),
-        var updateTime: Long = System.currentTimeMillis(),
 
         var loadStatus: LoadState = LoadState.Loaded,
         /**
