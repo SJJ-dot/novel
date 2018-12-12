@@ -10,6 +10,7 @@ class ReadViewModel(val name: String, val author: String) : ViewModel() {
     val book = novelDataRepository.getBookInBookSource(name, author)
 
     private var lastReadIndex = 0
+    private var isThrough: Boolean? = null
 
     fun getChapters(bookUrl: String) = novelDataRepository.getChapters(bookUrl)
 
@@ -25,12 +26,13 @@ class ReadViewModel(val name: String, val author: String) : ViewModel() {
         lastReadIndex = it
     }
 
-    fun setReadIndex(index: Int): Observable<Int> {
-        if (lastReadIndex == index) {
+    fun setReadIndex(index: Int, isThrough: Boolean = false): Observable<Int> {
+        if (lastReadIndex == index && this.isThrough == isThrough) {
             return Observable.empty()
         }
+        this.isThrough = isThrough
         lastReadIndex = index
-        return novelDataRepository.setReadIndex(name, author, index)
+        return novelDataRepository.setReadIndex(name, author, index, isThrough)
     }
 
 

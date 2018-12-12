@@ -18,10 +18,11 @@ class MainViewModel : ViewModel() {
                 b.chapterList = listOf(it)
                 b
             }.flatMap { book ->
-                novelDataRepository.getReadIndex(book.name, book.author)
+                novelDataRepository.getBookSourceRecord(book.name, book.author)
                         .firstElement()
                         .map {
-                            b.index = it
+                            b.index = it.readIndex
+                            b.isThrough = it.isThrough
                             b
                         }
                         .toObservable()

@@ -57,13 +57,13 @@ class LocalFictionDataSource : NovelDataRepository.LocalSource {
         }
     }
 
-    override fun getReadIndex(name: String, author: String): Flowable<Int> {
-        return bookDao.getReadIndex(name, author)
+    override fun getBookSourceRecord(name: String, author: String): Flowable<BookSourceRecord> {
+        return bookDao.getBookSourceRecord(name, author)
     }
 
-    override fun setReadIndex(name: String, author: String, index: Int): Observable<Int> {
+    override fun setReadIndex(name: String, author: String, index: Int, isThrough: Boolean): Observable<Int> {
         return fromCallableOrNull {
-            bookDao.setReadIndex(name, author, index)
+            bookDao.setReadIndex(name, author, index,isThrough)
         }.subscribeOn(Schedulers.io())
     }
 

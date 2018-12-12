@@ -73,9 +73,12 @@ class ReadActivity : BaseActivity() {
                 val manager = recyclerView.layoutManager as LinearLayoutManager
                 val position = manager.findFirstVisibleItemPosition()
                 seekBar.progress = position
+
+                val b = recyclerView.computeVerticalScrollExtent() + recyclerView.computeVerticalScrollOffset() >= recyclerView.computeVerticalScrollRange()
+
                 if (contentAdapter.data.size > position) {
                     chapterName.text = contentAdapter.data[position].chapterName
-                    model.setReadIndex(position).subscribe().destroy(DISPOSABLE_READ_INDEX)
+                    model.setReadIndex(position,b).subscribe().destroy(DISPOSABLE_READ_INDEX)
                 }
             }
         })

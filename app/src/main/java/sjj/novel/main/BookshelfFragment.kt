@@ -87,7 +87,7 @@ class BookshelfFragment : BaseFragment() {
                 holder.itemView.rl_loading.start()
             } else {
                 holder.itemView.bv_unread.visibility = View.VISIBLE
-                holder.itemView.bv_unread.badgeCount = maxOf((book.chapterList.lastOrNull()?.index?:0) - book.index,0)
+                holder.itemView.bv_unread.badgeCount = maxOf((book.chapterList.lastOrNull()?.index?:0) - book.index +(if (book.isThrough) 0 else -1),0)
                 holder.itemView.rl_loading.visibility = View.INVISIBLE
                 holder.itemView.rl_loading.stop()
             }

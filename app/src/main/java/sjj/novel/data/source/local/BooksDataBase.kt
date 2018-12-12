@@ -14,7 +14,7 @@ import sjj.novel.model.BookSourceRecord
 import sjj.novel.model.Chapter
 
 
-@Database(entities = [Book::class, BookSourceRecord::class, Chapter::class, BookParseRule::class], version = 3)
+@Database(entities = [Book::class, BookSourceRecord::class, Chapter::class, BookParseRule::class], version = 4)
 @TypeConverters(Converters::class)
 abstract class BooksDataBase : RoomDatabase() {
     abstract fun bookDao(): BookDao
@@ -27,13 +27,12 @@ val booksDataBase by lazy {
                 override fun migrate(database: SupportSQLiteDatabase) {
                     database.execSQL("PRAGMA foreign_keys=OFF")
                     database.execSQL("DROP INDEX `index_Book_name_author`")
-                    database.execSQL("ALTER TABLE 'Book' RENAME TO 'book_temp'")
+                    database.execSQL("ALTER TABLE `Book` RENAME TO `book_temp`")
                     database.execSQL("CREATE TABLE `Book` (`url` TEXT NOT NULL, `name` TEXT NOT NULL, `author` TEXT NOT NULL, `bookCoverImgUrl` TEXT NOT NULL, `intro` TEXT NOT NULL, `chapterListUrl` TEXT NOT NULL, `loadStatus` TEXT NOT NULL, PRIMARY KEY(`url`), FOREIGN KEY(`name`, `author`) REFERENCES `BookSourceRecord`(`bookName`, `author`) ON UPDATE NO ACTION ON DELETE CASCADE )")
                     database.execSQL("CREATE  INDEX `index_Book_name_author` ON `Book` (`name`, `author`)")
 
-                    val cursor = database.query("select * from book_temp")
+                    val cursor = database.query("SELECT * FROM `book_temp`")
                     while (cursor.moveToNext()) {
-                        Log.e("url "+cursor.getString(cursor.getColumnIndex("url")))
                         database.execSQL("INSERT INTO 'Book'('url','name','author','bookCoverImgUrl','intro','chapterListUrl','loadStatus') values(?,?,?,?,?,?,?)",
                                 arrayOf(cursor.getString(cursor.getColumnIndex("url")),
                                         cursor.getString(cursor.getColumnIndex("name")),
@@ -46,6 +45,12 @@ val booksDataBase by lazy {
                     cursor.close()
                     database.execSQL("DROP TABLE 'book_temp'")
                     database.execSQL("PRAGMA foreign_keys=ON")
+                }
+            })
+            .addMigrations(object : Migration(3, 4) {
+                override fun migrate(database: SupportSQLiteDatabase) {
+//                    ALTER TABLE 表名 ADD COLUMN 列名 数据类型
+                    database.execSQL("ALTER TABLE `BookSourceRecord` ADD COLUMN `isThrough` INTEGER NOT NULL default 0")
                 }
             })
             .build()

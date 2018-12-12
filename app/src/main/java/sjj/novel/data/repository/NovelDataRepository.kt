@@ -49,7 +49,7 @@ class NovelDataRepository {
         }.firstElement().toObservable()
     }
 
-    private fun getSource(url: String):Observable<NovelDataRepository.RemoteSource> = getSources().map { list ->
+    private fun getSource(url: String): Observable<NovelDataRepository.RemoteSource> = getSources().map { list ->
         list.forEach {
             if (url.host.endsWith(it.topLevelDomain, true)) {
                 return@map it
@@ -102,7 +102,7 @@ class NovelDataRepository {
         }.flatMap(localSource::refreshBook)
     }
 
-    fun batchUpdate(book:List<Book>): Observable<List<Book>> {
+    fun batchUpdate(book: List<Book>): Observable<List<Book>> {
         return localSource.batchUpdate(book)
     }
 
@@ -144,11 +144,15 @@ class NovelDataRepository {
     }
 
     fun getReadIndex(name: String, author: String): Flowable<Int> {
-        return localSource.getReadIndex(name, author)
+        return getBookSourceRecord(name, author).map { it.readIndex }
     }
 
-    fun setReadIndex(name: String, author: String, index: Int): Observable<Int> {
-        return localSource.setReadIndex(name, author, index)
+    fun getBookSourceRecord(name: String, author: String): Flowable<BookSourceRecord> {
+        return localSource.getBookSourceRecord(name, author)
+    }
+
+    fun setReadIndex(name: String, author: String, index: Int, isThrough: Boolean = false): Observable<Int> {
+        return localSource.setReadIndex(name, author, index,isThrough)
     }
 
     fun getLatestChapter(bookUrl: String): Observable<Chapter> {
@@ -183,8 +187,8 @@ class NovelDataRepository {
         fun deleteBook(bookName: String, author: String): Observable<Int>
         fun getBookSource(name: String, author: String): Observable<List<String>>
         fun updateBookSource(name: String, author: String, url: String): Observable<Int>
-        fun getReadIndex(name: String, author: String): Flowable<Int>
-        fun setReadIndex(name: String, author: String, index: Int): Observable<Int>
+        fun getBookSourceRecord(name: String, author: String): Flowable<BookSourceRecord>
+        fun setReadIndex(name: String, author: String, index: Int,isThrough:Boolean): Observable<Int>
         fun getLatestChapter(bookUrl: String): Observable<Chapter>
         fun getChapters(bookUrl: String): DataSource.Factory<Int, Chapter>
         fun getChapterIntro(bookUrl: String): Flowable<List<Chapter>>

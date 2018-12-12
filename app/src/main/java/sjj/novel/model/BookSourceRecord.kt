@@ -11,6 +11,10 @@ class BookSourceRecord {
     var author = ""
     var bookUrl = ""
     var readIndex: Int = 0
+    /**
+     * 是否已经读完
+     */
+    var isThrough:Boolean = false
     override fun toString(): String {
         return "BookSourceRecord(bookName='$bookName', author='$author', bookUrl='$bookUrl', readIndex=$readIndex)"
     }

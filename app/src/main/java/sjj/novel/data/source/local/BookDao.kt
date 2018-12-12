@@ -43,11 +43,11 @@ interface BookDao {
     @Query("update BookSourceRecord set bookUrl=:url where bookName=:name and author=:author")
     fun updateBookSource(name: String, author: String, url: String): Int
 
-    @Query("select readIndex from BookSourceRecord where bookName=:name and author=:author")
-    fun getReadIndex(name: String, author: String): Flowable<Int>
+    @Query("select * from BookSourceRecord where bookName=:name and author=:author")
+    fun getBookSourceRecord(name: String, author: String): Flowable<BookSourceRecord>
 
-    @Query("update BookSourceRecord set readIndex=:index where bookName=:name and author=:author")
-    fun setReadIndex(name: String, author: String, index: Int): Int
+    @Query("update BookSourceRecord set readIndex=:index,isThrough=:isThrough where bookName=:name and author=:author")
+    fun setReadIndex(name: String, author: String, index: Int, isThrough: Boolean): Int
 
     @Query("select * from Chapter where bookUrl=:bookUrl order by `index` desc limit 1")
     fun getLatestChapter(bookUrl: String): Chapter

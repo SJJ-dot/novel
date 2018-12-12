@@ -23,8 +23,9 @@ data class Book(
          * 阅读的章节
          */
         @Ignore
-        var index: Int = 0
-
+        var index: Int = 0,
+        @Ignore
+        var isThrough:Boolean = false
 ){
         enum class LoadState{
                 UnLoad,Loading,Loaded,LoadFailed
