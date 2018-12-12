@@ -36,7 +36,7 @@ class MainViewModel : ViewModel() {
 
     fun search(text: String) = novelDataRepository.search(text)
 
-    fun saveBookSourceRecord(books: List<Pair<BookSourceRecord, List<Book>>>) = novelDataRepository.saveBookSourceRecord(books)
+    fun saveBookSourceRecord(books: Pair<BookSourceRecord, List<Book>>) = novelDataRepository.saveBookSourceRecord(listOf(books))
 
     private fun getLatestChapter(bookUrl: String): Observable<Chapter> {
         return novelDataRepository.getLatestChapter(bookUrl)
