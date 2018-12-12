@@ -71,13 +71,18 @@ class ReadActivity : BaseActivity() {
         chapterContent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 val manager = recyclerView.layoutManager as LinearLayoutManager
-                val position = manager.findFirstVisibleItemPosition()
+                var position = manager.findFirstVisibleItemPosition()
                 seekBar.progress = position
 
                 val b = recyclerView.computeVerticalScrollExtent() + recyclerView.computeVerticalScrollOffset() >= recyclerView.computeVerticalScrollRange()
 
                 if (contentAdapter.data.size > position) {
                     chapterName.text = contentAdapter.data[position].chapterName
+
+                    if (b) {
+                        position = manager.findLastVisibleItemPosition()
+                    }
+
                     model.setReadIndex(position,b).subscribe().destroy(DISPOSABLE_READ_INDEX)
                 }
             }
