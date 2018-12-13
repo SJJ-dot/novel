@@ -22,8 +22,8 @@ class ReadViewModel(val name: String, val author: String) : ViewModel() {
         return novelDataRepository.getChapter(url)
     }
 
-    val readIndex = novelDataRepository.getReadIndex(name, author).doOnNext {
-        lastReadIndex = it
+    val readIndex = novelDataRepository.getBookSourceRecord(name, author).doOnNext {
+        lastReadIndex = it.readIndex
     }
 
     fun setReadIndex(index: Int, isThrough: Boolean = false): Observable<Int> {

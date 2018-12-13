@@ -10,6 +10,8 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Html
+import android.util.SparseArray
+import android.util.SparseBooleanArray
 import android.view.*
 import android.widget.TextView
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -56,16 +58,16 @@ class ReadActivity : BaseActivity() {
         val chapterListAdapter = ChapterListAdapter()
         chapterContent.adapter = contentAdapter
         chapterList.adapter = chapterListAdapter
-        model.book.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
-            title = it.name
-            seekBar.max = it.chapterList.size
-            contentAdapter.data = it.chapterList
-            chapterListAdapter.data = it.chapterList
+        model.book.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe { book ->
+            title = book.name
+            seekBar.max = book.chapterList.size
+            contentAdapter.data = book.chapterList
+            chapterListAdapter.data = book.chapterList
             contentAdapter.notifyDataSetChanged()
             chapterListAdapter.notifyDataSetChanged()
             model.readIndex.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
-                chapterList.scrollToPosition(it)
-                chapterContent.scrollToPosition(it)
+                chapterList.scrollToPosition(it.readIndex)
+                chapterContent.scrollToPosition(it.readIndex)
             }.destroy(DISPOSABLE_ACTIVITY_READ_READ_INDEX)
         }.destroy()
         chapterContent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -74,7 +76,8 @@ class ReadActivity : BaseActivity() {
                 var position = manager.findFirstVisibleItemPosition()
                 seekBar.progress = position
 
-                val b = recyclerView.computeVerticalScrollExtent() + recyclerView.computeVerticalScrollOffset() >= recyclerView.computeVerticalScrollRange()
+                val b = recyclerView.computeVerticalScrollExtent() + recyclerView.computeVerticalScrollOffset() >= recyclerView.computeVerticalScrollRange() &&
+                        contentAdapter.isLoadContent[position]
 
                 if (contentAdapter.data.size > position) {
                     chapterName.text = contentAdapter.data[position].chapterName
@@ -83,7 +86,7 @@ class ReadActivity : BaseActivity() {
                         position = manager.findLastVisibleItemPosition()
                     }
 
-                    model.setReadIndex(position,b).subscribe().destroy(DISPOSABLE_READ_INDEX)
+                    model.setReadIndex(position, b).subscribe().destroy(DISPOSABLE_READ_INDEX)
                 }
             }
         })
@@ -147,6 +150,8 @@ class ReadActivity : BaseActivity() {
 
         var data = listOf<Chapter>()
 
+        val isLoadContent = SparseBooleanArray()
+
         lateinit var ttf: Typeface
 
         var contentTextSize: Float = 0f
@@ -169,6 +174,7 @@ class ReadActivity : BaseActivity() {
         }
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+            isLoadContent.put(position, false)
             val chapter = data[position]
             holder.itemView.readItemChapterContentTitle.text = chapter.chapterName
             fun bindContent() {
@@ -190,7 +196,7 @@ class ReadActivity : BaseActivity() {
                     holder.itemView.apply {
                         layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
 
-                        readItemChapterContentHint.visibility =View.GONE
+                        readItemChapterContentHint.visibility = View.GONE
                         readItemChapterContentText.apply {
                             visibility = View.VISIBLE
                             typeface = ttf
@@ -198,7 +204,7 @@ class ReadActivity : BaseActivity() {
                             text = Html.fromHtml(it.content)
                         }
                     }
-
+                    isLoadContent.put(position, true)
 //                    holder.itemView.readItemChapterContentLines.visibility = View.VISIBLE
                 }, { _ ->
                     holder.itemView.readItemChapterContentHint.text = "加载失败，点击重试……"
@@ -206,7 +212,7 @@ class ReadActivity : BaseActivity() {
                         bindContent()
                         holder.itemView.readItemChapterContentHint.isClickable = false
                     }
-                    holder.itemView.readItemChapterContentHint.visibility =View.VISIBLE
+                    holder.itemView.readItemChapterContentHint.visibility = View.VISIBLE
 //                    holder.itemView.readItemChapterContentLines.visibility = View.GONE
                 }).destroy("${holder.itemView}")
             }
@@ -218,7 +224,7 @@ class ReadActivity : BaseActivity() {
 
 
     class TextLineAdapter(var data: List<TextLine>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-        var typeface: Typeface?=null
+        var typeface: Typeface? = null
         var textSize: Float? = null
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             return object : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_read_chapter_content_text_line, parent, false)) {

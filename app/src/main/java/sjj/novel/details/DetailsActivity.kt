@@ -47,9 +47,9 @@ class DetailsActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         val bind: ActivityDetailsBinding = DataBindingUtil.setContentView(this, R.layout.activity_details)
         val adapter = ChapterListAdapter()
-        model.book.observeOn(AndroidSchedulers.mainThread()).subscribe {
-            bind.book = it
-            originWebsite.text = it.url.host
+        model.book.observeOn(AndroidSchedulers.mainThread()).subscribe { book ->
+            bind.book = book
+            originWebsite.text = book.url.host
             originWebsite.setOnClickListener { v ->
                 v.isEnabled = false
                 model.bookSource.observeOn(AndroidSchedulers.mainThread()).doOnTerminate {
@@ -64,7 +64,7 @@ class DetailsActivity : BaseActivity() {
                     }.show()
                 }
             }
-            adapter.data = it.chapterList
+            adapter.data = book.chapterList
             adapter.notifyDataSetChanged()
             chapterListButton.setOnClickListener { v ->
                 if (chapterList.visibility != View.VISIBLE) {
@@ -73,37 +73,48 @@ class DetailsActivity : BaseActivity() {
 //                        adapter.submitList(it)
 //
 //                    })
-                    model.readIndex.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe { index ->
-                        chapterList.scrollToPosition(index)
+                    model.bookSourceRecord.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe { index ->
+                        chapterList.scrollToPosition(index.readIndex)
                     }
                 } else {
                     chapterList.visibility = View.GONE
                 }
             }
             detailsRefreshLayout.setOnRefreshListener {
-                model.refresh(it).observeOn(AndroidSchedulers.mainThread()).doOnTerminate {
+                model.refresh(book).observeOn(AndroidSchedulers.mainThread()).doOnTerminate {
                     detailsRefreshLayout.isRefreshing = false
                 }.subscribe().destroy(DISPOSABLE_ACTIVITY_DETAILS_REFRESH)
             }
-            reading.setOnClickListener {
-                model.readIndex.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
-                    startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)
-                }
+            reading.setOnClickListener { _ ->
+                model.bookSourceRecord.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
+                    if (it.isThrough && it.readIndex == book.chapterList.size - 2) {
+                        //有更新点击阅读直接进入下一章
+                        model.setReadIndex(book.chapterList.size - 1).observeOn(AndroidSchedulers.mainThread()).subscribe {
+                            startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)
+                        }.destroy("read book")
+
+                    } else {
+                        startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)
+                    }
+                }.destroy("load book source record")
             }
-            intro.text = it.intro
-            bookCover.setImageURI(it.bookCoverImgUrl)
-            if (it.chapterList.isNotEmpty()) {
-                latestChapter.text = it.chapterList.last().chapterName
+            intro.text = book.intro
+            bookCover.setImageURI(book.bookCoverImgUrl)
+            if (book.chapterList.isNotEmpty()) {
+                latestChapter.text = book.chapterList.last().chapterName
                 latestChapter.setOnClickListener { v ->
                     v.isEnabled = false
-                    model.setReadIndex(it.chapterList.lastIndex).observeOn(AndroidSchedulers.mainThread()).doOnTerminate {
+                    model.setReadIndex(book.chapterList.lastIndex).observeOn(AndroidSchedulers.mainThread()).doOnTerminate {
                         v.isEnabled = true
                     }.subscribe {
                         startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)
                     }
                 }
+            } else {
+                latestChapter.text = "无章节信息"
+                latestChapter.isClickable = false
             }
-        }.destroy()
+        }.destroy("book details activity")
 
         chapterList.layoutManager = LinearLayoutManager(this)
         chapterList.adapter = adapter

@@ -14,7 +14,7 @@ import sjj.novel.model.BookSourceRecord
 import sjj.novel.model.Chapter
 
 
-@Database(entities = [Book::class, BookSourceRecord::class, Chapter::class, BookParseRule::class], version = 4)
+@Database(entities = [Book::class, BookSourceRecord::class, Chapter::class, BookParseRule::class], version = 5)
 @TypeConverters(Converters::class)
 abstract class BooksDataBase : RoomDatabase() {
     abstract fun bookDao(): BookDao
@@ -51,6 +51,11 @@ val booksDataBase by lazy {
                 override fun migrate(database: SupportSQLiteDatabase) {
 //                    ALTER TABLE 表名 ADD COLUMN 列名 数据类型
                     database.execSQL("ALTER TABLE `BookSourceRecord` ADD COLUMN `isThrough` INTEGER NOT NULL default 0")
+                }
+            })
+            .addMigrations(object : Migration(4, 5) {
+                override fun migrate(database: SupportSQLiteDatabase) {
+                    database.execSQL("ALTER TABLE `BookSourceRecord` ADD COLUMN `chapterName` TEXT NOT NULL default ''")
                 }
             })
             .build()

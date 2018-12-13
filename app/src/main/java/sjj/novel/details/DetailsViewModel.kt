@@ -20,7 +20,7 @@ class DetailsViewModel(val name: String, val author: String) : ViewModel() {
 
     fun getChapters(bookUrl: String) = novelDataRepository.getChapters(bookUrl)
 
-    val readIndex = novelDataRepository.getReadIndex(name, author)
+    val bookSourceRecord = novelDataRepository.getBookSourceRecord(name, author)
 
     fun setReadIndex(index: Int): Observable<Int> {
         return novelDataRepository.setReadIndex(name, author, index)
