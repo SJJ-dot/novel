@@ -2,6 +2,7 @@ package sjj.novel.model
 
 import android.arch.persistence.room.*
 import android.arch.persistence.room.ForeignKey.CASCADE
+import java.util.*
 
 /**
  * Created by SJJ on 2017/10/7.
@@ -18,16 +19,46 @@ data class Book(
         @Ignore
         var chapterList: List<Chapter> = mutableListOf(),
 
-        var loadStatus: LoadState = LoadState.Loaded,
+        var loadStatus: LoadState = LoadState.UnLoad,
         /**
          * 阅读的章节
          */
         @Ignore
         var index: Int = 0,
         @Ignore
-        var isThrough:Boolean = false
-){
-        enum class LoadState{
-                UnLoad,Loading,Loaded,LoadFailed
+        var isThrough: Boolean = false
+) {
+    override fun equals(other: Any?): Boolean {
+        if (other is Book && other.url == url) {
+            return true
         }
+        return false
+    }
+
+    override fun hashCode(): Int {
+        return Objects.hashCode(url)
+    }
+
+    /**
+     * 书籍详情加载状态
+     */
+    enum class LoadState {
+        /**
+         * 搜索结果未加载详情
+         */
+        UnLoad,
+        /**
+         * 正在加载书籍详情
+         */
+        Loading,
+        /**
+         * 加载成功
+         */
+        Loaded,
+        /**
+         * 加载失败
+         */
+        LoadFailed
+    }
+
 }

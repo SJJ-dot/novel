@@ -69,7 +69,7 @@ class BookshelfFragment : BaseFragment() {
             holder.itemView.setOnClickListener { v ->
                 startActivity<DetailsActivity>(DetailsActivity.BOOK_NAME to book.name, DetailsActivity.BOOK_AUTHOR to book.author)
             }
-            holder.itemView.setOnLongClickListener {
+            holder.itemView.setOnLongClickListener { _ ->
                 alert {
                     title = "确认删除？"
                     message = "确认删除书籍：${book.name}？"

@@ -58,6 +58,11 @@ class CommonBookEngine(val rule: BookParseRule) : NovelDataRepository.RemoteSour
                 }
             }
             return@map listOf<Book>()
+        }.doOnNext { books ->
+            //搜索结果未加载详情
+            books.forEach {
+                it.loadStatus = Book.LoadState.UnLoad
+            }
         }
     }
 
@@ -103,6 +108,8 @@ class CommonBookEngine(val rule: BookParseRule) : NovelDataRepository.RemoteSour
                 Observable.just(book)
             }
 
+        }.doOnNext {
+            it.loadStatus = Book.LoadState.Loaded
         }
     }
 
