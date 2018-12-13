@@ -1,5 +1,7 @@
 package sjj.novel.source
 
+import android.arch.lifecycle.ViewModel
+import android.arch.lifecycle.ViewModelProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -10,6 +12,7 @@ import android.os.IBinder
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_novel_test.*
 import kotlinx.android.synthetic.main.item_log_text.view.*
 import org.jetbrains.anko.toast
@@ -18,15 +21,60 @@ import sjj.novel.R
 import sjj.novel.logcat.LogCatIBinder
 import sjj.novel.logcat.LogCatIBinderCallBack
 import sjj.novel.logcat.LogCatService
+import sjj.novel.util.getModel
 import java.util.*
 
 class NovelTestActivity : AppCompatActivity() {
+
+    companion object {
+        const val NOVEL_SOURCE_TOP_LEVEL_DOMAIN = "NOVEL_SOURCE_TOP_LEVEL_DOMAIN"
+    }
+
     private val adapter by lazy { Adapter() }
+
+    private val model by lazy {
+        getModel<NovelTestViewModel>(object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                return modelClass.getConstructor(String::class.java).newInstance(intent.getStringExtra(NOVEL_SOURCE_TOP_LEVEL_DOMAIN))
+            }
+        })
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_novel_test)
         console.adapter = adapter
         bindService(Intent(this, LogCatService::class.java), connection, Context.BIND_AUTO_CREATE)
+
+        search.setOnClickListener { _ ->
+            model.search(search_input.text.toString().trim()).observeOn(AndroidSchedulers.mainThread()).subscribe { list ->
+                if (list.isEmpty()) {
+                    toast("搜索结果为空")
+                    return@subscribe
+                }
+                refresh.setOnClickListener { _ ->
+                    model.getBook(list.first().url).observeOn(AndroidSchedulers.mainThread()).subscribe { book ->
+                        if (book.chapterList.isEmpty()) {
+                            toast("小说章节列表为空")
+                        } else {
+                            chapter.setOnClickListener {_->
+                                model.getChapterContent(book.chapterList.first()).observeOn(AndroidSchedulers.mainThread()).subscribe{
+                                    if (it.content.isNullOrBlank()) {
+                                        toast("小说章节内容为空")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+        clear.setOnClickListener {
+            adapter.data.clear()
+            adapter.notifyDataSetChanged()
+        }
+
     }
 
     override fun onDestroy() {

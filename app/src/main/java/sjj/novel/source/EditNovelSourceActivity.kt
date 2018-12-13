@@ -81,7 +81,7 @@ class EditNovelSourceActivity : BaseActivity() {
                 true
             }
             R.id.menu_test_novel_source->{
-                startActivity<NovelTestActivity>()
+                startActivity<NovelTestActivity>(NovelTestActivity.NOVEL_SOURCE_TOP_LEVEL_DOMAIN to model.tld.get())
                 true
             }
             R.id.menu_save_novel_source -> {
