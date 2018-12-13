@@ -12,6 +12,12 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 import sjj.novel.data.source.remote.retrofit.charset.HtmlEncodeConverter
 import java.io.EOFException
 import java.util.concurrent.TimeUnit
+import java.util.Collections.singletonList
+import okhttp3.CipherSuite
+import okhttp3.TlsVersion
+import okhttp3.ConnectionSpec
+import java.util.*
+
 
 object RetrofitInstance {
 
@@ -44,6 +50,17 @@ object RetrofitInstance {
 //                }
 //                response
 //            }
+//                .connectionSpecs(Collections.singletonList(ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
+//                        .tlsVersions(TlsVersion.TLS_1_0, TlsVersion.TLS_1_1, TlsVersion.TLS_1_2)
+//                        .cipherSuites(
+//                                CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+//                                CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+//                                CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,
+//                                CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
+//                                CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+//                                CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA,
+//                                CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256)
+//                        .build()))
                 .addNetworkInterceptor(StethoInterceptor())
                 .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                 .build()

@@ -11,4 +11,8 @@
         android:id="@+id/menu_save_novel_source"
         android:title="保存"
         app:showAsAction="collapseActionView" />
+    <item
+        android:id="@+id/menu_test_novel_source"
+        android:title="测试"
+        app:showAsAction="collapseActionView" />
 </menu>

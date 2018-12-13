@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_edit_novel_source.*
+import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
 import sjj.alog.Log
 import sjj.novel.BaseActivity
@@ -77,6 +78,10 @@ class EditNovelSourceActivity : BaseActivity() {
             }
             R.id.menu_reset_novel_source -> {
                 initData()
+                true
+            }
+            R.id.menu_test_novel_source->{
+                startActivity<NovelTestActivity>()
                 true
             }
             R.id.menu_save_novel_source -> {
