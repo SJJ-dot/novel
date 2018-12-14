@@ -11,8 +11,8 @@ import sjj.novel.model.Chapter
 class NovelTestViewModel(val topLevelDomain: String?) : ViewModel() {
     private val novelEngine = Observable.fromCallable {
         topLevelDomain
-    }.flatMap {
-        novelSourceRepository.getBookParseRule(it)
+    }.flatMap { key ->
+        novelSourceRepository.getBookParseRule(key)
                 .map {
                     CommonBookEngine(it)
                 }

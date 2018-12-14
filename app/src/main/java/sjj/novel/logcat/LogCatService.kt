@@ -41,7 +41,11 @@ class LogCatService : Service() {
     private fun sendMsg(msg: String) {
         val broadcast = mCallbacks.beginBroadcast()
         for (i in 0 until broadcast) {
-            mCallbacks.getBroadcastItem(i).onCapture(msg)
+            try {
+                mCallbacks.getBroadcastItem(i).onCapture(msg)
+            } catch (e: Exception) {
+                Log.e("LogCatService","sendMsg exception LogCatIBinderCallBack",e)
+            }
         }
         mCallbacks.finishBroadcast()
     }
@@ -67,10 +71,11 @@ class LogCatService : Service() {
     private val readLogCat: () -> Unit = {
         Log.e("LogCatService", "readLogCat")
         while (isRunning) {
+            var reader:BufferedReader?=null
             try {
                 val exec = Runtime.getRuntime().exec("logcat")
                 val logcatInput = exec.inputStream
-                val reader = BufferedReader(InputStreamReader(logcatInput))
+                reader = BufferedReader(InputStreamReader(logcatInput))
                 while (isRunning) {
                     val line = reader.readLine()
                     if (line != null)
@@ -78,6 +83,12 @@ class LogCatService : Service() {
                 }
             } catch (e: Exception) {
                 Log.e("LogCatService", "readLogCat ", e)
+            }finally {
+                try {
+                    reader?.close()
+                } catch (e: Exception) {
+
+                }
             }
         }
     }

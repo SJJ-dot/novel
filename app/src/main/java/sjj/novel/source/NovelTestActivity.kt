@@ -97,9 +97,7 @@ class NovelTestActivity : AppCompatActivity() {
                 val logcat = it as LogCatIBinder
                 logcat.register(object : LogCatIBinderCallBack.Stub() {
                     override fun onCapture(msg: String?) {
-
                         //回调不在主线程
-
                         runOnUiThread {
                             adapter.data.addFirst(msg)
                             if (adapter.data.size > 2000) {
