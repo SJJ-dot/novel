@@ -2,20 +2,20 @@
 ## 小说阅读器
 
 ---
-![](screen/20181211_160721.gif)
+![](https://raw.githubusercontent.com/lTBeL/novel_extra/master/screen/20181211_160721.gif)
 
 ---
 
-![](screen/20181211_160809.gif)
+![](https://raw.githubusercontent.com/lTBeL/novel_extra/master/screen/20181211_160809.gif)
 
 ---
 
-![](screen/20181211_160917.gif)
+![](https://raw.githubusercontent.com/lTBeL/novel_extra/master/screen/20181211_160917.gif)
 
 ---
 
-![](screen/20181211_161000.gif)
+![](https://raw.githubusercontent.com/lTBeL/novel_extra/master/screen/20181211_161000.gif)
 
 ---
 
-![](screen/20181211_161027.gif)
+![](https://raw.githubusercontent.com/lTBeL/novel_extra/master/screen/20181211_161027.gif)
