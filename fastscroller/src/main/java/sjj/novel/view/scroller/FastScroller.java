@@ -112,8 +112,7 @@ public class FastScroller extends LinearLayout {
         super.setLayoutParams(params);
     }
 
-    public void setLayoutParams(@NonNull ViewGroup viewGroup) {
-        @IdRes int recyclerViewId = mRecyclerView != null ? mRecyclerView.getId() : NO_ID;
+    public void setLayoutParams(@NonNull ViewGroup viewGroup, @IdRes int recyclerViewId ) {
         int marginTop = getResources().getDimensionPixelSize(R.dimen.fastscroll_scrollbar_margin_top);
         int marginBottom = getResources().getDimensionPixelSize(R.dimen.fastscroll_scrollbar_margin_bottom);
         if (recyclerViewId == NO_ID) {
@@ -377,8 +376,8 @@ public class FastScroller extends LinearLayout {
     }
 
     private void setViewPositions(float y) {
-        mBubbleHeight = mBubbleView.getHeight();
-        mHandleHeight = mHandleView.getHeight();
+        mBubbleHeight = mBubbleView.getMeasuredHeight();
+        mHandleHeight = mHandleView.getMeasuredHeight();
         int bubbleY = getValueInRange(0, mViewHeight - mBubbleHeight - mHandleHeight / 2, (int) (y - mBubbleHeight));
         int handleY = getValueInRange(0, mViewHeight - mHandleHeight, (int) (y - mHandleHeight / 2));
         if (mShowBubble) {

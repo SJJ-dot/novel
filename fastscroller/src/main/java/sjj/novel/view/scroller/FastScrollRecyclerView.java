@@ -208,9 +208,6 @@ public class FastScrollRecyclerView extends RecyclerView {
 
         super.onAttachedToWindow();
 
-        mFastScroller.attachRecyclerView(this);
-
-
         ViewParent parent = getParent();
 
 
@@ -220,9 +217,11 @@ public class FastScrollRecyclerView extends RecyclerView {
 
             viewGroup.addView(mFastScroller);
 
-            mFastScroller.setLayoutParams(viewGroup);
+            mFastScroller.setLayoutParams(viewGroup,getId());
 
         }
+
+        mFastScroller.attachRecyclerView(this);
 
     }
 
