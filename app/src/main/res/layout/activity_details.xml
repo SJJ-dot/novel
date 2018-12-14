@@ -221,7 +221,7 @@
                     app:layout_constraintStart_toEndOf="@+id/chapterListButton"
                     app:layout_constraintTop_toTopOf="@+id/chapterListButton" />
 
-                <android.support.v7.widget.RecyclerView
+                <sjj.novel.view.scroller.FastScrollRecyclerView
                     android:id="@+id/chapterList"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
