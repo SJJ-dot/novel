@@ -14,7 +14,7 @@ interface SearchHistoryDao {
     /**
      * 获取搜索历史列表
      */
-    @Query("select * from SearchHistory")
+    @Query("select * from SearchHistory order by `id` desc")
     fun getSearchHistory(): Flowable<List<SearchHistory>>
 
     /**
