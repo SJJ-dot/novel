@@ -24,7 +24,7 @@
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
         </android.support.design.widget.AppBarLayout>
 
-        <sjj.novel.view.scroller.FastScrollRecyclerView
+        <android.support.v7.widget.RecyclerView
             android:id="@+id/chapterContent"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
