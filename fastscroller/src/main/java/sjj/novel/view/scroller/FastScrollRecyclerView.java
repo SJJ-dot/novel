@@ -4,8 +4,6 @@ import android.content.Context;
 import android.support.annotation.ColorInt;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.view.ViewGroup;
-import android.view.ViewParent;
 
 @SuppressWarnings("unused")
 public class FastScrollRecyclerView extends RecyclerView {
@@ -205,24 +203,9 @@ public class FastScrollRecyclerView extends RecyclerView {
     @Override
 
     protected void onAttachedToWindow() {
-
         super.onAttachedToWindow();
 
-        ViewParent parent = getParent();
-
-
-        if (parent instanceof ViewGroup) {
-
-            ViewGroup viewGroup = (ViewGroup) parent;
-
-            viewGroup.addView(mFastScroller);
-
-            mFastScroller.setLayoutParams(viewGroup,getId());
-
-        }
-
         mFastScroller.attachRecyclerView(this);
-
     }
 
 

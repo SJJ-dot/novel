@@ -68,6 +68,7 @@ public class FastScroller extends LinearLayout {
                 setViewPositions(getScrollProportion(recyclerView));
             }
         }
+
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
@@ -112,7 +113,7 @@ public class FastScroller extends LinearLayout {
         super.setLayoutParams(params);
     }
 
-    public void setLayoutParams(@NonNull ViewGroup viewGroup, @IdRes int recyclerViewId ) {
+    public void setLayoutParams(@NonNull ViewGroup viewGroup, @IdRes int recyclerViewId) {
         int marginTop = getResources().getDimensionPixelSize(R.dimen.fastscroll_scrollbar_margin_top);
         int marginBottom = getResources().getDimensionPixelSize(R.dimen.fastscroll_scrollbar_margin_bottom);
         if (recyclerViewId == NO_ID) {
@@ -158,18 +159,21 @@ public class FastScroller extends LinearLayout {
         mSectionIndexer = sectionIndexer;
     }
 
-    public void attachRecyclerView(RecyclerView recyclerView) {
-        mRecyclerView = recyclerView;
-        if (mRecyclerView != null) {
-            mRecyclerView.addOnScrollListener(mScrollListener);
-            post(new Runnable() {
-                @Override
-                public void run() {
-                    // set initial positions for bubble and handle
-                    setViewPositions(getScrollProportion(mRecyclerView));
-                }
-            });
+    public void attachRecyclerView(@NonNull RecyclerView recyclerView) {
+
+        if (getParent() == null) {
+            ViewGroup viewGroup = (ViewGroup) recyclerView.getParent();
+            viewGroup.addView(this);
+            setLayoutParams(viewGroup, recyclerView.getId());
         }
+
+
+        mRecyclerView = recyclerView;
+        recyclerView.addOnScrollListener(mScrollListener);
+        post(() -> {
+            // set initial positions for bubble and handle
+            setViewPositions(getScrollProportion(recyclerView));
+        });
     }
 
     public void detachRecyclerView() {
@@ -435,6 +439,7 @@ public class FastScroller extends LinearLayout {
                             mBubbleView.setVisibility(GONE);
                             mBubbleAnimator = null;
                         }
+
                         @Override
                         public void onAnimationCancel(Animator animation) {
                             super.onAnimationCancel(animation);
@@ -469,6 +474,7 @@ public class FastScroller extends LinearLayout {
                         mScrollbar.setVisibility(GONE);
                         mScrollbarAnimator = null;
                     }
+
                     @Override
                     public void onAnimationCancel(Animator animation) {
                         super.onAnimationCancel(animation);
