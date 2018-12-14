@@ -14,4 +14,5 @@
 
     <color name="highlight">#d3321b</color>
     <color name="darker_gray">#aaaaaaaa</color>
+    <color name="background_card">#dedede</color>
 </resources>

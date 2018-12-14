@@ -12,48 +12,20 @@
         android:theme="@style/AppTheme.AppBarOverlay"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
+        <android.support.v7.widget.SearchView
+            android:id="@+id/searchView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
-            android:background="@color/material_white"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <AutoCompleteTextView
-                android:id="@+id/searchInput"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_weight="1"
-                android:background="@color/material_white"
-                android:completionThreshold="0"
-                android:gravity="center_vertical"
-                android:hint="@string/app_name"
-                android:imeOptions="actionSearch"
-                android:singleLine="true"
-                android:textColor="@color/material_black"
-                android:textColorHint="@color/material_textBlack_dividers"
-                android:textSize="20sp" />
-
-            <TextView
-                android:id="@+id/searchCancel"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical|end"
-                android:gravity="center"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:text="X"
-                android:textColor="@color/material_textBlack_text"
-                android:textSize="20sp" />
-        </LinearLayout>
-
+            android:imeOptions="actionSearch"
+            app:iconifiedByDefault="false"
+            app:queryHint="请输入书名或者作者" />
     </android.support.design.widget.AppBarLayout>
+
+    <sjj.novel.view.refreshprogressbar.RefreshProgressBar
+        android:id="@+id/refresh_progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        app:layout_constraintTop_toBottomOf="@id/appBarLayout2" />
 
     <sjj.novel.view.scroller.FastScrollRecyclerView
         android:id="@+id/searchRecyclerView"
@@ -61,5 +33,77 @@
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout2" />
+        app:layout_constraintTop_toBottomOf="@+id/refresh_progress_bar" />
+
+    <LinearLayout
+        android:id="@+id/ll_search_history"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout2"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="18dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="搜索历史"
+                android:textColor="@color/material_textBlack_secondaryText"
+                android:textSize="16sp"
+                tools:ignore="RtlHardcoded" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/tv_search_history_clean"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:paddingLeft="15dp"
+                android:paddingTop="5dp"
+                android:paddingRight="15dp"
+                android:paddingBottom="5dp"
+                android:text="清除"
+                android:textColor="@color/material_textBlack_secondaryText"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/tfl_search_history"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:overScrollMode="never"
+                android:padding="15dp"
+                app:dividerDrawable="@drawable/shape_space_divider"
+                app:flexDirection="row"
+                app:flexWrap="wrap"
+                app:showDivider="middle" />
+        </ScrollView>
+
+    </LinearLayout>
+
 </android.support.constraint.ConstraintLayout>

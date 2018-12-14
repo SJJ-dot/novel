@@ -9,7 +9,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import sjj.alog.Log
 import sjj.novel.R
-import sjj.novel.data.source.local.LocalFictionDataSource
+import sjj.novel.data.source.local.localFictionDataSource
 import sjj.novel.data.source.remote.CommonBookEngine
 import sjj.novel.model.Book
 import sjj.novel.model.BookSourceRecord
@@ -39,7 +39,7 @@ class NovelDataRepository {
 
 //    private val sources = multable
 
-    private val localSource: LocalSource = LocalFictionDataSource()
+    private val localSource: LocalSource by lazy { localFictionDataSource }
 
     private fun getSources(): Observable<List<CommonBookEngine>> {
         return novelSourceRepository.getAllBookParseRule().map { list ->

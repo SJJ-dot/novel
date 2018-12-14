@@ -12,13 +12,15 @@ import sjj.novel.data.source.remote.rule.BookParseRule
 import sjj.novel.model.Book
 import sjj.novel.model.BookSourceRecord
 import sjj.novel.model.Chapter
+import sjj.novel.model.SearchHistory
 
 
-@Database(entities = [Book::class, BookSourceRecord::class, Chapter::class, BookParseRule::class], version = 5)
+@Database(entities = [Book::class, BookSourceRecord::class, Chapter::class, BookParseRule::class, SearchHistory::class], version = 6)
 @TypeConverters(Converters::class)
 abstract class BooksDataBase : RoomDatabase() {
     abstract fun bookDao(): BookDao
     abstract fun novelSourceDao(): NovelSourceDao
+    abstract fun searchHistoryDao(): SearchHistoryDao
 }
 
 val booksDataBase by lazy {
@@ -38,9 +40,11 @@ val booksDataBase by lazy {
                                 arrayOf(cursor.getString(cursor.getColumnIndex("url")),
                                         cursor.getString(cursor.getColumnIndex("name")),
                                         cursor.getString(cursor.getColumnIndex("author")),
-                                        cursor.getString(cursor.getColumnIndex("bookCoverImgUrl"))?:"",
-                                        cursor.getString(cursor.getColumnIndex("intro"))?:"",
-                                        cursor.getString(cursor.getColumnIndex("chapterListUrl"))?:"",
+                                        cursor.getString(cursor.getColumnIndex("bookCoverImgUrl"))
+                                                ?: "",
+                                        cursor.getString(cursor.getColumnIndex("intro")) ?: "",
+                                        cursor.getString(cursor.getColumnIndex("chapterListUrl"))
+                                                ?: "",
                                         cursor.getString(cursor.getColumnIndex("loadStatus"))))
                     }
                     cursor.close()
@@ -57,6 +61,12 @@ val booksDataBase by lazy {
             .addMigrations(object : Migration(4, 5) {
                 override fun migrate(database: SupportSQLiteDatabase) {
                     database.execSQL("ALTER TABLE `BookSourceRecord` ADD COLUMN `chapterName` TEXT NOT NULL default ''")
+                }
+            })
+            .addMigrations(object : Migration(5, 6) {
+                override fun migrate(database: SupportSQLiteDatabase) {
+                    database.execSQL("CREATE TABLE `SearchHistory` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `content` TEXT NOT NULL)")
+                    database.execSQL("CREATE UNIQUE INDEX `index_SearchHistory_content` ON `SearchHistory` (`content`)");
                 }
             })
             .build()

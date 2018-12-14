@@ -1,9 +1,11 @@
 package sjj.novel.main
 
 import android.os.Bundle
+import android.service.autofill.FillEventHistory
 import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.SearchView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,11 +18,13 @@ import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.support.v4.indeterminateProgressDialog
 import org.jetbrains.anko.support.v4.startActivity
 import org.jetbrains.anko.support.v4.toast
+import sjj.novel.AppConfig
 import sjj.novel.BaseFragment
 import sjj.novel.R
 import sjj.novel.details.DetailsActivity
 import sjj.novel.model.Book
 import sjj.novel.model.BookSourceRecord
+import sjj.novel.model.SearchHistory
 import sjj.novel.util.*
 
 /**
@@ -37,37 +41,55 @@ class SearchFragment : BaseFragment() {
         searchRecyclerView.layoutManager = LinearLayoutManager(context)
         val resultBookAdapter = SearchResultBookAdapter()
         searchRecyclerView.adapter = resultBookAdapter
-        searchCancel.setOnClickListener {
-            searchInput.setText("")
-        }
-//        val adapter = ArrayAdapter<String>(context, R.layout.item_text_text, R.id.text1)
-//        searchInput.setAdapter(adapter)
-//        searchHistory.observe(this, Observer {
-//            val v = it ?: return@Observer
-//            adapter.clear()
-//            adapter.addAll(v)
-//            adapter.notifyDataSetChanged()
-//        })
-        searchInput.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                val dialog = indeterminateProgressDialog("搜索中……")
-                model.search(searchInput.text.toString()).observeOn(AndroidSchedulers.mainThread()).doAfterTerminate {
-                    dialog.dismiss()
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(p0: String?): Boolean {
+                if (p0.isNullOrEmpty())return true
+                model.addSearchHistory(SearchHistory(content = p0)).subscribe()
+                searchView.clearFocus()
+                refresh_progress_bar.isAutoLoading = true
+                model.search(p0).observeOn(AndroidSchedulers.mainThread()).doAfterTerminate {
+                    refresh_progress_bar.isAutoLoading = false
                 }.subscribe({ ls ->
-//                    val set = searchHistory.value?.toMutableList() ?: mutableListOf()
-//                    val list = ls.map { it.first.bookName }
-//                    set.removeAll(list)
-//                    set.addAll(list)
-//                    searchHistory.value = set
                     resultBookAdapter.data = ls
                     resultBookAdapter.notifyDataSetChanged()
                 }, {
                     toast("$it")
                 }).destroy("searchBook")
-                return@OnEditorActionListener true
+                return true
             }
-            false
+
+            override fun onQueryTextChange(p0: String?): Boolean {
+                return false
+            }
         })
+        searchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                ll_search_history.visibility = View.VISIBLE
+                searchRecyclerView.visibility = View.INVISIBLE
+            } else {
+                searchRecyclerView.visibility = View.VISIBLE
+                ll_search_history.visibility = View.INVISIBLE
+            }
+        }
+        model.getSearchHistory().observeOn(AndroidSchedulers.mainThread()).subscribe { history ->
+            tfl_search_history.removeAllViews()
+            history.forEach {
+                val tagView = layoutInflater.inflate(R.layout.item_search_history, tfl_search_history, false) as TextView
+                tfl_search_history.addView(tagView)
+                tagView.text = it.content
+                tagView.setOnClickListener { _ ->
+                    searchView.setQuery(it.content, true)
+                }
+                tagView.setOnLongClickListener { _ ->
+                    model.deleteSearchHistory(listOf(it)).subscribe()
+                    true
+                }
+            }
+            tv_search_history_clean.setOnClickListener {
+                model.deleteSearchHistory(history).subscribe()
+            }
+        }.destroy("get Search History")
     }
 
     private inner class SearchResultBookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {

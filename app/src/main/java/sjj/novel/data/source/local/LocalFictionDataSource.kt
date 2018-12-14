@@ -9,11 +9,14 @@ import sjj.novel.data.repository.NovelDataRepository
 import sjj.novel.model.Book
 import sjj.novel.model.BookSourceRecord
 import sjj.novel.model.Chapter
+import sjj.novel.model.SearchHistory
 import sjj.novel.util.fromCallableOrNull
 
 /**
  * Created by SJJ on 2017/10/15.
  */
+val localFictionDataSource by lazy { LocalFictionDataSource() }
+
 class LocalFictionDataSource : NovelDataRepository.LocalSource {
 
 
@@ -63,7 +66,7 @@ class LocalFictionDataSource : NovelDataRepository.LocalSource {
 
     override fun setReadIndex(name: String, author: String, index: Int, isThrough: Boolean): Observable<Int> {
         return fromCallableOrNull {
-            bookDao.setReadIndex(name, author, index,isThrough)
+            bookDao.setReadIndex(name, author, index, isThrough)
         }.subscribeOn(Schedulers.io())
     }
 
@@ -130,4 +133,32 @@ class LocalFictionDataSource : NovelDataRepository.LocalSource {
             bookDao.deleteBook(bookName, author)
         }.subscribeOn(Schedulers.io())
     }
+
+    /**
+     * 获取搜索历史列表
+     */
+    fun getSearchHistory(): Flowable<List<SearchHistory>> {
+        return booksDataBase.searchHistoryDao().getSearchHistory()
+    }
+
+    /**
+     * 添加一个搜索纪录
+     */
+    fun addSearchHistory(searchHistory: SearchHistory): Observable<SearchHistory> {
+        return fromCallableOrNull {
+            booksDataBase.searchHistoryDao().addSearchHistory(searchHistory)
+            searchHistory
+        }.subscribeOn(Schedulers.io())
+    }
+
+    /**
+     * 删除一个搜索纪录
+     */
+    fun deleteSearchHistory(searchHistory: List<SearchHistory>): Observable<List<SearchHistory>> {
+        return fromCallableOrNull {
+            booksDataBase.searchHistoryDao().deleteSearchHistory(searchHistory)
+            searchHistory
+        }.subscribeOn(Schedulers.io())
+    }
+
 }

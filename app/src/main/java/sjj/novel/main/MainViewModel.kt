@@ -4,9 +4,11 @@ import android.arch.lifecycle.ViewModel
 import io.reactivex.Observable
 import io.reactivex.functions.Function
 import sjj.novel.data.repository.novelDataRepository
+import sjj.novel.data.source.local.localFictionDataSource
 import sjj.novel.model.Book
 import sjj.novel.model.BookSourceRecord
 import sjj.novel.model.Chapter
+import sjj.novel.model.SearchHistory
 import sjj.novel.util.host
 import sjj.novel.util.lazyFromIterable
 import java.util.concurrent.TimeUnit
@@ -37,13 +39,17 @@ class MainViewModel : ViewModel() {
 
     fun search(text: String) = novelDataRepository.search(text)
 
+    fun getSearchHistory() = localFictionDataSource.getSearchHistory()
+
+    fun addSearchHistory(searchHistory: SearchHistory) = localFictionDataSource.addSearchHistory(searchHistory)
+
+    fun deleteSearchHistory(searchHistory: List<SearchHistory>): Observable<List<SearchHistory>> = localFictionDataSource.deleteSearchHistory(searchHistory)
+
     fun saveBookSourceRecord(books: Pair<BookSourceRecord, List<Book>>) = novelDataRepository.saveBookSourceRecord(listOf(books))
 
     private fun getLatestChapter(bookUrl: String): Observable<Chapter> {
         return novelDataRepository.getLatestChapter(bookUrl)
     }
-
-    fun getReadIndex(name: String, author: String) = novelDataRepository.getReadIndex(name, author)
 
     fun refresh(): Observable<Book> {
         return novelDataRepository.getBooks()
