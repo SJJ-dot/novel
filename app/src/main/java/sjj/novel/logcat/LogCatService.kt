@@ -3,15 +3,11 @@ package sjj.novel.logcat
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
-import android.os.Process
 import android.os.RemoteCallbackList
 import android.util.Log
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.io.StringReader
 import java.lang.Exception
-import java.util.concurrent.BlockingDeque
-import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
 
 
@@ -23,6 +19,8 @@ class LogCatService : Service() {
     private val blockingQueue = LinkedBlockingQueue<String>()
     @Volatile
     private var isRunning = false
+    private var readLogThread: Thread? = null
+    private var sendLogThread: Thread? = null
 
     override fun onBind(intent: Intent?): IBinder? {
         return binder
@@ -51,14 +49,18 @@ class LogCatService : Service() {
     override fun onCreate() {
         super.onCreate()
         isRunning = true
-        Thread(readLogCat).start()
-        Thread(sendLogCat).start()
+        readLogThread = Thread(readLogCat)
+        readLogThread?.start()
+        sendLogThread = Thread(sendLogCat)
+        sendLogThread?.start()
         Log.e("LogCatService", "onCreate")
     }
 
     override fun onDestroy() {
         super.onDestroy()
         isRunning = false
+        readLogThread?.interrupt()
+        sendLogThread?.interrupt()
         Log.e("LogCatService", "onDestroy")
     }
 
@@ -71,11 +73,10 @@ class LogCatService : Service() {
                 val reader = BufferedReader(InputStreamReader(logcatInput))
                 while (isRunning) {
                     val line = reader.readLine()
-                    if (line!=null)
+                    if (line != null)
                         blockingQueue.offer(line)
                 }
             } catch (e: Exception) {
-                blockingQueue.offer(Log.getStackTraceString(e))
                 Log.e("LogCatService", "readLogCat ", e)
             }
         }
@@ -84,11 +85,10 @@ class LogCatService : Service() {
     private val sendLogCat: () -> Unit = {
         while (isRunning) {
             try {
-                val poll = blockingQueue.poll()
+                val poll = blockingQueue.take()
                 if (poll != null)
                     sendMsg(poll)
             } catch (e: Exception) {
-                blockingQueue.offer(Log.getStackTraceString(e))
                 Log.e("LogCatService", "sendLogCat ", e)
             }
         }

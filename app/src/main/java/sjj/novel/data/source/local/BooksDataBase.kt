@@ -23,6 +23,7 @@ abstract class BooksDataBase : RoomDatabase() {
 
 val booksDataBase by lazy {
     Room.databaseBuilder(Session.ctx, BooksDataBase::class.java, "books.db")
+            .fallbackToDestructiveMigrationFrom(1)//忘记了最开始的数据库格式 也不想回去看
             .addMigrations(object : Migration(2, 3) {
                 override fun migrate(database: SupportSQLiteDatabase) {
                     database.execSQL("PRAGMA foreign_keys=OFF")

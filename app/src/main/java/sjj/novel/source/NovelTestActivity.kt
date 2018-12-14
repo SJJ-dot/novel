@@ -6,9 +6,9 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.IBinder
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -47,7 +47,7 @@ class NovelTestActivity : AppCompatActivity() {
         bindService(Intent(this, LogCatService::class.java), connection, Context.BIND_AUTO_CREATE)
 
         search.setOnClickListener { _ ->
-            model.search(search_input.text.toString().trim()).observeOn(AndroidSchedulers.mainThread()).subscribe { list ->
+            model.search(search_name.text.toString().trim()).observeOn(AndroidSchedulers.mainThread()).subscribe { list ->
                 if (list.isEmpty()) {
                     toast("搜索结果为空")
                     return@subscribe
@@ -57,8 +57,8 @@ class NovelTestActivity : AppCompatActivity() {
                         if (book.chapterList.isEmpty()) {
                             toast("小说章节列表为空")
                         } else {
-                            chapter.setOnClickListener {_->
-                                model.getChapterContent(book.chapterList.first()).observeOn(AndroidSchedulers.mainThread()).subscribe{
+                            chapter.setOnClickListener { _ ->
+                                model.getChapterContent(book.chapterList.first()).observeOn(AndroidSchedulers.mainThread()).subscribe {
                                     if (it.content.isNullOrBlank()) {
                                         toast("小说章节内容为空")
                                     }
@@ -84,18 +84,25 @@ class NovelTestActivity : AppCompatActivity() {
 
     private val connection = object : ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName?) {
-            toast("logcat 服务已断开")
+            //服务已连接回调是在主线程
+            Log.e("LogCatService 服务已断开")
+            toast("LogCatService 服务已断开")
         }
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            toast("logcat 服务已连接")
+            //服务已连接回调是在主线程
+            Log.e("LogCatService 服务已连接")
+            toast("LogCatService 服务已连接")
             service?.also {
                 val logcat = it as LogCatIBinder
                 logcat.register(object : LogCatIBinderCallBack.Stub() {
                     override fun onCapture(msg: String?) {
+
+                        //回调不在主线程
+
                         runOnUiThread {
                             adapter.data.addFirst(msg)
-                            if (adapter.data.size > 20) {
+                            if (adapter.data.size > 2000) {
                                 adapter.data.removeLast()
                             }
                             adapter.notifyDataSetChanged()
