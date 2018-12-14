@@ -1,0 +1,3 @@
+[submodule "novel_extra"]
+	path = novel_extra
+	url = https://github.com/lTBeL/novel_extra.git
