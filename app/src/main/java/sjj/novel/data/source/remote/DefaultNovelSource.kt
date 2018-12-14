@@ -16,7 +16,7 @@ class DefaultNovelSource : HttpDataSource(), NovelSourceRepository.RemoteSource 
     }
 
     interface Interface {
-        @GET("https://raw.githubusercontent.com/lTBeL/novel/master/novelRule/NovelSource.json")
+        @GET("https://raw.githubusercontent.com/lTBeL/novel_extra/master/novelRule/NovelSource.json")
         fun getDefaultNovelSourceRule(): Observable<List<BookParseRule>>
     }
 
