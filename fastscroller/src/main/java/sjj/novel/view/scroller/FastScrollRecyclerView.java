@@ -7,8 +7,6 @@ import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
-import sjj.novel.R;
-
 @SuppressWarnings("unused")
 public class FastScrollRecyclerView extends RecyclerView {
 

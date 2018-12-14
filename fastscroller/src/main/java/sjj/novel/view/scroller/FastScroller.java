@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -30,8 +31,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import sjj.novel.R;
 
 
 public class FastScroller extends LinearLayout {
@@ -257,7 +256,11 @@ public class FastScroller extends LinearLayout {
             }
         }
         DrawableCompat.setTint(mBubbleImage, mBubbleColor);
-        mBubbleView.setBackground(mBubbleImage);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            mBubbleView.setBackground(mBubbleImage);
+        } else {
+            mBubbleView.setBackgroundDrawable(mBubbleImage);
+        }
     }
 
     /**

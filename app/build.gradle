@@ -180,4 +180,6 @@ dependencies {
 
     //动画
     implementation 'com.victor:lib:1.0.4'
+    //recycleview 快速滑动条
+    implementation project(path: ':fastscroller')
 }
