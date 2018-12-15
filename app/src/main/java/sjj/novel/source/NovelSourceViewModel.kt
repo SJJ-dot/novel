@@ -2,9 +2,13 @@ package sjj.novel.source
 
 import android.arch.lifecycle.ViewModel
 import io.reactivex.Observable
-import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
+import org.eclipse.egit.github.core.Issue
+import sjj.novel.AppConfig
 import sjj.novel.data.repository.novelSourceRepository
+import sjj.novel.data.source.remote.githubDataSource
 import sjj.novel.data.source.remote.rule.BookParseRule
+import sjj.novel.util.gson
 
 class NovelSourceViewModel : ViewModel() {
     fun getAllBookParseRule() = novelSourceRepository.getAllBookParseRule()
@@ -19,7 +23,22 @@ class NovelSourceViewModel : ViewModel() {
 
     fun syncNovelSource(): Observable<BookParseRule> {
         return novelSourceRepository.getDefaultNovelSourceRule().flatMap {
+            AppConfig.defaultNovelSourceTLD = it.map { it.topLevelDomain }.toSet()
             Observable.fromIterable(it).flatMap(novelSourceRepository::saveBookParseRule)
+        }
+    }
+
+    fun share(rule: BookParseRule): Observable<BookParseRule> {
+        if (AppConfig.defaultNovelSourceTLD.contains(rule.topLevelDomain)) {
+            return Observable.error(Exception("共享书源已存在"))
+        }
+        return Observable.just(rule).observeOn(Schedulers.io()).flatMap {
+            githubDataSource.addIssue(Issue()
+                    .setTitle("小说网站解析规则：${it.sourceName}")
+                    .setBody(gson.toJson(it)))
+                    .map {
+                        rule
+                    }
         }
     }
 

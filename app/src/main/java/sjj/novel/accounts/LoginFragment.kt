@@ -49,7 +49,7 @@ class LoginFragment : BaseFragment() {
         dialog?.also {
             val dm = DisplayMetrics();
             activity!!.windowManager.defaultDisplay.getMetrics(dm);
-            it.window?.setLayout((dm.widthPixels * 0.96).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT);
+            it.window?.setLayout(dm.widthPixels, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
     }
     fun show(manager: FragmentManager?) {

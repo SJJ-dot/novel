@@ -20,7 +20,7 @@ class FeedbackViewModel : ViewModel() {
         if (AppConfig.gitHubAuthToken.value?.isNotEmpty() != true) {
             return Observable.error(Exception("请先登陆"))
         }
-        return githubDataSource.addIssue(Issue().setTitle(title).setBody(issueDescription.get())).doOnNext {
+        return githubDataSource.addIssue(Issue().setTitle("意见反馈：$title").setBody(issueDescription.get())).doOnNext {
             issueTitle.set("")
             issueDescription.set("")
         }

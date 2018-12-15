@@ -27,8 +27,6 @@ class GithubDataSource : HttpDataSource() {
         return Observable.fromCallable {
             try {
                 val client = GitHubClient().setOAuth2Token(AppConfig.gitHubAuthToken.value)
-//                issue.labels = listOf(Label().setName("意见反馈")) //普通用户没有权限加标签没有权限加标签
-                issue.title = "意见反馈：${issue.title}"
                 IssueService(client).createIssue("lTBeL", "novel", issue)
             } catch (e: RequestException) {
                 throw Exception("未登录或授权已失效", e)

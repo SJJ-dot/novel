@@ -26,4 +26,9 @@ object AppConfig {
 
     val gitHubAuthToken by DelegateLiveData("")
 
+    /**
+     * 默认的小说书源 域名
+     */
+    var defaultNovelSourceTLD by DelegateSharedPreferences(setOf<String>())
+
 }

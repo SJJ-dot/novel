@@ -75,11 +75,17 @@ class NovelSourceFragment : BaseFragment() {
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, p1: Int) {
             val rule = data[p1]
             holder.itemView.cb_book_source.text = rule.sourceName
-
+            holder.itemView.iv_share_source.setOnClickListener {
+                model.share(rule).observeOn(AndroidSchedulers.mainThread()).subscribe({
+                    showSnackbar(holder.itemView,"分享成功")
+                },{
+                    showSnackbar(holder.itemView,"分享失败:${it.message}")
+                }).destroy("share novel source rule")
+            }
             holder.itemView.iv_del_source.setOnClickListener {
                 model.deleteBookParseRule(rule)
                         .subscribe()
-                        .destroy()
+                        .destroy("delete novel source rule")
             }
             holder.itemView.iv_edit_source.setOnClickListener {
                 startActivity<EditNovelSourceActivity>(EditNovelSourceActivity.NOVEL_SOURCE_TOP_LEVEL_DOMAIN to rule.topLevelDomain)
