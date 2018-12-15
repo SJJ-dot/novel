@@ -1,13 +1,9 @@
 package sjj.novel.accounts
 
 
-import android.app.AlertDialog
-import android.app.Dialog
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.app.FragmentManager
-import android.util.DisplayMetrics
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,14 +40,6 @@ class LoginFragment : BaseFragment() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        dialog?.also {
-            val dm = DisplayMetrics();
-            activity!!.windowManager.defaultDisplay.getMetrics(dm);
-            it.window?.setLayout(dm.widthPixels, ViewGroup.LayoutParams.WRAP_CONTENT);
-        }
-    }
     fun show(manager: FragmentManager?) {
         super.show(manager, "LoginFragment")
     }

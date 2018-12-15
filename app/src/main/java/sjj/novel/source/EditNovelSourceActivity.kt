@@ -72,6 +72,10 @@ class EditNovelSourceActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
+            R.id.menu_help_novel_source -> {
+                startActivity<NovelSourceRuleExplanationActivity>()
+                true
+            }
             android.R.id.home -> {
                 finish()
                 true
@@ -80,7 +84,7 @@ class EditNovelSourceActivity : BaseActivity() {
                 initData()
                 true
             }
-            R.id.menu_test_novel_source->{
+            R.id.menu_test_novel_source -> {
                 startActivity<NovelTestActivity>(NovelTestActivity.NOVEL_SOURCE_TOP_LEVEL_DOMAIN to model.tld.get())
                 true
             }

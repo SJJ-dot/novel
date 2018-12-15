@@ -48,8 +48,4 @@ class NovelSourceRepository {
         return source.getDefaultNovelSourceRule()
     }
 
-    interface RemoteSource {
-        fun getDefaultNovelSourceRule():Observable<List<BookParseRule>>
-    }
-
 }

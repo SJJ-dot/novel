@@ -8,6 +8,7 @@ import org.eclipse.egit.github.core.Label
 import org.eclipse.egit.github.core.client.GitHubClient
 import org.eclipse.egit.github.core.client.RequestException
 import org.eclipse.egit.github.core.service.IssueService
+import org.eclipse.egit.github.core.service.MarkdownService
 import org.eclipse.egit.github.core.service.OAuthService
 import sjj.alog.Log
 import sjj.novel.AppConfig
@@ -15,13 +16,10 @@ import java.util.*
 
 val githubDataSource by lazy { GithubDataSource() }
 
-class GithubDataSource : HttpDataSource() {
+class GithubDataSource {
     private val USER_AGENT = "Novel/1.0"
     private val APP_NOTE = "Novel"
     private val SCOPES = listOf("repo", "user", "gist")
-    override val baseUrl: String = "https://api.github.com/"
-
-    private val api by lazy { create<Api>() }
 
     fun addIssue(issue: Issue): Observable<Issue> {
         return Observable.fromCallable {
@@ -61,7 +59,12 @@ class GithubDataSource : HttpDataSource() {
 
     }
 
-    interface Api {
-
+    /**
+     * 将markdown 文档渲染为html
+     */
+    fun getMarkDownHtml(text: String): Observable<String> {
+        return Observable.fromCallable {
+            MarkdownService().getHtml(text, "markdown")
+        }.subscribeOn(Schedulers.io())
     }
 }

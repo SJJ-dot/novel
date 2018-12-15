@@ -15,4 +15,8 @@
         android:id="@+id/menu_test_novel_source"
         android:title="测试"
         app:showAsAction="collapseActionView" />
+    <item
+        android:id="@+id/menu_help_novel_source"
+        android:title="帮助"
+        app:showAsAction="always" />
 </menu>

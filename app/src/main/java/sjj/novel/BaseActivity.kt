@@ -28,7 +28,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     private var snackbar: Snackbar? = null
 
-    fun showSnackbar(view: View, msg: String, duration: Int) {
+    fun showSnackbar(view: View, msg: String, duration: Int = Snackbar.LENGTH_SHORT) {
         if (snackbar == null) {
             snackbar = Snackbar.make(view, msg, duration)
         } else {
@@ -38,7 +38,7 @@ abstract class BaseActivity : AppCompatActivity() {
         snackbar?.show()
     }
 
-    fun newSnackbar(view: View, msg: String, duration: Int) {
+    fun newSnackbar(view: View, msg: String, duration: Int = Snackbar.LENGTH_SHORT) {
         snackbar = Snackbar.make(view, msg, duration)
         snackbar?.show()
     }

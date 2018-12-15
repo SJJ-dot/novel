@@ -2,7 +2,9 @@ package sjj.novel
 
 import android.support.design.widget.Snackbar
 import android.support.v4.app.DialogFragment
+import android.util.DisplayMetrics
 import android.view.View
+import android.view.ViewGroup
 import io.reactivex.disposables.Disposable
 import sjj.novel.util.destroy
 import sjj.novel.util.pause
@@ -46,5 +48,13 @@ open class BaseFragment : DialogFragment() {
         snackbar = null
     }
 
+    override fun onStart() {
+        super.onStart()
+        dialog?.also {
+            val dm = DisplayMetrics();
+            activity!!.windowManager.defaultDisplay.getMetrics(dm);
+            it.window?.setLayout(dm.widthPixels, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+    }
 
 }
