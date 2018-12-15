@@ -74,6 +74,11 @@ class App:Application() {
     }
     //将旧版本的SharedPreferences中的数据迁移到 mmkv 中
     override fun getSharedPreferences(name: String, mode: Int): SharedPreferences {
+
+        if (AppConfig.migrateSharedPreferencesDisable.contains(name)) {
+            return super.getSharedPreferences(name, mode)
+        }
+
         val set = AppConfig.migratedSharedPreferences
         val mmkv = MMKV.mmkvWithID("SharedPreferences_Migrated_$name", mode)
         if (!set.contains(name)) {
