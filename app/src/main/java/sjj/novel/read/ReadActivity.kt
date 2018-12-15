@@ -19,6 +19,7 @@ import kotlinx.android.synthetic.main.activity_read.*
 import kotlinx.android.synthetic.main.item_read_chapter_content.view.*
 import kotlinx.android.synthetic.main.item_read_chapter_content_text_line.view.*
 import org.jetbrains.anko.*
+import sjj.alog.Log
 import sjj.novel.*
 import sjj.novel.model.Chapter
 import sjj.novel.util.getModel
@@ -76,9 +77,8 @@ class ReadActivity : BaseActivity() {
                 var position = manager.findFirstVisibleItemPosition()
                 seekBar.progress = position
 
-                val b = recyclerView.computeVerticalScrollExtent() + recyclerView.computeVerticalScrollOffset() >= recyclerView.computeVerticalScrollRange() &&
+                val b = recyclerView.computeVerticalScrollExtent() + recyclerView.computeVerticalScrollOffset() - recyclerView.computeVerticalScrollRange() >= -chapterContent.height / 4 &&
                         contentAdapter.isLoadContent[position]
-
                 if (contentAdapter.data.size > position) {
                     chapterName.text = contentAdapter.data[position].chapterName
 
