@@ -73,7 +73,7 @@
                 android:text="@={model.password}" />
         </android.support.design.widget.TextInputLayout>
 
-        <TextView
+        <sjj.novel.view.LinksClickableTextView
             android:id="@+id/explanation"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
