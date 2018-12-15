@@ -3,8 +3,11 @@ package sjj.novel.data.source.remote
 import io.reactivex.Observable
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
+import retrofit2.Response
+import retrofit2.http.*
 import sjj.alog.Log
 import sjj.novel.data.repository.NovelDataRepository
+import sjj.novel.data.source.remote.retrofit.Html
 import sjj.novel.data.source.remote.rule.BookParseRule
 import sjj.novel.data.source.remote.rule.Method
 import sjj.novel.model.Book
@@ -139,5 +142,19 @@ class CommonBookEngine(val rule: BookParseRule) : NovelDataRepository.RemoteSour
             chapter
         }
     }
+    interface HttpInterface {
+        @FormUrlEncoded
+        @POST
+        @Html
+        fun searchPost(@Url url: String, @FieldMap(encoded = true) map: Map<String, String>): Observable<Response<String>>
 
+        @GET
+        @Html
+        fun searchGet(@Url url: String, @QueryMap(encoded = true) map: Map<String, String>): Observable<Response<String>>
+
+        @GET
+        @Html
+        fun loadHtml(@Url url: String): Observable<Response<String>>
+
+    }
 }

@@ -4,7 +4,6 @@ import android.text.Html
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
@@ -12,14 +11,13 @@ import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Response
 import retrofit2.Retrofit
-import sjj.novel.data.source.DataSourceInterface
 import sjj.novel.data.source.remote.retrofit.RetrofitInstance
 import java.lang.reflect.Type
 
 /**
  * Created by SJJ on 2017/9/3.
  */
-abstract class HttpDataSource : DataSourceInterface {
+abstract class HttpDataSource{
     abstract val baseUrl: String
 
     protected val retrofit: Retrofit by lazy {

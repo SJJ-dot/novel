@@ -12,6 +12,9 @@
         android:id="@+id/novelSourceFragment"
         android:title="书源管理" />
     <item
+        android:id="@+id/feedbackFragment"
+        android:title="意见反馈" />
+    <item
         android:id="@+id/aboutFragment"
         android:title="关于" />
 

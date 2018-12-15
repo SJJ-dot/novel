@@ -5,7 +5,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
-    <string name="about_app">说明：\n本项目为研究学习用途，不做任何更新完善保证，不会作为商业应用推广，禁止他人擅自应用于商业行为。\n应用内容均来自网络，如果您认为应用内容侵犯了您网站的权利请通过邮箱联系通知。\n欢迎前往github提交建议。\n<a href="mailto:978622005@qq.com">邮箱：978622005@qq.com</a>\n<a href="https://github.com/lTBeL/fiction">项目地址：https://github.com/lTBeL/fiction</a></string>
+    <string name="about_app">说明：\n本项目为研究学习用途，不做任何更新完善保证，不会作为商业应用推广，禁止他人擅自应用于商业行为。\n应用内容均来自网络，如果您认为应用内容侵犯了您网站的权利请通过邮箱联系通知。\n欢迎前往github提交建议。\n<a href="mailto:978622005@qq.com">邮箱：978622005@qq.com</a>\n<a href="https://github.com/lTBeL/fiction">项目地址：https://github.com</a></string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_scrolling">ScrollingActivity</string>
 
@@ -45,4 +45,8 @@
     <string name="shuming"><![CDATA[书名(css:e.g:.info > :nth-child(1) > :nth-child(1))]]></string>
     <string name="smtq">书名提取(regex:e.g:)</string>
     <string name="zzmtq2">作者名提取(regex:e.g:)</string>
+
+    <string name="signup_link">没有 GitHub账户？<a href="https://github.com">点这里</a>注册</string>
+    <string name="login_pass_explanation">看小说是一款完全开源的小说App工具,您的密码只会被用于生成 <i>私人授权令牌（Token）</i>. 并且不会在任何地方保存，您可以随时登陆您的GitHub账户管理授权令牌。</string>
+
 </resources>

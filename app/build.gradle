@@ -183,4 +183,6 @@ dependencies {
     implementation project(path: ':fastscroller')
     implementation 'com.google.android:flexbox:1.0.0'
     implementation project(':refreshprogressbar')
+
+    implementation 'org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5'
 }

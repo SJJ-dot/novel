@@ -20,6 +20,11 @@
         android:label="书源管理"
         tools:layout="@layout/fragment_novel_source" />
     <fragment
+        android:id="@+id/feedbackFragment"
+        android:name="sjj.novel.feedback.FeedbackFragment"
+        android:label="意见反馈"
+        tools:layout="@layout/fragment_novel_source" />
+    <fragment
         android:id="@+id/aboutFragment"
         android:name="sjj.novel.main.AboutFragment"
         android:label="关于"

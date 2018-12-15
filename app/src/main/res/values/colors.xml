@@ -15,4 +15,7 @@
     <color name="highlight">#d3321b</color>
     <color name="darker_gray">#aaaaaaaa</color>
     <color name="background_card">#dedede</color>
+
+    <color name="sign_up_background">#E6E6E5</color>
+    <color name="sign_up_background_bottom">#D4D4D4</color>
 </resources>

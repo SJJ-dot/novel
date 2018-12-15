@@ -24,4 +24,6 @@ object AppConfig {
     var deniedPermissions by DelegateSharedPreferences<MutableSet<String>>(mutableSetOf())
 
 
+    val gitHubAuthToken by DelegateLiveData("")
+
 }
