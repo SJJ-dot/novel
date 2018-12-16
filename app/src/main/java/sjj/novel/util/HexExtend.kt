@@ -16,3 +16,12 @@ fun ByteArray.toHexString(start: Int, length: Int): String {
 }
 
 fun Int.hex() = String.format("%02X ", this)
+fun Long.hex() = String.format("%02X ", this)
+fun print() {
+    val sb = java.lang.StringBuilder()
+    val id = 1L
+    for (i in 0 until 64) {
+        sb.append(id shr i and 0x01).append("-")
+    }
+    sb.log()
+}

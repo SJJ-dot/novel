@@ -2,6 +2,7 @@ package sjj.novel.main
 
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.support.annotation.IntegerRes
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -22,6 +23,10 @@ import sjj.novel.databinding.ItemBookListBinding
 import sjj.novel.details.DetailsActivity
 import sjj.novel.model.Book
 import sjj.novel.util.getModel
+import sjj.novel.util.hex
+import sjj.novel.util.log
+import java.lang.StringBuilder
+import java.util.zip.CRC32
 
 /**
  * Created by SJJ on 2017/10/7.
@@ -110,7 +115,8 @@ class BookshelfFragment : BaseFragment() {
         override fun getItemCount(): Int = data?.size ?: 0
 
         override fun getItemId(position: Int): Long {
-            return position.toLong()
+            val viewModel = data?.get(position) ?: return 0
+            return viewModel.book.id()
         }
     }
 }
