@@ -49,20 +49,9 @@ class DetailsActivity : BaseActivity() {
         val adapter = ChapterListAdapter()
         model.book.observeOn(AndroidSchedulers.mainThread()).subscribe { book ->
             bind.book = book
-            originWebsite.text = book.url.host
+            originWebsite.text = book.origin?.sourceName
             originWebsite.setOnClickListener { v ->
-                v.isEnabled = false
-                model.bookSource.observeOn(AndroidSchedulers.mainThread()).doOnTerminate {
-                    v.isEnabled = true
-                }.subscribe { bs ->
-                    v.isEnabled = true
-                    alert {
-                        items(bs.map { it.host }) { dialog, index ->
-                            dialog.dismiss()
-                            model.setBookSource(bs[index]).subscribe()
-                        }
-                    }.show()
-                }
+                ChooseBookSourceFragment.newInstance(book.name,book.author).show(supportFragmentManager)
             }
             adapter.data = book.chapterList
             adapter.notifyDataSetChanged()

@@ -18,7 +18,7 @@ public class RefreshProgressBar extends View {
     private int secondMaxProgress = 100;
     private int secondDurProgress = 0;
     private int bgColor = 0x00000000;
-    private int secondColor = 0xFFC1C1C1;
+    private int secondColor = 0xFF0F9D58;
     private int fontColor = 0xFF363636;
     private int speed = 4;
     private int secondFinalProgress = 0;

@@ -33,9 +33,18 @@ class LocalFictionDataSource : NovelDataRepository.LocalSource {
     }
 
     override fun getBookSource(name: String, author: String): Observable<List<String>> {
-        return fromCallableOrNull {
-            bookDao.getBookSource(name, author)
-        }.subscribeOn(Schedulers.io())
+        return bookDao.getBookSource(name, author)
+                .firstElement()
+                .toObservable()
+                .map { it.map { it.url } }
+                .subscribeOn(Schedulers.io())
+    }
+
+    /**
+     * 根据书名与作者获取不同来源的所有书籍
+     */
+    fun getBooks(name: String, author: String): Flowable<List<Book>> {
+        return bookDao.getBookSource(name, author).subscribeOn(Schedulers.io())
     }
 
     override fun updateBookSource(name: String, author: String, url: String): Observable<Int> {
@@ -59,7 +68,7 @@ class LocalFictionDataSource : NovelDataRepository.LocalSource {
 
     override fun setReadIndex(name: String, author: String, index: Chapter, isThrough: Boolean): Observable<Int> {
         return fromCallableOrNull {
-            bookDao.setReadIndex(name, author, index.index,index.chapterName, isThrough)
+            bookDao.setReadIndex(name, author, index.index, index.chapterName, isThrough)
         }.subscribeOn(Schedulers.io())
     }
 
@@ -83,6 +92,18 @@ class LocalFictionDataSource : NovelDataRepository.LocalSource {
             book
         }.subscribeOn(Schedulers.io())
     }
+
+
+    override fun getAllReadingBook(): Flowable<List<Book>> {
+        return bookDao.getBooksInRecord()
+    }
+
+    override fun deleteBook(bookName: String, author: String): Observable<Int> {
+        return fromCallableOrNull {
+            bookDao.deleteBook(bookName, author)
+        }.subscribeOn(Schedulers.io())
+    }
+
 
     override fun getLatestChapter(bookUrl: String): Observable<Chapter> {
         return fromCallableOrNull {
@@ -114,16 +135,6 @@ class LocalFictionDataSource : NovelDataRepository.LocalSource {
         return fromCallableOrNull {
             bookDao.updateChapter(chapter)
             chapter
-        }.subscribeOn(Schedulers.io())
-    }
-
-    override fun getAllReadingBook(): Flowable<List<Book>> {
-        return bookDao.getBooksInRecord()
-    }
-
-    override fun deleteBook(bookName: String, author: String): Observable<Int> {
-        return fromCallableOrNull {
-            bookDao.deleteBook(bookName, author)
         }.subscribeOn(Schedulers.io())
     }
 

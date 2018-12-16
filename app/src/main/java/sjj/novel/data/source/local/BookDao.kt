@@ -16,8 +16,8 @@ interface BookDao {
     @Query("select * from Book where url in (select bookUrl from BookSourceRecord)")
     fun getBooksInRecord(): Flowable<List<Book>>
 
-    @Query("select url from Book where name=:name and author=:author")
-    fun getBookSource(name: String, author: String): List<String>
+    @Query("select * from Book where name=:name and author=:author")
+    fun getBookSource(name: String, author: String): Flowable<List<Book>>
 
     @Query("SELECT * FROM Book WHERE url = (select bookUrl from BookSourceRecord where bookName=:name and author=:author)")
     fun getBookInBookSource(name: String, author: String): Flowable<Book>

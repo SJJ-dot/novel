@@ -2,6 +2,8 @@ package sjj.novel
 
 import android.support.design.widget.Snackbar
 import android.support.v4.app.DialogFragment
+import android.support.v4.app.FragmentManager
+import android.support.v4.app.FragmentTransaction
 import android.util.DisplayMetrics
 import android.view.View
 import android.view.ViewGroup
@@ -55,6 +57,14 @@ open class BaseFragment : DialogFragment() {
             activity!!.windowManager.defaultDisplay.getMetrics(dm);
             it.window?.setLayout(dm.widthPixels, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
+    }
+
+    fun show(manager: FragmentManager?) {
+        super.show(manager, javaClass.name)
+    }
+
+    fun show(transaction: FragmentTransaction?): Int {
+        return super.show(transaction, javaClass.name)
     }
 
 }

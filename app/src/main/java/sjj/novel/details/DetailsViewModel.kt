@@ -3,11 +3,19 @@ package sjj.novel.details
 import android.arch.lifecycle.ViewModel
 import io.reactivex.Observable
 import sjj.novel.data.repository.novelDataRepository
+import sjj.novel.data.repository.novelSourceRepository
 import sjj.novel.model.Book
 import sjj.novel.model.Chapter
+import sjj.novel.util.host
 
 class DetailsViewModel(val name: String, val author: String) : ViewModel() {
-    val book = novelDataRepository.getBookInBookSource(name, author)
+    val book = novelDataRepository.getBookInBookSource(name, author).flatMap { book ->
+        novelSourceRepository.getAllBookParseRule().map {
+            book.origin = it.find { book.url.host.endsWith(it.topLevelDomain, true) }
+            book
+        }
+
+    }
 
     val bookSource = novelDataRepository.getBookSource(name, author)
 
@@ -28,6 +36,6 @@ class DetailsViewModel(val name: String, val author: String) : ViewModel() {
     }
 
     fun refresh(it: Book): Observable<Book> {
-       return novelDataRepository.refreshBook(it.url)
+        return novelDataRepository.refreshBook(it.url)
     }
 }

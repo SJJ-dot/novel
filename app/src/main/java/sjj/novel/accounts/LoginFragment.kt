@@ -39,9 +39,4 @@ class LoginFragment : BaseFragment() {
             })
         }
     }
-
-    fun show(manager: FragmentManager?) {
-        super.show(manager, "LoginFragment")
-    }
-
 }

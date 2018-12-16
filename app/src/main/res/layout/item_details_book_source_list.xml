@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="model"
+            type="sjj.novel.details.ChooseBookSourceViewModel.ChooseBookSourceItemViewModel" />
+    </data>
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_margin="5dp">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:id="@+id/bookCover"
+                android:layout_width="65dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="5dp"
+                app:imageURI='@{model.bookCover}'
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                fresco:failureImage="@drawable/ic_laokuoteng"
+                fresco:progressBarImage="@drawable/ic_wait" />
+
+            <sjj.novel.view.AutofitTextView
+                android:id="@+id/bookName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:textColor="@color/colorText"
+                android:layout_marginStart="5dp"
+                android:textSize="18sp"
+                android:text='@{model.bookName}'
+                app:layout_constraintBottom_toTopOf="@+id/author"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/bookCover"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="标题" />
+
+            <sjj.novel.view.AutofitTextView
+                android:id="@+id/author"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:text='@{model.author}'
+                android:textColor="@color/colorTextLight"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toTopOf="@+id/lastChapter"
+                app:layout_constraintEnd_toEndOf="@id/bookName"
+                app:layout_constraintStart_toStartOf="@+id/bookName"
+                app:layout_constraintTop_toBottomOf="@+id/bookName"
+                tools:text="标题" />
+
+            <sjj.novel.view.AutofitTextView
+                android:id="@+id/lastChapter"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:textColor="@color/colorTextLight"
+                android:textSize="12sp"
+                android:text='@{model.lastChapter}'
+                app:layout_constraintBottom_toTopOf="@+id/haveRead"
+                app:layout_constraintEnd_toEndOf="@id/bookName"
+                app:layout_constraintStart_toStartOf="@+id/author"
+                app:layout_constraintTop_toBottomOf="@+id/author"
+                tools:text="标题" />
+
+            <sjj.novel.view.AutofitTextView
+                android:id="@+id/haveRead"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:textColor="@color/colorTextLight"
+                android:textSize="12sp"
+                android:text='@{model.origin}'
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/bookName"
+                app:layout_constraintStart_toStartOf="@+id/lastChapter"
+                app:layout_constraintTop_toBottomOf="@+id/lastChapter"
+                tools:text="标题" />
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v7.widget.CardView>
+</layout>
