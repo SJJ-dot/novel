@@ -77,7 +77,56 @@
                 android:singleLine="true"
                 android:text="@={model.authorRegex}" />
         </android.support.design.widget.TextInputLayout>
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/last_chapter_url"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="最新章节URL(css:e.g:> :nth-child(2) > :nth-child(2))"
+                android:singleLine="true"
+                android:text="@={model.lastChapterUrl}" />
+        </android.support.design.widget.TextInputLayout>
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/last_chapter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="最新章节名(css:e.g:> :nth-child(2) > :nth-child(2))"
+                android:singleLine="true"
+                android:text="@={model.lastChapter}" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/last_chapter_regex"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="最新章节名提取(regex:e.g:(.*)/.*)"
+                android:singleLine="true"
+                android:text="@={model.lastChapterRegex}" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/book_cover_imgurl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="封面URL(css:e.g:> :nth-child(1) > :nth-child(1))"
+                android:singleLine="true"
+                android:text="@={model.bookCoverImgUrl}" />
+        </android.support.design.widget.TextInputLayout>
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">

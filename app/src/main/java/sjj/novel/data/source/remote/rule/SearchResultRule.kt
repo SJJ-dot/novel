@@ -28,4 +28,16 @@ class SearchResultRule {
     var authorRegex = "*"
 
     var bookUrl = ""
+
+    /**
+     * 书籍封面的url 应当指向<img /> 标签
+     */
+    var bookCoverImgUrl = ""
+
+    /**
+     * 最新章章节
+     */
+    var lastChapterUrl = ""
+    var lastChapterName = ""
+    var lastChapterNameRegex = ""
 }

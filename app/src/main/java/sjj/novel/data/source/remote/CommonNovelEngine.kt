@@ -39,21 +39,39 @@ class CommonNovelEngine(val rule: BookParseRule) : NovelDataRepository.RemoteSou
             Log.i("搜索 解析html")
             val document = Jsoup.parse(response.body(), response.baseUrl)
             val resultRules = rule.searchRule!!.resultRules!!
-            Log.i("搜索 遍历搜索结果解析规则列表:"+resultRules.size)
+            Log.i("搜索 遍历搜索结果解析规则列表:" + resultRules.size)
             resultRules.forEach { resultRule ->
                 val elements = document.select(resultRule.bookInfos)
-                Log.i("搜索 遍历搜索结果书籍信息列表： "+elements.size)
+                Log.i("搜索 遍历搜索结果书籍信息列表： " + elements.size)
                 val books = mutableListOf<Book>()
                 elements.forEach { element ->
-
                     val bookName = element.select(resultRule.name).text(resultRule.nameRegex).trim()
                     Log.i("搜索 解析作者 书名:$bookName")
                     val bookAuthor = element.select(resultRule.author).text(resultRule.authorRegex).trim()
                     Log.i("搜索 书籍url 书籍作者:$bookAuthor")
                     val bookUrl = element.absUrl(resultRule.bookUrl, response).trim()
                     Log.i("搜索 创建书籍对象 bookUrl:$bookUrl")
+
                     if (bookName.isNotBlank() && bookAuthor.isNotBlank() && bookUrl.isNotBlank()) {
-                        books.add(Book(bookUrl, bookName, bookAuthor))
+                        val book = Book(bookUrl, bookName, bookAuthor)
+                        books.add(book)
+                        Log.i("搜索 解析最新章节 lastChapterUrl:${resultRule.lastChapterUrl}")
+                        if (resultRule.lastChapterUrl.isNotBlank()) {
+                            val lastChapterUrl = element.select(resultRule.lastChapterUrl).first()?.absUrl("href")?.trim()
+                            val chapterName = element.select(resultRule.lastChapterName).text(resultRule.lastChapterNameRegex)
+                            Log.i("搜索 lastChapterUrl：$lastChapterUrl chapterName:$chapterName")
+                            if (lastChapterUrl?.isNotBlank() == true && chapterName.isNotBlank()) {
+                                book.lastChapter = Chapter(lastChapterUrl, bookUrl, chapterName = chapterName)
+                            }
+                        }
+                        Log.i("搜索 解析封面 bookCoverImgUrl:${resultRule.bookCoverImgUrl}")
+                        if (resultRule.bookCoverImgUrl.isNotBlank()) {
+                            val trim = element.select(resultRule.bookCoverImgUrl).first()?.absUrl("src")?.trim()
+                            Log.i("搜索 bookCoverImgUrl：$trim")
+                            if (trim?.isNotBlank() == true) {
+                                book.bookCoverImgUrl = trim
+                            }
+                        }
                     }
                 }
                 if (books.isNotEmpty()) {
@@ -139,11 +157,12 @@ class CommonNovelEngine(val rule: BookParseRule) : NovelDataRepository.RemoteSou
             Log.i("章节内容 解析html")
             val document = Jsoup.parse(it.body(), it.baseUrl)
             chapter.content = document.select(rule.chapterContentRule!!.bookChapterContent).html()
-            Log.i("章节内容 获取到章节内容："+chapter.content)
+            Log.i("章节内容 获取到章节内容：" + chapter.content)
             chapter.isLoadSuccess = true
             chapter
         }
     }
+
     interface HttpInterface {
         @FormUrlEncoded
         @POST

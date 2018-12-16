@@ -33,7 +33,8 @@ data class Book(
         @Ignore
         var origin: BookParseRule? = null
 ) {
-    val lastChapter: Chapter? = null
+    @Ignore
+    var lastChapter: Chapter? = null
         get() {
             return field ?: chapterList.lastOrNull()
         }

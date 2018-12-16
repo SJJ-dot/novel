@@ -7,7 +7,6 @@ import io.reactivex.Observable
 import io.reactivex.functions.Function
 import sjj.novel.data.repository.novelSourceRepository
 import sjj.novel.data.source.remote.rule.*
-import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException
 
 class EditNovelSourceViewModel(private val TOP_LEVEL_DOMAIN: String?) : ViewModel() {
@@ -162,7 +161,10 @@ class EditNovelSourceViewModel(private val TOP_LEVEL_DOMAIN: String?) : ViewMode
         val author = ObservableField<String>()
         val authorRegex = ObservableField<String>()
         val bookUrl = ObservableField<String>()
-
+        var lastChapterUrl = ObservableField<String>()
+        var lastChapter = ObservableField<String>()
+        var lastChapterRegex = ObservableField<String>()
+        var bookCoverImgUrl = ObservableField<String>()
         init {
             resultRule?.also { rule ->
                 bookInfos.set(rule.bookInfos)
@@ -171,6 +173,10 @@ class EditNovelSourceViewModel(private val TOP_LEVEL_DOMAIN: String?) : ViewMode
                 author.set(rule.author)
                 authorRegex.set(rule.authorRegex)
                 bookUrl.set(rule.bookUrl)
+                lastChapterUrl.set(rule.lastChapterUrl)
+                lastChapter.set(rule.lastChapterName)
+                lastChapterRegex.set(rule.lastChapterNameRegex)
+                bookCoverImgUrl.set(rule.bookCoverImgUrl)
             }
         }
 
@@ -181,6 +187,10 @@ class EditNovelSourceViewModel(private val TOP_LEVEL_DOMAIN: String?) : ViewMode
             resultRule.author = author.get() ?: ""
             resultRule.authorRegex = authorRegex.get() ?: ""
             resultRule.bookUrl = bookUrl.get() ?: ""
+            resultRule.lastChapterUrl = lastChapterUrl.get() ?: ""
+            resultRule.lastChapterName = lastChapter.get() ?: ""
+            resultRule.lastChapterNameRegex = lastChapterRegex.get() ?: ""
+            resultRule.bookCoverImgUrl = bookCoverImgUrl.get() ?: ""
             return resultRule
         }
     }
