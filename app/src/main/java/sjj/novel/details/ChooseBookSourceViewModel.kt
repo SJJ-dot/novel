@@ -3,6 +3,7 @@ package sjj.novel.details
 import android.arch.lifecycle.ViewModel
 import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
+import info.debatty.java.stringsimilarity.QGram
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Observable
@@ -11,8 +12,10 @@ import sjj.novel.data.repository.novelDataRepository
 import sjj.novel.data.repository.novelSourceRepository
 import sjj.novel.data.source.local.localFictionDataSource
 import sjj.novel.model.Book
+import sjj.novel.model.Chapter
 import sjj.novel.util.host
 import sjj.novel.util.resStr
+import kotlin.math.abs
 
 class ChooseBookSourceViewModel(val bookName: String, val author: String) : ViewModel() {
     val isRefreshing = ObservableBoolean()
@@ -37,7 +40,7 @@ class ChooseBookSourceViewModel(val bookName: String, val author: String) : View
                 }
                 bookList
             }.flatMap { modelList ->
-                Flowable.fromIterable(modelList).flatMap {m->
+                Flowable.fromIterable(modelList).flatMap { m ->
                     localFictionDataSource.getLatestChapter(m.book.url).doOnNext { chapter ->
                         m.lastChapter.set(R.string.newest_.resStr(chapter.chapterName))
                     }.toFlowable(BackpressureStrategy.BUFFER)
@@ -59,8 +62,43 @@ class ChooseBookSourceViewModel(val bookName: String, val author: String) : View
         }
     }
 
-    fun setBookSource(url: String): Observable<Int> {
-        return novelDataRepository.setBookSource(bookName, author, url)
+    fun setBookSource(book: Book): Observable<Int> {
+        return novelDataRepository.getBookSourceRecord(book.name, book.author).firstElement().toObservable().flatMap { b ->
+            if (b.chapterName.isBlank()) {
+                novelDataRepository.setBookSource(bookName, author, book.url)
+            } else {
+                localFictionDataSource.getChapterIntro(book.url).firstElement().toObservable().flatMap {
+                    val dig = QGram(2)
+                    var temp = 100.0
+                    val cs = mutableListOf<Chapter>()
+                    for (i in 0 until it.size) {
+                        val r = dig.distance(b.chapterName, it[i].chapterName)
+                        if (temp > r) {
+                            temp = r
+                            cs.clear()
+                            cs.add(it[i])
+                        } else if (temp == r) {
+                            cs.add(it[i])
+                        }
+                    }
+                    if (cs.isEmpty()) {
+                        novelDataRepository.setBookSource(bookName, author, book.url)
+                    } else {
+
+                        var t: Chapter? = null
+                        cs.forEach { chapter ->
+                            if (abs(chapter.index - b.readIndex) <= abs((t?.index ?: 0)-b.readIndex)) {
+                                t = chapter
+                            }
+                        }
+                        novelDataRepository.setReadIndex(book.name, book.author, t!!, b.isThrough).flatMap {
+                            novelDataRepository.setBookSource(bookName, author, book.url)
+                        }
+                    }
+                }
+            }
+        }
+//        return novelDataRepository.setBookSource(bookName, author, book.url)
     }
 
     class ChooseBookSourceItemViewModel {

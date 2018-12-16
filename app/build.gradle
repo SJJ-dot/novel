@@ -185,4 +185,8 @@ dependencies {
     implementation project(':refreshprogressbar')
 
     implementation 'org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5'
+
+    //字符串比较
+//    implementation 'net.ricecode:string-similarity:1.0.0'
+//    implementation 'info.debatty:java-string-similarity:1.2.0'
 }

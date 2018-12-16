@@ -71,7 +71,7 @@ class ChooseBookSourceFragment : BaseFragment() {
             val bookGroup = data[position]
             bind?.model = bookGroup
             holder.itemView.setOnClickListener { _ ->
-                model.setBookSource(bookGroup.book.url).observeOn(AndroidSchedulers.mainThread()).subscribe {
+                model.setBookSource(bookGroup.book).observeOn(AndroidSchedulers.mainThread()).subscribe {
                     dismiss()
                 }.destroy("set novel source")
             }
