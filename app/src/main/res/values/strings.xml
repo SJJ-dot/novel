@@ -50,5 +50,8 @@
     <string name="login_pass_explanation">看小说是一款完全开源的小说App工具,您的密码只会被用于生成 <i>私人授权令牌（Token）</i>. 并且不会在任何地方保存，您可以随时登陆您的GitHub账户管理授权令牌。
         \n如果你愿意也可以<a href="https://github.com/settings/tokens">自己生成</a>令牌并将其填入密码框（自行生成令牌填入密码框时，请勿填写用户名）</string>
     <string name="share">分享</string>
+    <string name="author_">作者：%s</string>
+    <string name="newest_">最新：%s</string>
+    <string name="haveRead_">已读：%s</string>
 
 </resources>

@@ -1,7 +1,6 @@
 package sjj.novel.main
 
 import android.os.Bundle
-import android.service.autofill.FillEventHistory
 import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -9,16 +8,13 @@ import android.support.v7.widget.SearchView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_search.*
 import org.jetbrains.anko.find
 import org.jetbrains.anko.linearLayout
-import org.jetbrains.anko.support.v4.indeterminateProgressDialog
 import org.jetbrains.anko.support.v4.startActivity
 import org.jetbrains.anko.support.v4.toast
-import sjj.novel.AppConfig
 import sjj.novel.BaseFragment
 import sjj.novel.R
 import sjj.novel.details.DetailsActivity
@@ -31,7 +27,7 @@ import sjj.novel.util.*
  * Created by SJJ on 2017/10/7.
  */
 class SearchFragment : BaseFragment() {
-    private val model by lazy { getModel<MainViewModel>() }
+    private val model by lazy { getModel<SearchViewModel>() }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_search, container, false)

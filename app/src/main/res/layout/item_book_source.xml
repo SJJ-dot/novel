@@ -49,7 +49,7 @@
                 android:background="@drawable/bg_ib_pre_round"
                 android:contentDescription="@string/share"
                 android:padding="8dp"
-                android:src="@drawable/ic_screen_share_black"
+                android:src="@drawable/ic_menu_share"
                 app:tint="@color/tv_text_default" />
 
             <ImageView

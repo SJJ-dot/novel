@@ -1,11 +1,13 @@
 package sjj.novel.main
 
+import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.NavHostFragment.findNavController
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_books.*
 import kotlinx.android.synthetic.main.item_book_list.view.*
@@ -16,17 +18,17 @@ import sjj.alog.Log
 import sjj.novel.BaseFragment
 import sjj.novel.DISPOSABLE_ACTIVITY_MAIN_REFRESH
 import sjj.novel.R
+import sjj.novel.databinding.ItemBookListBinding
 import sjj.novel.details.DetailsActivity
 import sjj.novel.model.Book
 import sjj.novel.util.getModel
-import sjj.novel.util.host
 
 /**
  * Created by SJJ on 2017/10/7.
  */
 class BookshelfFragment : BaseFragment() {
 
-    private val model by lazy { getModel<MainViewModel>() }
+    private val model by lazy { getModel<BookShelfViewModel>() }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_books, container, false)
@@ -34,6 +36,18 @@ class BookshelfFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        toolbar.inflateMenu(R.menu.fragment_book_shelf)
+        toolbar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.search_book_shelf -> {
+                    findNavController(this).navigate(R.id.searchFragment)
+                    true
+                }
+                else -> false
+            }
+        }
+
         bookList.layoutManager = LinearLayoutManager(context)
         val adapter = Adapter()
         bookList.adapter = adapter
@@ -54,40 +68,39 @@ class BookshelfFragment : BaseFragment() {
     }
 
     private inner class Adapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-        var data: List<Book>? = null
+        var data: List<BookShelfViewModel.BookShelfItemViewModel>? = null
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            return object : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_book_list, parent, false)) {}
+            val binding = DataBindingUtil.inflate<ItemBookListBinding>(LayoutInflater.from(parent.context), R.layout.item_book_list, parent, false)
+            return object : RecyclerView.ViewHolder(binding.root) {}
         }
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-            val book = data!![position]
-            holder.itemView.bookName.text = book.name
-            holder.itemView.author.text = book.author
-            holder.itemView.originWebsite.text = book.url.host
-            holder.itemView.lastChapter.text = book.chapterList.lastOrNull()?.chapterName
-            holder.itemView.bookCover.setImageURI(book.bookCoverImgUrl)
+            val bind = DataBindingUtil.bind<ItemBookListBinding>(holder.itemView)
+            val viewModel = data!!.get(position)
+            bind!!.model = viewModel
             holder.itemView.setOnClickListener { v ->
-                startActivity<DetailsActivity>(DetailsActivity.BOOK_NAME to book.name, DetailsActivity.BOOK_AUTHOR to book.author)
+                startActivity<DetailsActivity>(DetailsActivity.BOOK_NAME to viewModel.book.name, DetailsActivity.BOOK_AUTHOR to viewModel.book.author)
             }
             holder.itemView.setOnLongClickListener { _ ->
                 alert {
                     title = "确认删除？"
-                    message = "确认删除书籍：${book.name}？"
+                    message = "确认删除书籍：${viewModel.bookName.get()}？"
                     negativeButton("取消") {}
                     positiveButton("删除") {
-                        model.delete(book)
+                        model.delete(viewModel.book)
                     }
                 }.show()
                 true
             }
 
-            if (book.loadStatus == Book.LoadState.Loading) {
+            if (viewModel.book.loadStatus == Book.LoadState.Loading) {
                 holder.itemView.bv_unread.visibility = View.INVISIBLE
                 holder.itemView.rl_loading.visibility = View.VISIBLE
                 holder.itemView.rl_loading.start()
             } else {
                 holder.itemView.bv_unread.visibility = View.VISIBLE
-                holder.itemView.bv_unread.badgeCount = maxOf((book.chapterList.lastOrNull()?.index?:0) - book.index +(if (book.isThrough) 0 else 1),0)
+                holder.itemView.bv_unread.badgeCount = maxOf((viewModel.book.chapterList.lastOrNull()?.index
+                        ?: 0) - viewModel.book.index + (if (viewModel.book.isThrough) 0 else 1), 0)
                 holder.itemView.rl_loading.visibility = View.INVISIBLE
                 holder.itemView.rl_loading.stop()
             }

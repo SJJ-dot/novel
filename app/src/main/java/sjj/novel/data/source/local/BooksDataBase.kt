@@ -15,7 +15,7 @@ import sjj.novel.model.Chapter
 import sjj.novel.model.SearchHistory
 
 
-@Database(entities = [Book::class, BookSourceRecord::class, Chapter::class, BookParseRule::class, SearchHistory::class], version = 6)
+@Database(entities = [Book::class, BookSourceRecord::class, Chapter::class, BookParseRule::class, SearchHistory::class], version = 6,exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class BooksDataBase : RoomDatabase() {
     abstract fun bookDao(): BookDao

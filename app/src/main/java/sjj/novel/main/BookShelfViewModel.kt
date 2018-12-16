@@ -1,22 +1,21 @@
 package sjj.novel.main
 
 import android.arch.lifecycle.ViewModel
+import android.databinding.ObservableField
 import io.reactivex.Observable
 import io.reactivex.functions.Function
+import sjj.novel.R
 import sjj.novel.data.repository.novelDataRepository
-import sjj.novel.data.source.local.localFictionDataSource
 import sjj.novel.model.Book
-import sjj.novel.model.BookSourceRecord
-import sjj.novel.model.Chapter
-import sjj.novel.model.SearchHistory
 import sjj.novel.util.host
 import sjj.novel.util.lazyFromIterable
+import sjj.novel.util.resStr
 import java.util.concurrent.TimeUnit
 
-class MainViewModel : ViewModel() {
+class BookShelfViewModel : ViewModel() {
     val books = novelDataRepository.getBooks().flatMap { list ->
         Observable.fromIterable(list).flatMap { b ->
-            getLatestChapter(b.url).map {
+            novelDataRepository.getLatestChapter(b.url).map {
                 b.chapterList = listOf(it)
                 b
             }.flatMap { book ->
@@ -29,28 +28,23 @@ class MainViewModel : ViewModel() {
                         }
                         .toObservable()
             }
-        }.reduce(list) { _, _ -> list }.toFlowable()
+        }.reduce(list) { _, _ -> list }.map {
+            it.map { book ->
+                val model = BookShelfItemViewModel()
+                model.book = book
+                model.bookName.set(book.name)
+                model.author.set(R.string.author_.resStr(book.author))
+                model.lastChapter.set(R.string.newest_.resStr(book.chapterList.lastOrNull()?.chapterName))
+                model.haveRead.set(R.string.haveRead_.resStr("待添加"))
+                model.bookCover.set(book.bookCoverImgUrl)
+                model
+            }
+        }.toFlowable()
     }
 
-    fun delete(book: Book) {
-        novelDataRepository.deleteBook(book.name, book.author)
-                .subscribe()
-    }
-
-    fun search(text: String) = novelDataRepository.search(text)
-
-    fun getSearchHistory() = localFictionDataSource.getSearchHistory()
-
-    fun addSearchHistory(searchHistory: SearchHistory) = localFictionDataSource.addSearchHistory(searchHistory)
-
-    fun deleteSearchHistory(searchHistory: List<SearchHistory>): Observable<List<SearchHistory>> = localFictionDataSource.deleteSearchHistory(searchHistory)
-
-    fun saveBookSourceRecord(books: Pair<BookSourceRecord, List<Book>>) = novelDataRepository.saveBookSourceRecord(listOf(books))
-
-    private fun getLatestChapter(bookUrl: String): Observable<Chapter> {
-        return novelDataRepository.getLatestChapter(bookUrl)
-    }
-
+    /**
+     *  刷新书籍书籍。
+     */
     fun refresh(): Observable<Book> {
         return novelDataRepository.getBooks()
                 .firstElement()
@@ -86,6 +80,22 @@ class MainViewModel : ViewModel() {
                                 novelDataRepository.batchUpdate(list).subscribe()
                             }
                 }
+    }
+
+
+    fun delete(book: Book) {
+        novelDataRepository.deleteBook(book.name, book.author)
+                .subscribe()
+    }
+
+    class BookShelfItemViewModel {
+        lateinit var book:Book
+        val bookCover = ObservableField<String>()
+        val bookName = ObservableField<String>()
+        val author = ObservableField<String>()
+        val lastChapter = ObservableField<String>()
+        val haveRead = ObservableField<String>()
+
     }
 
 }
