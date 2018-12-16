@@ -50,6 +50,7 @@ class BookshelfFragment : BaseFragment() {
 
         bookList.layoutManager = LinearLayoutManager(context)
         val adapter = Adapter()
+        adapter.setHasStableIds(true)
         bookList.adapter = adapter
         model.books.observeOn(AndroidSchedulers.mainThread()).subscribe {
             adapter.data = it
@@ -107,5 +108,9 @@ class BookshelfFragment : BaseFragment() {
         }
 
         override fun getItemCount(): Int = data?.size ?: 0
+
+        override fun getItemId(position: Int): Long {
+            return position.toLong()
+        }
     }
 }
