@@ -41,9 +41,13 @@ class ChooseBookSourceViewModel(val bookName: String, val author: String) : View
                 bookList
             }.flatMap { modelList ->
                 Flowable.fromIterable(modelList).flatMap { m ->
-                    localFictionDataSource.getLatestChapter(m.book.url).doOnNext { chapter ->
-                        m.lastChapter.set(R.string.newest_.resStr(chapter.chapterName))
-                    }.toFlowable(BackpressureStrategy.BUFFER)
+                    if (m.book.loadStatus == Book.LoadState.UnLoad) {
+                        Flowable.just(m)
+                    } else {
+                        localFictionDataSource.getLatestChapter(m.book.url).doOnNext { chapter ->
+                            m.lastChapter.set(R.string.newest_.resStr(chapter.chapterName))
+                        }.toFlowable(BackpressureStrategy.BUFFER)
+                    }
                 }.map {
                     bookList
                 }
@@ -87,7 +91,8 @@ class ChooseBookSourceViewModel(val bookName: String, val author: String) : View
 
                         var t: Chapter? = null
                         cs.forEach { chapter ->
-                            if (abs(chapter.index - b.readIndex) <= abs((t?.index ?: 0)-b.readIndex)) {
+                            if (abs(chapter.index - b.readIndex) <= abs((t?.index
+                                            ?: 0) - b.readIndex)) {
                                 t = chapter
                             }
                         }
