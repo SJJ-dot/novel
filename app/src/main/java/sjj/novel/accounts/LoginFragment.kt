@@ -3,7 +3,6 @@ package sjj.novel.accounts
 
 import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v4.app.FragmentManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,13 +12,11 @@ import sjj.alog.Log
 import sjj.novel.BaseFragment
 import sjj.novel.R
 import sjj.novel.databinding.FragmentLoginBinding
-import sjj.novel.util.getModel
+import sjj.novel.util.lazyModel
 
 
 class LoginFragment : BaseFragment() {
-    private val model by lazy {
-        getModel<LoginViewModel>()
-    }
+    private val model by lazyModel<LoginViewModel>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding = DataBindingUtil.inflate<FragmentLoginBinding>(inflater, R.layout.fragment_login, container, false)

@@ -1,7 +1,5 @@
 package sjj.novel.source
 
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -21,7 +19,7 @@ import sjj.novel.R
 import sjj.novel.logcat.LogCatIBinder
 import sjj.novel.logcat.LogCatIBinderCallBack
 import sjj.novel.logcat.LogCatService
-import sjj.novel.util.getModel
+import sjj.novel.util.lazyModel
 import java.util.*
 
 class NovelTestActivity : AppCompatActivity() {
@@ -32,13 +30,7 @@ class NovelTestActivity : AppCompatActivity() {
 
     private val adapter by lazy { Adapter() }
 
-    private val model by lazy {
-        getModel<NovelTestViewModel>(object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return modelClass.getConstructor(String::class.java).newInstance(intent.getStringExtra(NOVEL_SOURCE_TOP_LEVEL_DOMAIN))
-            }
-        })
-    }
+    private val model by lazyModel<NovelTestViewModel> { arrayOf(intent.getStringExtra(NOVEL_SOURCE_TOP_LEVEL_DOMAIN)) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -1,12 +1,12 @@
 package sjj.novel.source
 
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
+import android.view.ViewGroup
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_edit_novel_source.*
 import org.jetbrains.anko.startActivity
@@ -16,20 +16,14 @@ import sjj.novel.BaseActivity
 import sjj.novel.R
 import sjj.novel.databinding.ActivityEditNovelSourceBinding
 import sjj.novel.databinding.NovelSourceSearchResultRuleBinding
-import sjj.novel.util.getModel
+import sjj.novel.util.lazyModel
 
 class EditNovelSourceActivity : BaseActivity() {
     companion object {
         const val NOVEL_SOURCE_TOP_LEVEL_DOMAIN = "NOVEL_SOURCE_TOP_LEVEL_DOMAIN"
     }
 
-    private val model by lazy {
-        getModel<EditNovelSourceViewModel>(object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return modelClass.getConstructor(String::class.java).newInstance(intent.getStringExtra(NOVEL_SOURCE_TOP_LEVEL_DOMAIN))
-            }
-        })
-    }
+    private val model by lazyModel<EditNovelSourceViewModel> { arrayOf(intent.getStringExtra(NOVEL_SOURCE_TOP_LEVEL_DOMAIN)) }
 
     private val adapter by lazy { SearchResultPagerAdapter() }
 

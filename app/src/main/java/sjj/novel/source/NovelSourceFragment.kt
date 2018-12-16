@@ -14,11 +14,11 @@ import sjj.alog.Log
 import sjj.novel.BaseFragment
 import sjj.novel.R
 import sjj.novel.data.source.remote.rule.BookParseRule
-import sjj.novel.util.getModel
 import sjj.novel.util.gson
+import sjj.novel.util.lazyModel
 
 class NovelSourceFragment : BaseFragment() {
-    private val model by lazy { getModel<NovelSourceViewModel>() }
+    private val model by lazyModel<NovelSourceViewModel>()
 
     private val adapter by lazy { Adapter() }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

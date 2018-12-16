@@ -5,33 +5,25 @@ import android.arch.lifecycle.Observer
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.design.widget.Snackbar
-import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_feedback.*
-import org.eclipse.egit.github.core.Issue
-import org.eclipse.egit.github.core.client.GitHubClient
-import org.eclipse.egit.github.core.service.IssueService
-import org.eclipse.egit.github.core.service.UserService
 import sjj.alog.Log
 import sjj.novel.AppConfig
 import sjj.novel.BaseFragment
 import sjj.novel.R
 import sjj.novel.accounts.LoginFragment
 import sjj.novel.databinding.FragmentFeedbackBinding
-import sjj.novel.util.getModel
-import sjj.novel.util.submit
+import sjj.novel.util.lazyModel
 
 /**
  *意见反馈
  */
 class FeedbackFragment : BaseFragment() {
 
-    private val model by lazy {
-        getModel<FeedbackViewModel>()
-    }
+    private val model by lazyModel<FeedbackViewModel>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding = DataBindingUtil.inflate<FragmentFeedbackBinding>(layoutInflater, R.layout.fragment_feedback, container, false)

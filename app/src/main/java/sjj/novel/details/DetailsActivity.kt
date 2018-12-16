@@ -1,7 +1,5 @@
 package sjj.novel.details
 
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -13,7 +11,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_details.*
-import org.jetbrains.anko.alert
 import org.jetbrains.anko.find
 import org.jetbrains.anko.startActivity
 import sjj.novel.BaseActivity
@@ -22,8 +19,7 @@ import sjj.novel.R
 import sjj.novel.databinding.ActivityDetailsBinding
 import sjj.novel.model.Chapter
 import sjj.novel.read.ReadActivity
-import sjj.novel.util.getModel
-import sjj.novel.util.host
+import sjj.novel.util.lazyModel
 
 /**
  * Created by SJJ on 2017/10/10.
@@ -34,14 +30,7 @@ class DetailsActivity : BaseActivity() {
         const val BOOK_AUTHOR = "book_author"
     }
 
-    private val model by lazy {
-        getModel<DetailsViewModel>(object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                @Suppress("UNCHECKED_CAST")
-                return DetailsViewModel(intent.getStringExtra(BOOK_NAME), intent.getStringExtra(BOOK_AUTHOR)) as T
-            }
-        })
-    }
+    private val model by lazyModel<DetailsViewModel> { arrayOf(intent.getStringExtra(BOOK_NAME), intent.getStringExtra(BOOK_AUTHOR)) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +40,7 @@ class DetailsActivity : BaseActivity() {
             bind.book = book
             originWebsite.text = book.origin?.sourceName
             originWebsite.setOnClickListener { v ->
-                ChooseBookSourceFragment.newInstance(book.name,book.author).show(supportFragmentManager)
+                ChooseBookSourceFragment.newInstance(book.name, book.author).show(supportFragmentManager)
             }
             adapter.data = book.chapterList
             adapter.notifyDataSetChanged()

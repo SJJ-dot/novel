@@ -30,7 +30,7 @@ import sjj.novel.util.*
  * Created by SJJ on 2017/10/7.
  */
 class SearchFragment : BaseFragment() {
-    private val model by lazy { getModel<SearchViewModel>() }
+    private val model by lazyModel<SearchViewModel>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_search, container, false)

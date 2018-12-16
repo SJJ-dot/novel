@@ -2,7 +2,6 @@ package sjj.novel.main
 
 import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.annotation.IntegerRes
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -15,25 +14,20 @@ import kotlinx.android.synthetic.main.item_book_list.view.*
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.startActivity
 import org.jetbrains.anko.support.v4.toast
-import sjj.alog.Log
 import sjj.novel.BaseFragment
 import sjj.novel.DISPOSABLE_ACTIVITY_MAIN_REFRESH
 import sjj.novel.R
 import sjj.novel.databinding.ItemBookListBinding
 import sjj.novel.details.DetailsActivity
 import sjj.novel.model.Book
-import sjj.novel.util.getModel
-import sjj.novel.util.hex
-import sjj.novel.util.log
-import java.lang.StringBuilder
-import java.util.zip.CRC32
+import sjj.novel.util.lazyModel
 
 /**
  * Created by SJJ on 2017/10/7.
  */
 class BookshelfFragment : BaseFragment() {
 
-    private val model by lazy { getModel<BookShelfViewModel>() }
+    private val model by lazyModel<BookShelfViewModel>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_books, container, false)

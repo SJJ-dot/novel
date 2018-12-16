@@ -2,15 +2,12 @@ package sjj.novel.read
 
 import android.app.ProgressDialog
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
 import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Html
-import android.util.SparseArray
 import android.util.SparseBooleanArray
 import android.view.*
 import android.widget.TextView
@@ -18,11 +15,13 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_read.*
 import kotlinx.android.synthetic.main.item_read_chapter_content.view.*
 import kotlinx.android.synthetic.main.item_read_chapter_content_text_line.view.*
-import org.jetbrains.anko.*
-import sjj.alog.Log
+import org.jetbrains.anko.ctx
+import org.jetbrains.anko.find
+import org.jetbrains.anko.progressDialog
+import org.jetbrains.anko.toast
 import sjj.novel.*
 import sjj.novel.model.Chapter
-import sjj.novel.util.getModel
+import sjj.novel.util.lazyModel
 
 class ReadActivity : BaseActivity() {
     companion object {
@@ -38,14 +37,7 @@ class ReadActivity : BaseActivity() {
     private var loadBookHint: ProgressDialog? = null
     private var cached: ProgressDialog? = null
 
-    private val model by lazy {
-        getModel<ReadViewModel>(object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                @Suppress("UNCHECKED_CAST")
-                return ReadViewModel(intent.getStringExtra(BOOK_NAME), intent.getStringExtra(BOOK_AUTHOR)) as T
-            }
-        })
-    }
+    private val model by lazyModel<ReadViewModel> { arrayOf(intent.getStringExtra(BOOK_NAME), intent.getStringExtra(BOOK_AUTHOR)) }
 
     private val contentAdapter = ChapterContentAdapter()
 

@@ -1,8 +1,6 @@
 package sjj.novel.details
 
 
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
@@ -14,7 +12,7 @@ import kotlinx.android.synthetic.main.fragment_choose_book_source.*
 import sjj.novel.BaseFragment
 import sjj.novel.R
 import sjj.novel.databinding.FragmentChooseBookSourceBinding
-import sjj.novel.util.getModel
+import sjj.novel.util.lazyModel
 
 
 /**
@@ -39,13 +37,7 @@ class ChooseBookSourceFragment : BaseFragment() {
 
 
 
-    private val model by lazy {
-        getModel<ChooseBookSourceViewModel>(object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return modelClass.getConstructor(String::class.java, String::class.java).newInstance(arguments!!.getString(BOOK_NAME), arguments!!.getString(BOOK_AUTHOR))
-            }
-        })
-    }
+    private val model by lazyModel<ChooseBookSourceViewModel> { arrayOf(arguments!!.getString(BOOK_NAME)!!, arguments!!.getString(BOOK_AUTHOR)!!)}
     private val adapter by lazy { ChooseBookSourceAdapter() }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding = DataBindingUtil.inflate<FragmentChooseBookSourceBinding>(inflater, R.layout.fragment_choose_book_source, container, false)
