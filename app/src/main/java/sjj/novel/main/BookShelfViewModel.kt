@@ -23,6 +23,7 @@ class BookShelfViewModel : ViewModel() {
                         .firstElement()
                         .map {
                             b.index = it.readIndex
+                            b.readChapterName = it.chapterName
                             b.isThrough = it.isThrough
                             b
                         }
@@ -35,7 +36,7 @@ class BookShelfViewModel : ViewModel() {
                 model.bookName.set(book.name)
                 model.author.set(R.string.author_.resStr(book.author))
                 model.lastChapter.set(R.string.newest_.resStr(book.chapterList.lastOrNull()?.chapterName))
-                model.haveRead.set(R.string.haveRead_.resStr("待添加"))
+                model.haveRead.set(R.string.haveRead_.resStr(book.readChapterName))
                 model.bookCover.set(book.bookCoverImgUrl)
                 model
             }

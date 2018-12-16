@@ -89,7 +89,7 @@ class DetailsActivity : BaseActivity() {
                 model.bookSourceRecord.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
                     if (it.isThrough && it.readIndex == book.chapterList.size - 2) {
                         //有更新点击阅读直接进入下一章
-                        model.setReadIndex(book.chapterList.size - 1).observeOn(AndroidSchedulers.mainThread()).subscribe {
+                        model.setReadIndex(book.chapterList.last()).observeOn(AndroidSchedulers.mainThread()).subscribe {
                             startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)
                         }.destroy("read book")
 
@@ -104,7 +104,7 @@ class DetailsActivity : BaseActivity() {
                 latestChapter.text = book.chapterList.last().chapterName
                 latestChapter.setOnClickListener { v ->
                     v.isEnabled = false
-                    model.setReadIndex(book.chapterList.lastIndex).observeOn(AndroidSchedulers.mainThread()).doOnTerminate {
+                    model.setReadIndex(book.chapterList.last()).observeOn(AndroidSchedulers.mainThread()).doOnTerminate {
                         v.isEnabled = true
                     }.subscribe {
                         startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)
@@ -133,7 +133,7 @@ class DetailsActivity : BaseActivity() {
             holder.itemView.find<TextView>(R.id.text1).text = book.chapterName
             holder.itemView.setOnClickListener {
                 it.isEnabled = false
-                model.setReadIndex(position).observeOn(AndroidSchedulers.mainThread()).doOnTerminate {
+                model.setReadIndex(book).observeOn(AndroidSchedulers.mainThread()).doOnTerminate {
                     it.isEnabled = true
                 }.subscribe {
                     startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)

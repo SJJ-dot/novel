@@ -80,13 +80,14 @@ class ReadActivity : BaseActivity() {
                 val b = recyclerView.computeVerticalScrollExtent() + recyclerView.computeVerticalScrollOffset() - recyclerView.computeVerticalScrollRange() >= -chapterContent.height / 4 &&
                         contentAdapter.isLoadContent[position]
                 if (contentAdapter.data.size > position) {
-                    chapterName.text = contentAdapter.data[position].chapterName
+                    val chapter = contentAdapter.data[position]
+                    chapterName.text = chapter.chapterName
 
                     if (b) {
                         position = manager.findLastVisibleItemPosition()
                     }
 
-                    model.setReadIndex(position, b).subscribe().destroy(DISPOSABLE_READ_INDEX)
+                    model.setReadIndex(chapter, b).subscribe().destroy(DISPOSABLE_READ_INDEX)
                 }
             }
         })
@@ -261,7 +262,7 @@ class ReadActivity : BaseActivity() {
             val c = data[position]
             holder.itemView.find<TextView>(R.id.text1).text = c.chapterName
             holder.itemView.setOnClickListener {
-                model.setReadIndex(position).subscribe().destroy(DISPOSABLE_READ_INDEX)
+                model.setReadIndex(c).subscribe().destroy(DISPOSABLE_READ_INDEX)
                 chapterContent.scrollToPosition(position)
             }
         }

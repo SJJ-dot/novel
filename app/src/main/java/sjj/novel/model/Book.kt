@@ -29,6 +29,8 @@ data class Book(
         @Ignore
         var index: Int = 0,
         @Ignore
+        var readChapterName: String = "",
+        @Ignore
         var isThrough: Boolean = false,
 
         @Ignore

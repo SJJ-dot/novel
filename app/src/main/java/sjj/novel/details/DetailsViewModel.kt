@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModel
 import io.reactivex.Observable
 import sjj.novel.data.repository.novelDataRepository
 import sjj.novel.model.Book
+import sjj.novel.model.Chapter
 
 class DetailsViewModel(val name: String, val author: String) : ViewModel() {
     val book = novelDataRepository.getBookInBookSource(name, author)
@@ -22,7 +23,7 @@ class DetailsViewModel(val name: String, val author: String) : ViewModel() {
 
     val bookSourceRecord = novelDataRepository.getBookSourceRecord(name, author)
 
-    fun setReadIndex(index: Int): Observable<Int> {
+    fun setReadIndex(index: Chapter): Observable<Int> {
         return novelDataRepository.setReadIndex(name, author, index)
     }
 

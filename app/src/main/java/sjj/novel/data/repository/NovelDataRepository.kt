@@ -153,7 +153,7 @@ class NovelDataRepository {
         return localSource.getBookSourceRecord(name, author)
     }
 
-    fun setReadIndex(name: String, author: String, index: Int, isThrough: Boolean = false): Observable<Int> {
+    fun setReadIndex(name: String, author: String, index: Chapter, isThrough: Boolean = false): Observable<Int> {
         return localSource.setReadIndex(name, author, index,isThrough)
     }
 
@@ -190,7 +190,7 @@ class NovelDataRepository {
         fun getBookSource(name: String, author: String): Observable<List<String>>
         fun updateBookSource(name: String, author: String, url: String): Observable<Int>
         fun getBookSourceRecord(name: String, author: String): Flowable<BookSourceRecord>
-        fun setReadIndex(name: String, author: String, index: Int,isThrough:Boolean): Observable<Int>
+        fun setReadIndex(name: String, author: String, index: Chapter,isThrough:Boolean): Observable<Int>
         fun getLatestChapter(bookUrl: String): Observable<Chapter>
         fun getChapters(bookUrl: String): DataSource.Factory<Int, Chapter>
         fun getChapterIntro(bookUrl: String): Flowable<List<Chapter>>
