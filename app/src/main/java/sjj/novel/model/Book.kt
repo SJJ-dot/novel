@@ -2,6 +2,8 @@ package sjj.novel.model
 
 import android.arch.persistence.room.*
 import android.arch.persistence.room.ForeignKey.CASCADE
+import sjj.novel.data.repository.NovelSourceRepository
+import sjj.novel.data.source.remote.rule.BookParseRule
 import java.util.*
 
 /**
@@ -26,8 +28,16 @@ data class Book(
         @Ignore
         var index: Int = 0,
         @Ignore
-        var isThrough: Boolean = false
+        var isThrough: Boolean = false,
+
+        @Ignore
+        var origin: BookParseRule? = null
 ) {
+    val lastChapter: Chapter? = null
+        get() {
+            return field ?: chapterList.lastOrNull()
+        }
+
     override fun equals(other: Any?): Boolean {
         if (other is Book && other.url == url) {
             return true

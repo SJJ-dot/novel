@@ -11,7 +11,7 @@ import sjj.novel.model.Chapter
 @Dao
 interface BookDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertRecordAndBooks(bookSource: List<BookSourceRecord>, books: List<Book>)
+    fun insertRecordAndBooks(bookSource: BookSourceRecord, books: List<Book>)
 
     @Query("select * from Book where url in (select bookUrl from BookSourceRecord) order by name")
     fun getBooksInRecord(): Flowable<List<Book>>

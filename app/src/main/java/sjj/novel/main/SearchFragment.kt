@@ -1,5 +1,6 @@
 package sjj.novel.main
 
+import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
@@ -17,6 +18,8 @@ import org.jetbrains.anko.support.v4.startActivity
 import org.jetbrains.anko.support.v4.toast
 import sjj.novel.BaseFragment
 import sjj.novel.R
+import sjj.novel.databinding.ItemBookListBinding
+import sjj.novel.databinding.ItemBookSearchListBinding
 import sjj.novel.details.DetailsActivity
 import sjj.novel.model.Book
 import sjj.novel.model.BookSourceRecord
@@ -89,54 +92,20 @@ class SearchFragment : BaseFragment() {
     }
 
     private inner class SearchResultBookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-        var data = listOf<Pair<BookSourceRecord, List<Book>>>()
+        var data = listOf<SearchViewModel.BookSearchItemViewModel>()
         override fun getItemCount(): Int = data.size
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            return object : RecyclerView.ViewHolder(with(parent.context) {
-                cardView {
-                    linearLayout {
-                        textView {
-                            id = R.id.searchItemTitle
-                            setPadding(16.toDpx(), 5.toDpx(), 16.toDpx(), 5.toDpx())
-                            textSize = 16f
-                        }.lparams {
-                            weight = 1.0f
-                        }
-                        textView {
-                            id = R.id.searchItemAuthor
-                            setPadding(16.toDpx(), 5.toDpx(), 16.toDpx(), 5.toDpx())
-                            textSize = 16f
-                        }
-                        textView {
-                            id = R.id.searchItemOrigin
-                            setPadding(16.toDpx(), 5.toDpx(), 16.toDpx(), 5.toDpx())
-                            textSize = 16f
-                        }
-                    }.lparams {
-                        width = ViewGroup.LayoutParams.MATCH_PARENT
-                        leftMargin = 16.toDpx()
-                        topMargin = 5.toDpx()
-                        rightMargin = 16.toDpx()
-                        bottomMargin = 5.toDpx()
-                    }
-                }.lparams<RecyclerView.LayoutParams, CardView>(width = -1) {
-                    leftMargin = 16.toDpx()
-                    topMargin = 5.toDpx()
-                    rightMargin = 16.toDpx()
-                    bottomMargin = 5.toDpx()
-                }
-            }) {}
+            val binding = DataBindingUtil.inflate<ItemBookSearchListBinding>(LayoutInflater.from(parent.context), R.layout.item_book_search_list, parent, false)
+            return object : RecyclerView.ViewHolder(binding.root) {}
         }
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+            val bind = DataBindingUtil.bind<ItemBookSearchListBinding>(holder.itemView)
             val bookGroup = data[position]
-            val book = bookGroup.second.first()
-            holder.itemView.find<TextView>(R.id.searchItemTitle).text = book.name
-            holder.itemView.find<TextView>(R.id.searchItemAuthor).text = book.author
-            holder.itemView.find<TextView>(R.id.searchItemOrigin).text = bookGroup.second.size.toString()
-            holder.itemView.setOnClickListener { v ->
-                model.saveBookSourceRecord(bookGroup).observeOn(AndroidSchedulers.mainThread()).subscribe { _ ->
-                    startActivity<DetailsActivity>(DetailsActivity.BOOK_NAME to book.name, DetailsActivity.BOOK_AUTHOR to book.author)
+            bind?.model = bookGroup
+            holder.itemView.setOnClickListener { _ ->
+                model.saveBookSourceRecord(bookGroup.book).observeOn(AndroidSchedulers.mainThread()).subscribe { _ ->
+                    startActivity<DetailsActivity>(DetailsActivity.BOOK_NAME to bookGroup.book.bookName, DetailsActivity.BOOK_AUTHOR to bookGroup.book.author)
                 }
             }
         }

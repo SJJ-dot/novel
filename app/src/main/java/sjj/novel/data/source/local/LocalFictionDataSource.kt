@@ -22,17 +22,10 @@ class LocalFictionDataSource : NovelDataRepository.LocalSource {
 
     private val bookDao by lazy { booksDataBase.bookDao() }
 
-    override fun saveBookSourceRecord(books: List<Pair<BookSourceRecord, List<Book>>>): Single<List<Book>> {
+    override fun saveBookSourceRecord(books: BookSourceRecord): Single<List<Book>> {
         return Single.fromCallable {
             booksDataBase.runInTransaction {
-                bookDao.insertRecordAndBooks(books.map {
-                    it.first
-                }, books.map {
-                    it.second.toMutableList()
-                }.reduce { acc, list ->
-                    acc.addAll(list)
-                    acc
-                })
+                bookDao.insertRecordAndBooks(books, books.books!!)
             }
         }.subscribeOn(Schedulers.io()).flatMap {
             bookDao.getBooksInRecord().firstOrError()

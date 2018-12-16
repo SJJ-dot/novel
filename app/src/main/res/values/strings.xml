@@ -53,5 +53,6 @@
     <string name="author_">作者：%s</string>
     <string name="newest_">最新：%s</string>
     <string name="haveRead_">已读：%s</string>
+    <string name="origin_">来源：%s 共%d个源</string>
 
 </resources>

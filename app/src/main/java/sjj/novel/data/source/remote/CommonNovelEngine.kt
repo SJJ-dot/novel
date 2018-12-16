@@ -64,6 +64,7 @@ class CommonNovelEngine(val rule: BookParseRule) : NovelDataRepository.RemoteSou
         }.doOnNext { books ->
             //搜索结果未加载详情
             books.forEach {
+                it.origin = rule
                 it.loadStatus = Book.LoadState.UnLoad
             }
         }
@@ -112,6 +113,7 @@ class CommonNovelEngine(val rule: BookParseRule) : NovelDataRepository.RemoteSou
             }
 
         }.doOnNext {
+            it.origin = rule
             it.loadStatus = Book.LoadState.Loaded
         }
     }

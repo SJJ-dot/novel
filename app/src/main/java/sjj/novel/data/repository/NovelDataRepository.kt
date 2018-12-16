@@ -58,7 +58,7 @@ class NovelDataRepository {
         throw IllegalArgumentException(R.string.unknown_source.resStr)
     }
 
-    fun search(search: String): Observable<List<Pair<BookSourceRecord, List<Book>>>> {
+    fun search(search: String): Observable<List<BookSourceRecord>> {
         return getSources().flatMap { list ->
             if (search.isBlank()) {
                 throw IllegalArgumentException(R.string.Search_content_cannot_be_empty.resStr)
@@ -77,12 +77,14 @@ class NovelDataRepository {
             map
         }.toObservable().map {
             it.map { entry ->
-                Pair(BookSourceRecord().apply {
+                BookSourceRecord().apply {
                     val first = entry.value.first()
+                    currentBook = first
                     bookName = first.name
                     author = first.author
                     bookUrl = first.url
-                }, entry.value)
+                    books = entry.value
+                }
             }
         }
     }
@@ -133,7 +135,7 @@ class NovelDataRepository {
 
     fun deleteBook(bookName: String, author: String) = localSource.deleteBook(bookName, author)
 
-    fun saveBookSourceRecord(books: List<Pair<BookSourceRecord, List<Book>>>) = localSource.saveBookSourceRecord(books)
+    fun saveBookSourceRecord(books: BookSourceRecord) = localSource.saveBookSourceRecord(books)
 
     fun getBookSource(name: String, author: String): Observable<List<String>> {
         return localSource.getBookSource(name, author)
@@ -177,7 +179,7 @@ class NovelDataRepository {
     }
 
     interface LocalSource {
-        fun saveBookSourceRecord(books: List<Pair<BookSourceRecord, List<Book>>>): Single<List<Book>>
+        fun saveBookSourceRecord(books: BookSourceRecord): Single<List<Book>>
         fun getBookInBookSource(name: String, author: String): Flowable<Book>
         fun refreshBook(book: Book): Observable<Book>
         fun batchUpdate(book: List<Book>): Observable<List<Book>>
