@@ -14,6 +14,9 @@ interface NovelSourceDao {
     @Query("select * from BookParseRule where topLevelDomain = :tld")
     fun getBookParseRule(tld: String): BookParseRule
 
+    @Query("select BookParseRule.* from BookParseRule, Book where instr(Book.url,BookParseRule.topLevelDomain) != 0 and Book.name=:bookName and Book.author=:author")
+    fun getBookParseRule(bookName:String,author:String):List<BookParseRule>
+
     @Insert
     fun insertBookParseRule(rule: BookParseRule)
 

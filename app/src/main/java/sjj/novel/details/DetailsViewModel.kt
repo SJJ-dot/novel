@@ -1,6 +1,7 @@
 package sjj.novel.details
 
 import android.arch.lifecycle.ViewModel
+import io.reactivex.BackpressureStrategy
 import io.reactivex.Observable
 import sjj.novel.data.repository.novelDataRepository
 import sjj.novel.data.repository.novelSourceRepository
@@ -10,10 +11,10 @@ import sjj.novel.util.host
 
 class DetailsViewModel(val name: String, val author: String) : ViewModel() {
     val book = novelDataRepository.getBookInBookSource(name, author).flatMap { book ->
-        novelSourceRepository.getAllBookParseRule().map {
+        novelSourceRepository.getBookParse(name, author).map {
             book.origin = it.find { book.url.host.endsWith(it.topLevelDomain, true) }
             book
-        }
+        }.toFlowable(BackpressureStrategy.LATEST)
 
     }
 

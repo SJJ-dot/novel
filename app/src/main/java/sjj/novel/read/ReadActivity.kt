@@ -22,6 +22,8 @@ import org.jetbrains.anko.toast
 import sjj.novel.*
 import sjj.novel.model.Chapter
 import sjj.novel.util.lazyModel
+import kotlin.math.max
+import kotlin.math.min
 
 class ReadActivity : BaseActivity() {
     companion object {
@@ -59,8 +61,9 @@ class ReadActivity : BaseActivity() {
             contentAdapter.notifyDataSetChanged()
             chapterListAdapter.notifyDataSetChanged()
             model.readIndex.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
-                chapterList.scrollToPosition(it.readIndex)
-                chapterContent.scrollToPosition(it.readIndex)
+                val index = min(max(book.chapterList.lastIndex,0),it.readIndex)
+                chapterList.scrollToPosition(index)
+                chapterContent.scrollToPosition(index)
             }.destroy(DISPOSABLE_ACTIVITY_READ_READ_INDEX)
         }.destroy()
         chapterContent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
