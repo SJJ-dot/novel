@@ -16,14 +16,17 @@ import java.util.concurrent.TimeUnit
 
 class BookShelfViewModel : ViewModel() {
     val books:Flowable<List<BookShelfItemViewModel>> = novelDataRepository.getBooks().flatMap { list ->
-        Observable.fromIterable(list.map {book->
+
+        val map = list.map { book ->
             BookShelfItemViewModel().apply {
                 this.book = book
                 bookName.set(book.name)
                 author.set(R.string.author_.resStr(book.author))
                 bookCover.set(book.bookCoverImgUrl)
             }
-        }).flatMap {
+        }
+
+        Observable.fromIterable(map).flatMap {
             novelDataRepository.getLatestChapter(it.book.url).map {chapter->
                 it.lastChapter.set(R.string.newest_.resStr(chapter.chapterName))
                 it
@@ -40,9 +43,8 @@ class BookShelfViewModel : ViewModel() {
                 model.origin.set(R.string.origin_.resStr(list.find { model.book.url.host.endsWith(it.topLevelDomain) }?.sourceName,list.size))
                 model
             }
-        }.reduce(mutableListOf<BookShelfItemViewModel>()) { r, t->
-            r.add(t)
-            r
+        }.reduce(map) { r, _ ->
+            r //保持顺序
         }.toFlowable()
     }
 
