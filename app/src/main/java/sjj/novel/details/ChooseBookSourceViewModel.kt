@@ -3,10 +3,10 @@ package sjj.novel.details
 import android.arch.lifecycle.ViewModel
 import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
-import info.debatty.java.stringsimilarity.QGram
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import net.ricecode.similarity.JaroWinklerStrategy
 import sjj.novel.R
 import sjj.novel.data.repository.novelDataRepository
 import sjj.novel.data.repository.novelSourceRepository
@@ -68,15 +68,27 @@ class ChooseBookSourceViewModel(val bookName: String, val author: String) : View
 
     fun setBookSource(book: Book): Observable<Int> {
         return novelDataRepository.getBookSourceRecord(book.name, book.author).firstElement().toObservable().flatMap { b ->
-            if (b.chapterName.isBlank()) {
+            //当前阅读的章节名
+            val chapterName = b.chapterName
+            if (chapterName.isBlank()) {
                 novelDataRepository.setBookSource(bookName, author, book.url)
             } else {
                 localFictionDataSource.getChapterIntro(book.url).firstElement().toObservable().flatMap {
-                    val dig = QGram(2)
+                    val dig = JaroWinklerStrategy()
                     var temp = 100.0
                     val cs = mutableListOf<Chapter>()
                     for (i in 0 until it.size) {
-                        val r = dig.distance(b.chapterName, it[i].chapterName)
+                        //新来源中的书籍章节名
+                        val name = it[i].chapterName
+                        if (chapterName.length == name.length) {
+                            if (chapterName == name) {
+                                cs.clear()
+                                cs.add(it[i])
+                                break
+                            }
+                            continue
+                        }
+                        val r = dig.score(chapterName, name)
                         if (temp > r) {
                             temp = r
                             cs.clear()
@@ -88,11 +100,13 @@ class ChooseBookSourceViewModel(val bookName: String, val author: String) : View
                     if (cs.isEmpty()) {
                         novelDataRepository.setBookSource(bookName, author, book.url)
                     } else {
-
+                        //这里有一点小问题 。 新来源的书籍可能没有当前的书源章节多。始终找不到最新书籍 可能会随机找上一个最相似的书籍章节。
+                        //我认为作为一款免费的app这应当是可以忍受的
                         var t: Chapter? = null
                         cs.forEach { chapter ->
-                            if (abs(chapter.index - b.readIndex) <= abs((t?.index
-                                            ?: 0) - b.readIndex)) {
+                            if (t == null) {
+                                t = chapter
+                            }else if (abs(chapter.index - b.readIndex) <= abs(t!!.index - b.readIndex)) {
                                 t = chapter
                             }
                         }
