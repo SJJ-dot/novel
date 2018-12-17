@@ -2,7 +2,6 @@ package sjj.novel.main
 
 import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
@@ -12,19 +11,14 @@ import android.view.ViewGroup
 import android.widget.TextView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_search.*
-import org.jetbrains.anko.find
-import org.jetbrains.anko.linearLayout
+import org.jetbrains.anko.support.v4.longToast
 import org.jetbrains.anko.support.v4.startActivity
-import org.jetbrains.anko.support.v4.toast
 import sjj.novel.BaseFragment
 import sjj.novel.R
-import sjj.novel.databinding.ItemBookListBinding
 import sjj.novel.databinding.ItemBookSearchListBinding
 import sjj.novel.details.DetailsActivity
-import sjj.novel.model.Book
-import sjj.novel.model.BookSourceRecord
 import sjj.novel.model.SearchHistory
-import sjj.novel.util.*
+import sjj.novel.util.lazyModel
 
 /**
  * Created by SJJ on 2017/10/7.
@@ -43,7 +37,7 @@ class SearchFragment : BaseFragment() {
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
-                if (p0.isNullOrEmpty())return true
+                if (p0.isNullOrEmpty()) return true
                 model.addSearchHistory(SearchHistory(content = p0)).subscribe()
                 searchView.clearFocus()
                 refresh_progress_bar.isAutoLoading = true
@@ -53,7 +47,7 @@ class SearchFragment : BaseFragment() {
                     resultBookAdapter.data = ls
                     resultBookAdapter.notifyDataSetChanged()
                 }, {
-                    toast("$it")
+                    longToast("${it.message}")
                 }).destroy("searchBook")
                 return true
             }
