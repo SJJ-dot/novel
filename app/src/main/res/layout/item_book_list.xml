@@ -10,6 +10,7 @@
             name="model"
             type="sjj.novel.main.BookShelfViewModel.BookShelfItemViewModel" />
     </data>
+
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="100dp"
@@ -36,11 +37,11 @@
                 android:id="@+id/bookName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:textColor="@color/colorText"
                 android:layout_marginStart="5dp"
-                android:textSize="18sp"
+                android:gravity="center_vertical"
                 android:text='@{model.bookName}'
+                android:textColor="@color/colorText"
+                android:textSize="18sp"
                 app:layout_constraintBottom_toTopOf="@+id/author"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/bookCover"
@@ -66,12 +67,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
+                android:text='@{model.lastChapter}'
                 android:textColor="@color/colorTextLight"
                 android:textSize="12sp"
-                android:text='@{model.lastChapter}'
                 app:layout_constraintBottom_toTopOf="@+id/haveRead"
                 app:layout_constraintEnd_toEndOf="@id/bookName"
-                app:layout_constraintStart_toStartOf="@+id/author"
+                app:layout_constraintStart_toStartOf="@+id/bookName"
                 app:layout_constraintTop_toBottomOf="@+id/author"
                 tools:text="标题" />
 
@@ -80,15 +81,28 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
+                android:text='@{model.haveRead}'
                 android:textColor="@color/colorTextLight"
                 android:textSize="12sp"
-                android:text='@{model.haveRead}'
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/origin"
                 app:layout_constraintEnd_toEndOf="@id/bookName"
-                app:layout_constraintStart_toStartOf="@+id/lastChapter"
+                app:layout_constraintStart_toStartOf="@+id/bookName"
                 app:layout_constraintTop_toBottomOf="@+id/lastChapter"
                 tools:text="标题" />
 
+            <sjj.novel.view.AutofitTextView
+                android:id="@+id/origin"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:text='@{model.origin}'
+                android:textColor="@color/colorTextLight"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/bookName"
+                app:layout_constraintStart_toStartOf="@+id/bookName"
+                app:layout_constraintTop_toBottomOf="@+id/haveRead"
+                tools:text="标题" />
 
             <sjj.novel.view.BadgeView
                 android:id="@+id/bv_unread"
@@ -105,8 +119,8 @@
                 android:id="@+id/rl_loading"
                 android:layout_width="26dp"
                 android:layout_height="26dp"
-                android:layout_marginEnd="16dp"
                 android:layout_marginTop="5dp"
+                android:layout_marginEnd="16dp"
                 android:visibility="invisible"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

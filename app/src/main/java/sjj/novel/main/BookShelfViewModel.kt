@@ -2,10 +2,12 @@ package sjj.novel.main
 
 import android.arch.lifecycle.ViewModel
 import android.databinding.ObservableField
+import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.functions.Function
 import sjj.novel.R
 import sjj.novel.data.repository.novelDataRepository
+import sjj.novel.data.repository.novelSourceRepository
 import sjj.novel.model.Book
 import sjj.novel.util.host
 import sjj.novel.util.lazyFromIterable
@@ -13,33 +15,34 @@ import sjj.novel.util.resStr
 import java.util.concurrent.TimeUnit
 
 class BookShelfViewModel : ViewModel() {
-    val books = novelDataRepository.getBooks().flatMap { list ->
-        Observable.fromIterable(list).flatMap { b ->
-            novelDataRepository.getLatestChapter(b.url).map {
-                b.chapterList = listOf(it)
-                b
-            }.flatMap { book ->
-                novelDataRepository.getBookSourceRecord(book.name, book.author)
-                        .firstElement()
-                        .map {
-                            b.index = it.readIndex
-                            b.readChapterName = it.chapterName
-                            b.isThrough = it.isThrough
-                            b
-                        }
-                        .toObservable()
+    val books:Flowable<List<BookShelfItemViewModel>> = novelDataRepository.getBooks().flatMap { list ->
+        Observable.fromIterable(list.map {book->
+            BookShelfItemViewModel().apply {
+                this.book = book
+                bookName.set(book.name)
+                author.set(R.string.author_.resStr(book.author))
+                bookCover.set(book.bookCoverImgUrl)
             }
-        }.reduce(list) { _, _ -> list }.map {
-            it.map { book ->
-                val model = BookShelfItemViewModel()
-                model.book = book
-                model.bookName.set(book.name)
-                model.author.set(R.string.author_.resStr(book.author))
-                model.lastChapter.set(R.string.newest_.resStr(book.chapterList.lastOrNull()?.chapterName))
-                model.haveRead.set(R.string.haveRead_.resStr(book.readChapterName))
-                model.bookCover.set(book.bookCoverImgUrl)
+        }).flatMap {
+            novelDataRepository.getLatestChapter(it.book.url).map {chapter->
+                it.lastChapter.set(R.string.newest_.resStr(chapter.chapterName))
+                it
+            }.switchIfEmpty(Observable.just(it))
+        }.flatMap {model->
+            novelDataRepository.getBookSourceRecord(model.book.name, model.book.author).firstElement().toObservable().map {
+                model.book.index = it.readIndex
+                model.book.isThrough = it.isThrough
+                model.haveRead.set(R.string.haveRead_.resStr(it.chapterName))
                 model
             }
+        }.flatMap {model->
+            novelSourceRepository.getBookParse(model.book.name,model.book.author).map {list->
+                model.origin.set(R.string.origin_.resStr(list.find { model.book.url.host.endsWith(it.topLevelDomain) }?.sourceName,list.size))
+                model
+            }
+        }.reduce(mutableListOf<BookShelfItemViewModel>()) { r, t->
+            r.add(t)
+            r
         }.toFlowable()
     }
 
@@ -96,6 +99,7 @@ class BookShelfViewModel : ViewModel() {
         val author = ObservableField<String>()
         val lastChapter = ObservableField<String>()
         val haveRead = ObservableField<String>()
+        val origin = ObservableField<String>()
 
     }
 
