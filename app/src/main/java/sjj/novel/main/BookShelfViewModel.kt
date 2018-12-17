@@ -2,6 +2,7 @@ package sjj.novel.main
 
 import android.arch.lifecycle.ViewModel
 import android.databinding.ObservableField
+import android.databinding.ObservableInt
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.functions.Function
@@ -29,6 +30,7 @@ class BookShelfViewModel : ViewModel() {
         Observable.fromIterable(map).flatMap {
             novelDataRepository.getLatestChapter(it.book.url).map {chapter->
                 it.lastChapter.set(R.string.newest_.resStr(chapter.chapterName))
+                it.book.lastChapter = chapter
                 it
             }.switchIfEmpty(Observable.just(it))
         }.flatMap {model->
@@ -43,7 +45,8 @@ class BookShelfViewModel : ViewModel() {
                 model.origin.set(R.string.origin_.resStr(list.find { model.book.url.host.endsWith(it.topLevelDomain) }?.sourceName,list.size))
                 model
             }
-        }.reduce(map) { r, _ ->
+        }.reduce(map) { r, model ->
+            model.remainingChapter.set(maxOf((model.book.lastChapter?.index?:0) - model.book.index + (if (model.book.isThrough) 0 else 1), 0))
             r //保持顺序
         }.toFlowable()
     }
@@ -101,6 +104,7 @@ class BookShelfViewModel : ViewModel() {
         val author = ObservableField<String>()
         val lastChapter = ObservableField<String>()
         val haveRead = ObservableField<String>()
+        val remainingChapter = ObservableInt()
         val origin = ObservableField<String>()
 
     }
