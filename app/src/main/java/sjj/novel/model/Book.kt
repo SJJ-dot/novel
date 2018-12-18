@@ -4,6 +4,7 @@ import android.arch.persistence.room.*
 import android.arch.persistence.room.ForeignKey.CASCADE
 import sjj.novel.data.repository.NovelSourceRepository
 import sjj.novel.data.source.remote.rule.BookParseRule
+import sjj.novel.util.id
 import java.util.*
 import java.util.zip.CRC32
 
@@ -40,6 +41,10 @@ data class Book(
             return field ?: chapterList.lastOrNull()
         }
 
+    @Ignore
+    var id: Long = 0
+        get() = url.id
+
     override fun equals(other: Any?): Boolean {
         if (other is Book && other.url == url) {
             return true
@@ -51,11 +56,6 @@ data class Book(
         return Objects.hashCode(url)
     }
 
-    fun id(): Long {
-        val crC32 = CRC32()
-        crC32.update(url.toByteArray())
-       return url.hashCode().toLong() shl 32 or crC32.value
-    }
     /**
      * 书籍详情加载状态
      */

@@ -107,8 +107,6 @@ public class BadgeView extends AppCompatTextView {
     public void setText(CharSequence text, BufferType type) {
         if (isHideOnNull() && TextUtils.isEmpty(text)) {
             setVisibility(GONE);
-        } else {
-            setVisibility(VISIBLE);
         }
         super.setText(text, type);
     }

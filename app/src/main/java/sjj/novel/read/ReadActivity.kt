@@ -19,6 +19,7 @@ import org.jetbrains.anko.ctx
 import org.jetbrains.anko.find
 import org.jetbrains.anko.progressDialog
 import org.jetbrains.anko.toast
+import sjj.alog.Log
 import sjj.novel.*
 import sjj.novel.model.Chapter
 import sjj.novel.util.lazyModel
@@ -67,22 +68,25 @@ class ReadActivity : BaseActivity() {
             }.destroy(DISPOSABLE_ACTIVITY_READ_READ_INDEX)
         }.destroy()
         chapterContent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                val manager = recyclerView.layoutManager as LinearLayoutManager
-                var position = manager.findFirstVisibleItemPosition()
-                seekBar.progress = position
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    val manager = recyclerView.layoutManager as LinearLayoutManager
+                    var position = manager.findFirstVisibleItemPosition()
+                    seekBar.progress = position
 
-                val b = recyclerView.computeVerticalScrollExtent() + recyclerView.computeVerticalScrollOffset() - recyclerView.computeVerticalScrollRange() >= -chapterContent.height / 4 &&
-                        contentAdapter.isLoadContent[position]
-                if (contentAdapter.data.size > position) {
-                    val chapter = contentAdapter.data[position]
-                    chapterName.text = chapter.chapterName
+                    val b = recyclerView.computeVerticalScrollExtent() + recyclerView.computeVerticalScrollOffset() - recyclerView.computeVerticalScrollRange() >= -chapterContent.height / 4 &&
+                            contentAdapter.isLoadContent[position]
+                    if (contentAdapter.data.size > position) {
 
-                    if (b) {
-                        position = manager.findLastVisibleItemPosition()
+                        if (b) {
+                            position = manager.findLastVisibleItemPosition()
+                            seekBar.progress = position
+                        }
+                        val chapter = contentAdapter.data[position]
+                        chapterName.text = chapter.chapterName
+
+                        model.setReadIndex(chapter, b).subscribe().destroy(DISPOSABLE_READ_INDEX)
                     }
-
-                    model.setReadIndex(chapter, b).subscribe().destroy(DISPOSABLE_READ_INDEX)
                 }
             }
         })

@@ -1,6 +1,7 @@
 package sjj.novel.main
 
 import android.arch.lifecycle.ViewModel
+import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
 import android.databinding.ObservableInt
 import io.reactivex.Flowable
@@ -24,6 +25,7 @@ class BookShelfViewModel : ViewModel() {
                 bookName.set(book.name)
                 author.set(R.string.author_.resStr(book.author))
                 bookCover.set(book.bookCoverImgUrl)
+                loading.set(book.loadStatus == Book.LoadState.Loading)
             }
         }
 
@@ -106,6 +108,7 @@ class BookShelfViewModel : ViewModel() {
         val haveRead = ObservableField<String>()
         val remainingChapter = ObservableInt()
         val origin = ObservableField<String>()
+        val loading = ObservableBoolean()
 
     }
 
