@@ -8,7 +8,7 @@ import sjj.novel.model.Book
 import sjj.novel.model.Chapter
 
 
-class NovelTestViewModel(val topLevelDomain: String?) : ViewModel() {
+class NovelTestViewModel(val topLevelDomain: String) : ViewModel() {
     private val novelEngine = Observable.fromCallable {
         topLevelDomain
     }.flatMap { key ->

@@ -9,7 +9,7 @@ import sjj.novel.data.repository.novelSourceRepository
 import sjj.novel.data.source.remote.rule.*
 import java.lang.IllegalStateException
 
-class EditNovelSourceViewModel(private val TOP_LEVEL_DOMAIN: String?) : ViewModel() {
+class EditNovelSourceViewModel(private val TOP_LEVEL_DOMAIN: String) : ViewModel() {
 
     val sourceName = ObservableField<String>()
     val tld = ObservableField<String>()
@@ -44,7 +44,7 @@ class EditNovelSourceViewModel(private val TOP_LEVEL_DOMAIN: String?) : ViewMode
         if (reule != null) {
             return Observable.just(reule)
         }
-        if (TOP_LEVEL_DOMAIN.isNullOrBlank()) {
+        if (TOP_LEVEL_DOMAIN.isBlank()) {
             reule = BookParseRule()
             return Observable.just(reule)
         } else {

@@ -17,13 +17,14 @@ import sjj.novel.R
 import sjj.novel.databinding.ActivityEditNovelSourceBinding
 import sjj.novel.databinding.NovelSourceSearchResultRuleBinding
 import sjj.novel.util.lazyModel
+import sjj.novel.util.observeOnMain
 
 class EditNovelSourceActivity : BaseActivity() {
     companion object {
         const val NOVEL_SOURCE_TOP_LEVEL_DOMAIN = "NOVEL_SOURCE_TOP_LEVEL_DOMAIN"
     }
 
-    private val model by lazyModel<EditNovelSourceViewModel> { arrayOf(intent.getStringExtra(NOVEL_SOURCE_TOP_LEVEL_DOMAIN)) }
+    private val model by lazyModel<EditNovelSourceViewModel> { arrayOf(intent.getStringExtra(NOVEL_SOURCE_TOP_LEVEL_DOMAIN)?:"") }
 
     private val adapter by lazy { SearchResultPagerAdapter() }
 
@@ -79,11 +80,18 @@ class EditNovelSourceActivity : BaseActivity() {
                 true
             }
             R.id.menu_test_novel_source -> {
-                startActivity<NovelTestActivity>(NovelTestActivity.NOVEL_SOURCE_TOP_LEVEL_DOMAIN to model.tld.get())
+                model.saveNovelSourceParseRule().observeOnMain()
+                        .subscribe({
+                            startActivity<NovelTestActivity>(NovelTestActivity.NOVEL_SOURCE_TOP_LEVEL_DOMAIN to model.tld.get())
+                        }, {
+                            toast(it.message ?: "保存失败")
+                            Log.e("save failed ", it)
+                        })
+                        .destroy("menu_save_novel_source")
                 true
             }
             R.id.menu_save_novel_source -> {
-                model.saveNovelSourceParseRule()
+                model.saveNovelSourceParseRule().observeOnMain()
                         .subscribe({
                             finish()
                         }, {
@@ -115,8 +123,8 @@ class EditNovelSourceActivity : BaseActivity() {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
                             notifyDataSetChanged()
-                        }, {
-                            toast(it.message ?: "删除失败")
+                        }, { throwable ->
+                            toast(throwable.message ?: "删除失败")
                         })
                         .destroy("deleteSearchResultViewModel")
 

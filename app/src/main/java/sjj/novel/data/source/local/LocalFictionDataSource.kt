@@ -11,6 +11,7 @@ import sjj.novel.model.BookSourceRecord
 import sjj.novel.model.Chapter
 import sjj.novel.model.SearchHistory
 import sjj.novel.util.fromCallableOrNull
+import kotlin.math.abs
 
 /**
  * Created by SJJ on 2017/10/15.
@@ -72,11 +73,49 @@ class LocalFictionDataSource : NovelDataRepository.LocalSource {
         }.subscribeOn(Schedulers.io())
     }
 
+    /**
+     * 更新属性书籍记录
+     */
     override fun refreshBook(book: Book): Observable<Book> {
         return fromCallableOrNull {
             booksDataBase.runInTransaction {
                 bookDao.updateBook(book)
                 bookDao.insertChapters(book.chapterList)
+                book.chapterList.forEach {
+                    //更新章节索引避免将已读记录清除
+                    bookDao.updateChapterIndex(it.index,it.url)
+                }
+
+                try {
+                    //更新阅读纪录的索引
+                    val bookSourceRecord = bookDao.getBookSourceRecord(book.name, book.author).firstElement().blockingGet()
+                    if (bookSourceRecord.bookUrl == book.url) {
+                        val chapters = mutableListOf<Chapter>()
+                        for (c in book.chapterList) {
+                            if (c.chapterName == bookSourceRecord.chapterName) {
+                                //阅读记录的索引。
+                                chapters.add(c)
+                                if (c.index == bookSourceRecord.readIndex) {
+                                    chapters.clear()
+                                    //找到相同的索引 放弃更改
+                                    break
+                                }
+                            }
+                        }
+                        //
+                        if (chapters.isNotEmpty()) {
+                            var newIndex = chapters.first()
+                            for (c in 1 until chapters.size) {
+                                if (abs(newIndex.index - bookSourceRecord.readIndex) > abs(chapters[c].index - bookSourceRecord.readIndex)) {
+                                    newIndex = chapters[c]
+                                }
+                            }
+                            bookDao.setReadIndex(bookSourceRecord.bookName, bookSourceRecord.author, newIndex.index, bookSourceRecord.chapterName, bookSourceRecord.isThrough)
+                        }
+                    }
+                } catch (e: Exception) {
+                    //不希望更新索引导致可能的数据插入数据失败。
+                }
             }
             book
         }.subscribeOn(Schedulers.io())

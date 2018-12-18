@@ -2,6 +2,8 @@ package sjj.novel.util
 
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 fun <T, R> Observable<out List<T>>.lazyFromIterable(mapper: (T) -> Observable<R>): Observable<Observable<R>> {
     return flatMap { list ->
@@ -43,3 +45,6 @@ fun <T> fromCallableOrNull(callable:()->T): Observable<T> {
         it.onComplete()
     }
 }
+
+fun <T> Observable<T>.observeOnMain() = observeOn(AndroidSchedulers.mainThread())
+fun <T> Observable<T>.subscribeOnIo() = subscribeOn(Schedulers.io())

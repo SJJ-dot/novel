@@ -30,7 +30,7 @@ class NovelTestActivity : AppCompatActivity() {
 
     private val adapter by lazy { Adapter() }
 
-    private val model by lazyModel<NovelTestViewModel> { arrayOf(intent.getStringExtra(NOVEL_SOURCE_TOP_LEVEL_DOMAIN)) }
+    private val model by lazyModel<NovelTestViewModel> { arrayOf(intent.getStringExtra(NOVEL_SOURCE_TOP_LEVEL_DOMAIN)?:"") }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
