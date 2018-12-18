@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/fastscroller/fastscroller.iml" filepath="$PROJECT_DIR$/fastscroller/fastscroller.iml" />
       <module fileurl="file://$PROJECT_DIR$/fiction.iml" filepath="$PROJECT_DIR$/fiction.iml" />
+      <module fileurl="file://$PROJECT_DIR$/page/page.iml" filepath="$PROJECT_DIR$/page/page.iml" />
       <module fileurl="file://$PROJECT_DIR$/refreshprogressbar/refreshprogressbar.iml" filepath="$PROJECT_DIR$/refreshprogressbar/refreshprogressbar.iml" />
     </modules>
   </component>
