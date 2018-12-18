@@ -1,18 +1,10 @@
 package sjj.novel.view.reader.page;
 
 
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
 import sjj.novel.view.reader.bean.BookBean;
-import sjj.novel.view.reader.bean.BookChapterBean;
-import sjj.novel.view.reader.utils.Constant;
 
 /**
  * Created by newbiechen on 17-5-29.
@@ -26,24 +18,12 @@ public class NetPageLoader extends PageLoader {
         super(pageView, collBook);
     }
 
-    private List<TxtChapter> convertTxtChapter(List<BookChapterBean> bookChapters) {
-        List<TxtChapter> txtChapters = new ArrayList<>(bookChapters.size());
-        for (BookChapterBean bean : bookChapters) {
-            TxtChapter chapter = new TxtChapter();
-            chapter.bookId = bean.id;
-            chapter.title = bean.title;
-            chapter.link = bean.url;
-            txtChapters.add(chapter);
-        }
-        return txtChapters;
-    }
-
     @Override
     public void refreshChapterList() {
         if (mCollBook.bookChapterList == null) return;
 
         // 将 BookChapter 转换成当前可用的 Chapter
-        mChapterList = convertTxtChapter(mCollBook.bookChapterList);
+        mChapterList = mCollBook.bookChapterList;
         isChapterListPrepare = true;
 
         // 目录加载完成，执行回调操作。
@@ -56,22 +36,6 @@ public class NetPageLoader extends PageLoader {
             // 打开章节
             openChapter();
         }
-    }
-
-    @Override
-    protected BufferedReader getChapterReader(TxtChapter chapter) throws Exception {
-        File file = new File(Constant.BOOK_CACHE_PATH + mCollBook.get_id()
-                + File.separator + chapter.title + FileUtils.SUFFIX_NB);
-        if (!file.exists()) return null;
-
-        Reader reader = new FileReader(file);
-        BufferedReader br = new BufferedReader(reader);
-        return br;
-    }
-
-    @Override
-    protected boolean hasChapterData(TxtChapter chapter) {
-        return BookManager.isChapterCached(mCollBook.get_id(), chapter.title);
     }
 
     // 装载上一章节的内容
@@ -202,20 +166,6 @@ public class NetPageLoader extends PageLoader {
 
         if (!chapters.isEmpty()) {
             mPageChangeListener.requestChapters(chapters);
-        }
-    }
-
-    @Override
-    public void saveRecord() {
-        super.saveRecord();
-        if (mCollBook != null && isChapterListPrepare) {
-            //表示当前CollBook已经阅读
-            mCollBook.setIsUpdate(false);
-            mCollBook.setLastRead(StringUtils.
-                    dateConvert(System.currentTimeMillis(), Constant.FORMAT_BOOK_DATE));
-            //直接更新
-            BookRepository.getInstance()
-                    .saveCollBook(mCollBook);
         }
     }
 }

@@ -2,6 +2,8 @@ package sjj.novel.view.reader.bean;
 
 import java.util.List;
 
+import sjj.novel.view.reader.page.TxtChapter;
+
 /**
  * Created by newbiechen on 17-5-8.
  * 收藏的书籍
@@ -12,7 +14,7 @@ public class BookBean {
     public String author;
     public String shortIntro;
     public String cover;
-    public List<BookChapterBean> bookChapterList;
+    public List<TxtChapter> bookChapterList;
 
     public boolean isLocal() {
         return false;
