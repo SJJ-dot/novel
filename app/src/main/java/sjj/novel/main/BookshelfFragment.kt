@@ -92,23 +92,13 @@ class BookshelfFragment : BaseFragment() {
                 }.show()
                 true
             }
-
-            if (viewModel.book.loadStatus == Book.LoadState.Loading) {
-                holder.itemView.bv_unread.visibility = View.INVISIBLE
-                holder.itemView.rl_loading.visibility = View.VISIBLE
-                holder.itemView.rl_loading.start()
-            } else {
-                holder.itemView.bv_unread.visibility = View.VISIBLE
-                holder.itemView.rl_loading.visibility = View.INVISIBLE
-                holder.itemView.rl_loading.stop()
-            }
         }
 
         override fun getItemCount(): Int = data?.size ?: 0
 
         override fun getItemId(position: Int): Long {
             val viewModel = data?.get(position) ?: return 0
-            return viewModel.book.id()
+            return viewModel.book.id
         }
     }
 }

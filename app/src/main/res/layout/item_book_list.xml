@@ -6,6 +6,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="model"
             type="sjj.novel.main.BookShelfViewModel.BookShelfItemViewModel" />
@@ -110,21 +112,23 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="16dp"
-                app:badgeCount="@{model.remainingChapter}"
                 android:includeFontPadding="false"
+                android:visibility="@{model.loading||model.remainingChapter==0?View.INVISIBLE:View.VISIBLE}"
+                app:badgeCount="@{model.remainingChapter}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="99" />
 
-            <com.victor.loading.rotate.RotateLoading
+            <sjj.novel.view.RotateLoading2
                 android:id="@+id/rl_loading"
                 android:layout_width="26dp"
                 android:layout_height="26dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="16dp"
-                android:visibility="invisible"
+                android:visibility="@{model.loading?View.VISIBLE:View.INVISIBLE}"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                app:loading="@{model.loading}"
                 app:loading_color="@color/colorPrimary"
                 app:loading_width="2dp" />
         </android.support.constraint.ConstraintLayout>

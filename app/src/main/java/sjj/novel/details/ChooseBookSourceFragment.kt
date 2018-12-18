@@ -78,7 +78,7 @@ class ChooseBookSourceFragment : BaseFragment() {
         }
 
         override fun getItemId(position: Int): Long {
-            return data[position].book.id()
+            return data[position].book.id
         }
 
     }
