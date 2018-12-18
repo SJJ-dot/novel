@@ -98,7 +98,7 @@ class BookshelfFragment : BaseFragment() {
 
         override fun getItemId(position: Int): Long {
             val viewModel = data?.get(position) ?: return 0
-            return viewModel.book.id
+            return viewModel.id
         }
     }
 }

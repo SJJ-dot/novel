@@ -14,6 +14,7 @@ import sjj.novel.data.source.local.localFictionDataSource
 import sjj.novel.model.Book
 import sjj.novel.model.Chapter
 import sjj.novel.util.host
+import sjj.novel.util.id
 import sjj.novel.util.resStr
 import kotlin.math.abs
 
@@ -127,5 +128,6 @@ class ChooseBookSourceViewModel(val bookName: String, val author: String) : View
         val author = ObservableField<String>()
         val lastChapter = ObservableField<String>()
         val origin = ObservableField<String>()
+        val id: Long by lazy { book.url.id }
     }
 }

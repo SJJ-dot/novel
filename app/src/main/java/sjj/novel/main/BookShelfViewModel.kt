@@ -12,6 +12,7 @@ import sjj.novel.data.repository.novelDataRepository
 import sjj.novel.data.repository.novelSourceRepository
 import sjj.novel.model.Book
 import sjj.novel.util.host
+import sjj.novel.util.id
 import sjj.novel.util.lazyFromIterable
 import sjj.novel.util.resStr
 import java.util.concurrent.TimeUnit
@@ -37,8 +38,8 @@ class BookShelfViewModel : ViewModel() {
             }.switchIfEmpty(Observable.just(it))
         }.flatMap {model->
             novelDataRepository.getBookSourceRecord(model.book.name, model.book.author).firstElement().toObservable().map {
-                model.book.index = it.readIndex
-                model.book.isThrough = it.isThrough
+                model.index = it.readIndex
+                model.isThrough = it.isThrough
                 model.haveRead.set(R.string.haveRead_.resStr(it.chapterName))
                 model
             }
@@ -48,7 +49,7 @@ class BookShelfViewModel : ViewModel() {
                 model
             }
         }.reduce(map) { r, model ->
-            model.remainingChapter.set(maxOf((model.book.lastChapter?.index?:0) - model.book.index + (if (model.book.isThrough) 0 else 1), 0))
+            model.remainingChapter.set(maxOf((model.book.lastChapter?.index?:0) - model.index + (if (model.isThrough) 0 else 1), 0))
             r //保持顺序
         }.toFlowable()
     }
@@ -109,6 +110,10 @@ class BookShelfViewModel : ViewModel() {
         val remainingChapter = ObservableInt()
         val origin = ObservableField<String>()
         val loading = ObservableBoolean()
+        //temp
+        var index: Int = 0
+        var isThrough: Boolean = false
+        val id: Long by lazy { book.url.id }
 
     }
 
