@@ -366,6 +366,7 @@ public abstract class PageLoader {
             setTextSize(mTextSize - screenUtils.spToPx(1));
         }
     }
+
     /**
      * 设置文字相关参数
      *
@@ -566,7 +567,7 @@ public abstract class PageLoader {
         } else {
             mBookRecord.pagePos = 0;
         }
-        if (mCurPageList==null)return;
+        if (mCurPageList == null) return;
         mBookRecord.isThrough = mCurPageList.size() == mCurPage.position + 1;
         mPageChangeListener.onBookRecordChange(mBookRecord);
     }
@@ -576,6 +577,7 @@ public abstract class PageLoader {
         prepareBook();
         isChapterOpen = false;
     }
+
     /**
      * 初始化书籍
      */
@@ -743,12 +745,12 @@ public abstract class PageLoader {
                 }
 
                 /******绘制页码********/
-                // 底部的字显示的位置Y
                 float y = mDisplayHeight - mTipPaint.getFontMetrics().bottom - tipMarginHeight;
                 // 只有finish的时候采用页码
                 if (mStatus == STATUS_FINISH) {
                     String percent = (mCurPage.position + 1) + "/" + mCurPageList.size();
-                    canvas.drawText(percent, mMarginWidth, y, mTipPaint);
+                    int visibleRight = mDisplayWidth - mMarginWidth;
+                    canvas.drawText(percent, visibleRight - mTipPaint.measureText(percent), tipTop, mTipPaint);
                 }
             }
         } else {
@@ -759,50 +761,50 @@ public abstract class PageLoader {
 
         /******绘制电池********/
 
-        int visibleRight = mDisplayWidth - mMarginWidth;
-        int visibleBottom = mDisplayHeight - tipMarginHeight;
-
-        int outFrameWidth = (int) mTipPaint.measureText("xxx");
-        int outFrameHeight = (int) mTipPaint.getTextSize();
-
-        int polarHeight = screenUtils.dpToPx(6);
-        int polarWidth = screenUtils.dpToPx(2);
-        int border = 1;
-        int innerMargin = 1;
-
-        //电极的制作
-        int polarLeft = visibleRight - polarWidth;
-        int polarTop = visibleBottom - (outFrameHeight + polarHeight) / 2;
-        Rect polar = new Rect(polarLeft, polarTop, visibleRight,
-                polarTop + polarHeight - screenUtils.dpToPx(2));
-
-        mBatteryPaint.setStyle(Paint.Style.FILL);
-        canvas.drawRect(polar, mBatteryPaint);
-
-        //外框的制作
-        int outFrameLeft = polarLeft - outFrameWidth;
-        int outFrameTop = visibleBottom - outFrameHeight;
-        int outFrameBottom = visibleBottom - screenUtils.dpToPx(2);
-        Rect outFrame = new Rect(outFrameLeft, outFrameTop, polarLeft, outFrameBottom);
-
-        mBatteryPaint.setStyle(Paint.Style.STROKE);
-        mBatteryPaint.setStrokeWidth(border);
-        canvas.drawRect(outFrame, mBatteryPaint);
-
-        //内框的制作
-        float innerWidth = (outFrame.width() - innerMargin * 2 - border) * (mBatteryLevel / 100.0f);
-        RectF innerFrame = new RectF(outFrameLeft + border + innerMargin, outFrameTop + border + innerMargin,
-                outFrameLeft + border + innerMargin + innerWidth, outFrameBottom - border - innerMargin);
-
-        mBatteryPaint.setStyle(Paint.Style.FILL);
-        canvas.drawRect(innerFrame, mBatteryPaint);
-
-        /******绘制当前时间********/
-        //底部的字显示的位置Y
-        float y = mDisplayHeight - mTipPaint.getFontMetrics().bottom - tipMarginHeight;
-        String time = StringUtils.dateConvert(System.currentTimeMillis(), Constant.FORMAT_TIME);
-        float x = outFrameLeft - mTipPaint.measureText(time) - screenUtils.dpToPx(4);
-        canvas.drawText(time, x, y, mTipPaint);
+//        int visibleRight = mDisplayWidth - mMarginWidth;
+//        int visibleBottom = mDisplayHeight - tipMarginHeight;
+//
+//        int outFrameWidth = (int) mTipPaint.measureText("xxx");
+//        int outFrameHeight = (int) mTipPaint.getTextSize();
+//
+//        int polarHeight = screenUtils.dpToPx(6);
+//        int polarWidth = screenUtils.dpToPx(2);
+//        int border = 1;
+//        int innerMargin = 1;
+//
+//        //电极的制作
+//        int polarLeft = visibleRight - polarWidth;
+//        int polarTop = visibleBottom - (outFrameHeight + polarHeight) / 2;
+//        Rect polar = new Rect(polarLeft, polarTop, visibleRight,
+//                polarTop + polarHeight - screenUtils.dpToPx(2));
+//
+//        mBatteryPaint.setStyle(Paint.Style.FILL);
+//        canvas.drawRect(polar, mBatteryPaint);
+//
+//        //外框的制作
+//        int outFrameLeft = polarLeft - outFrameWidth;
+//        int outFrameTop = visibleBottom - outFrameHeight;
+//        int outFrameBottom = visibleBottom - screenUtils.dpToPx(2);
+//        Rect outFrame = new Rect(outFrameLeft, outFrameTop, polarLeft, outFrameBottom);
+//
+//        mBatteryPaint.setStyle(Paint.Style.STROKE);
+//        mBatteryPaint.setStrokeWidth(border);
+//        canvas.drawRect(outFrame, mBatteryPaint);
+//
+//        //内框的制作
+//        float innerWidth = (outFrame.width() - innerMargin * 2 - border) * (mBatteryLevel / 100.0f);
+//        RectF innerFrame = new RectF(outFrameLeft + border + innerMargin, outFrameTop + border + innerMargin,
+//                outFrameLeft + border + innerMargin + innerWidth, outFrameBottom - border - innerMargin);
+//
+//        mBatteryPaint.setStyle(Paint.Style.FILL);
+//        canvas.drawRect(innerFrame, mBatteryPaint);
+//
+//        /******绘制当前时间********/
+//        //底部的字显示的位置Y
+//        float y = mDisplayHeight - mTipPaint.getFontMetrics().bottom - tipMarginHeight;
+//        String time = StringUtils.dateConvert(System.currentTimeMillis(), Constant.FORMAT_TIME);
+//        float x = outFrameLeft - mTipPaint.measureText(time) - screenUtils.dpToPx(4);
+//        canvas.drawText(time, x, y, mTipPaint);
     }
 
     private void drawContent(Bitmap bitmap) {
@@ -904,7 +906,7 @@ public abstract class PageLoader {
 
         // 获取内容显示位置的大小
         mVisibleWidth = mDisplayWidth - mMarginWidth * 2;
-        mVisibleHeight = mDisplayHeight - mMarginHeight * 2;
+        mVisibleHeight = mDisplayHeight - mMarginHeight;//至减去上边距
 
         // 重置 PageMode
         mPageView.setPageMode(mPageMode);

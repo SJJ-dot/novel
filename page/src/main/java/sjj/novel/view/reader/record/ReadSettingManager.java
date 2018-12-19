@@ -93,7 +93,7 @@ public class ReadSettingManager {
     }
 
     public PageStyle getPageStyle() {
-        int style = sharedPreUtils.getInt(SHARED_READ_BG, PageStyle.BG_0.ordinal());
+        int style = sharedPreUtils.getInt(SHARED_READ_BG, PageStyle.BG_def.ordinal());
         return PageStyle.values()[style];
     }
 

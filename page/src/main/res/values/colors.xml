@@ -8,7 +8,8 @@
     <color name="nb_read_bg_4">#D1CEC5</color>
     <color name="nb_read_bg_5">#001C27</color>
     <color name="nb_read_bg_6">#DDCEC29C</color>
-
+    <color name="chapter_background">#F6F4EE</color>
+    <color name="chapter_text_color">#252525</color>
 
     <color name="nb_read_font_1">#2C2C2C</color>
     <color name="nb_read_font_2">#2F332D</color>

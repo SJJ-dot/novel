@@ -40,12 +40,9 @@ class ReadActivity : BaseActivity() {
         val BOOK_AUTHOR = "BOOK_AUTHOR"
     }
 
-    private var loadBookHint: ProgressDialog? = null
     private var cached: ProgressDialog? = null
 
     private val model by lazyModel<ReadViewModel> { arrayOf(intent.getStringExtra(BOOK_NAME), intent.getStringExtra(BOOK_AUTHOR)) }
-
-//    private val contentAdapter = ChapterContentAdapter()
 
     private val pageLoader by lazy { chapterContent.pageLoader }
 

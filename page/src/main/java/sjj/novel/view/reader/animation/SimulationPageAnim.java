@@ -98,6 +98,13 @@ public class SimulationPageAnim extends HorizonPageAnim{
                 drawCurrentPageShadow(canvas);
                 drawCurrentBackArea(canvas, mCurBitmap);
                 break;
+            case PRE:
+                calcPoints();
+                drawCurrentPageArea(canvas, mCurBitmap, mPath0);
+                drawNextPageAreaAndShadow(canvas, mNextBitmap);
+                drawCurrentPageShadow(canvas);
+                drawCurrentBackArea(canvas,mCurBitmap);
+                break;
             default:
                 calcPoints();
                 drawCurrentPageArea(canvas, mNextBitmap, mPath0);
@@ -164,9 +171,9 @@ public class SimulationPageAnim extends HorizonPageAnim{
             case PRE:
                 //上一页滑动不出现对角
                 if (mStartX > mScreenWidth / 2){
-                    calcCornerXY(mStartX,mScreenHeight);
+                    calcCornerXY(mScreenWidth-mStartX,mScreenHeight);
                 }else{
-                    calcCornerXY(mScreenWidth - mStartX,mScreenHeight);
+                    calcCornerXY(mStartX,mScreenHeight);
                 }
                 break;
             case NEXT:

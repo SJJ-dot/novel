@@ -55,7 +55,7 @@ public abstract class PageAnimation {
         mMarginHeight = marginHeight;
 
         mViewWidth = mScreenWidth - mMarginWidth * 2;
-        mViewHeight = mScreenHeight - mMarginHeight * 2;
+        mViewHeight = mScreenHeight - mMarginHeight;
 
         mView = view;
         mListener = listener;

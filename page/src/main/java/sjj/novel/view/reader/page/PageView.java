@@ -34,7 +34,7 @@ public class PageView extends View {
     private int mStartY = 0;
     private boolean isMove = false;
     // 初始化参数
-    private int mBgColor = 0xFFCEC29C;
+    private int mBgColor = 0xFFF6F4EE;
     private PageMode mPageMode = PageMode.SIMULATION;
     // 唤醒菜单的区域
     private RectF mCenterRect = null;
