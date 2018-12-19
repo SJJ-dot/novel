@@ -358,6 +358,13 @@ public abstract class PageLoader {
         mPageView.drawCurPage(false);
     }
 
+    public void setTextSizeIncrease(boolean increase) {
+        if (increase) {
+            setTextSize(mTextSize + screenUtils.spToPx(1));
+        } else {
+            setTextSize(mTextSize - screenUtils.spToPx(1));
+        }
+    }
     /**
      * 设置文字相关参数
      *

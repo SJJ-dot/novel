@@ -27,6 +27,7 @@ import sjj.novel.util.observeOnMain
 import sjj.novel.view.reader.bean.BookBean
 import sjj.novel.view.reader.bean.BookRecordBean
 import sjj.novel.view.reader.page.PageLoader
+import sjj.novel.view.reader.page.PageMode
 import sjj.novel.view.reader.page.PageView
 import sjj.novel.view.reader.page.TxtChapter
 import kotlin.math.max
@@ -169,16 +170,21 @@ class ReadActivity : BaseActivity() {
                 }.destroy(DISPOSABLE_CACHED_BOOK_CHAPTER)
                 true
             }
-            R.id.menu_ttf -> {
-                toast("Not Supported")
+            R.id.menu_flip_mode -> {
+                AlertDialog.Builder(this).setSingleChoiceItems(arrayOf("仿真","覆盖","平移","无","滚动"), PageMode.valueOf(AppConfig.flipPageMode).ordinal) { dialog, which ->
+                    dialog.dismiss()
+                    val mode = PageMode.values()[which]
+                    AppConfig.flipPageMode = mode.name
+                    pageLoader.setPageMode(mode)
+                }.show()
                 true
             }
             R.id.menu_add -> {
-                AppConfig.readChapterTextSize.value = AppConfig.readChapterTextSize.value!! + 1
+                pageLoader.setTextSizeIncrease(true)
                 true
             }
             R.id.menu_minus -> {
-                AppConfig.readChapterTextSize.value = AppConfig.readChapterTextSize.value!! - 1
+                pageLoader.setTextSizeIncrease(false)
                 true
             }
             else -> super.onOptionsItemSelected(item)

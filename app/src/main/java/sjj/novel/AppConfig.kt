@@ -2,16 +2,9 @@ package sjj.novel
 
 import sjj.novel.util.DelegateLiveData
 import sjj.novel.util.DelegateSharedPreferences
+import sjj.novel.view.reader.page.PageMode
 
 object AppConfig {
-
-    val ttf by DelegateLiveData("Roboto-Black.ttf")
-
-    val readChapterTextSize by DelegateLiveData(24f)
-
-//    val searchHistory by DelegateLiveData<List<String>>(listOf())
-
-    var offest by DelegateSharedPreferences(0)
 
     //已经迁移到到mmkv 的 SharedPreferences 文件记录
     var migratedSharedPreferences by DelegateSharedPreferences<MutableSet<String>>(mutableSetOf())
@@ -30,5 +23,7 @@ object AppConfig {
      * 默认的小说书源 域名
      */
     var defaultNovelSourceTLD by DelegateSharedPreferences(setOf<String>())
+
+    var flipPageMode by DelegateSharedPreferences(PageMode.SIMULATION.name)
 
 }
