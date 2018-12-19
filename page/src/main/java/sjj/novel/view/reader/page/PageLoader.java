@@ -366,6 +366,7 @@ public abstract class PageLoader {
             setTextSize(mTextSize - screenUtils.spToPx(1));
         }
     }
+
     /**
      * 设置文字相关参数
      *
@@ -566,7 +567,7 @@ public abstract class PageLoader {
         } else {
             mBookRecord.pagePos = 0;
         }
-        if (mCurPageList==null)return;
+        if (mCurPageList == null) return;
         mBookRecord.isThrough = mCurPageList.size() == mCurPage.position + 1;
         mPageChangeListener.onBookRecordChange(mBookRecord);
     }
@@ -576,6 +577,7 @@ public abstract class PageLoader {
         prepareBook();
         isChapterOpen = false;
     }
+
     /**
      * 初始化书籍
      */
@@ -743,12 +745,12 @@ public abstract class PageLoader {
                 }
 
                 /******绘制页码********/
-                // 底部的字显示的位置Y
                 float y = mDisplayHeight - mTipPaint.getFontMetrics().bottom - tipMarginHeight;
                 // 只有finish的时候采用页码
                 if (mStatus == STATUS_FINISH) {
                     String percent = (mCurPage.position + 1) + "/" + mCurPageList.size();
-                    canvas.drawText(percent, mMarginWidth, y, mTipPaint);
+                    int visibleRight = mDisplayWidth - mMarginWidth;
+                    canvas.drawText(percent, visibleRight - mTipPaint.measureText(percent), tipTop, mTipPaint);
                 }
             }
         } else {
@@ -904,7 +906,7 @@ public abstract class PageLoader {
 
         // 获取内容显示位置的大小
         mVisibleWidth = mDisplayWidth - mMarginWidth * 2;
-        mVisibleHeight = mDisplayHeight - mMarginHeight * 2;
+        mVisibleHeight = mDisplayHeight - mMarginHeight;//至减去上边距
 
         // 重置 PageMode
         mPageView.setPageMode(mPageMode);
