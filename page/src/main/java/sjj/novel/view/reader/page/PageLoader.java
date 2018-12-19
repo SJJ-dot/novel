@@ -168,6 +168,7 @@ public abstract class PageLoader {
 
     public void setBook(BookBean book) {
         mCollBook = book;
+        TxtChapter.checkCache(book.id);
     }
 
     /**
@@ -565,6 +566,7 @@ public abstract class PageLoader {
         } else {
             mBookRecord.pagePos = 0;
         }
+        if (mCurPageList==null)return;
         mBookRecord.isThrough = mCurPageList.size() == mCurPage.position + 1;
         mPageChangeListener.onBookRecordChange(mBookRecord);
     }
