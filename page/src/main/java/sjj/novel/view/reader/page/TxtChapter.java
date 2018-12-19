@@ -8,7 +8,7 @@ import android.text.TextUtils;
  */
 
 public class TxtChapter {
-    //保存10章的章节内容
+    //保存10章的章节内容 这里的10个字符串会导致内存泄漏。但是我并不关心 总不可能有10M的
     private static LruCache<String, String> contents = new LruCache<>(10);
     //章节所属的小说(网络)
     public String bookId;
