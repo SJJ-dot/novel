@@ -178,7 +178,7 @@ public abstract class PageLoader {
     private void setUpTextParams(int textSize) {
         // 文字大小
         mTextSize = textSize;
-        mTitleSize = mTextSize + screenUtils.spToPx(EXTRA_TITLE_SIZE);
+        mTitleSize = mTextSize;
         // 行间距(大小为字体的一半)
         mTextInterval = mTextSize / 2;
         mTitleInterval = mTitleSize / 2;
@@ -1225,7 +1225,9 @@ public abstract class PageLoader {
         String[] strings = chapter.getContent().split("\n");
         int i = 0;
         while (showTitle || strings.length > i) {
-            paragraph = strings[i];
+            if (!showTitle) {
+                paragraph = strings[i];
+            }
             i++;
             paragraph = StringUtils.convertCC(paragraph, mContext);
             // 重置段落

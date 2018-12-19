@@ -36,8 +36,6 @@ public class PageView extends View {
     // 初始化参数
     private int mBgColor = 0xFFCEC29C;
     private PageMode mPageMode = PageMode.SIMULATION;
-    // 是否允许点击
-    private boolean canTouch = true;
     // 唤醒菜单的区域
     private RectF mCenterRect = null;
     private boolean isPrepare;
@@ -202,8 +200,6 @@ public class PageView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         super.onTouchEvent(event);
 
-        if (!canTouch && event.getAction() != MotionEvent.ACTION_DOWN) return true;
-
         int x = (int) event.getX();
         int y = (int) event.getY();
         switch (event.getAction()) {
@@ -211,7 +207,6 @@ public class PageView extends View {
                 mStartX = x;
                 mStartY = y;
                 isMove = false;
-                canTouch = mTouchListener.onTouch();
                 mPageAnim.onTouchEvent(event);
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -254,7 +249,6 @@ public class PageView extends View {
      * @return
      */
     private boolean hasPrevPage() {
-        mTouchListener.prePage();
         return mPageLoader.prev();
     }
 
@@ -264,12 +258,10 @@ public class PageView extends View {
      * @return
      */
     private boolean hasNextPage() {
-        mTouchListener.nextPage();
         return mPageLoader.next();
     }
 
     private void pageCancel() {
-        mTouchListener.cancel();
         mPageLoader.pageCancel();
     }
 
@@ -357,14 +349,6 @@ public class PageView extends View {
     }
 
     public interface TouchListener {
-        boolean onTouch();
-
         void center();
-
-        void prePage();
-
-        void nextPage();
-
-        void cancel();
     }
 }
