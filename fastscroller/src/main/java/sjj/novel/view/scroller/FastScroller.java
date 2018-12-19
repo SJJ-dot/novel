@@ -492,6 +492,7 @@ public class FastScroller extends LinearLayout {
     @SuppressWarnings("ConstantConditions")
     private void layout(Context context, AttributeSet attrs) {
         inflate(context, R.layout.view_fastscroller, this);
+        setBackgroundColor(Color.TRANSPARENT);
         setClipChildren(false);
         setOrientation(HORIZONTAL);
         mBubbleView = findViewById(R.id.fastscroll_bubble);

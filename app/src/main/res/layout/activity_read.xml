@@ -38,6 +38,7 @@
 
         <sjj.novel.view.scroller.FastScrollRecyclerView
             android:id="@+id/chapterList"
+            android:background="@color/material_white"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
