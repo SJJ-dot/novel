@@ -15,6 +15,11 @@ class BookSourceRecord {
      * 当前阅读的当前索引
      */
     var readIndex: Int = 0
+
+    /**
+     *当前的页码
+     */
+    var pagePos: Int = 0
     /**
      * 当前阅读的章节名
      */
@@ -25,10 +30,10 @@ class BookSourceRecord {
     var isThrough: Boolean = false
 
     @Ignore
-    var books:List<Book>?=null
+    var books: List<Book>? = null
 
     @Ignore
-    var currentBook:Book?=null
+    var currentBook: Book? = null
 
     override fun toString(): String {
         return "BookSourceRecord(bookName='$bookName', author='$author', bookUrl='$bookUrl', readIndex=$readIndex)"

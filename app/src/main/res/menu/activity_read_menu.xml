@@ -12,8 +12,8 @@
         android:title="缩小字号"
         app:showAsAction="collapseActionView" />
     <item
-        android:id="@+id/menu_ttf"
-        android:title="修改章节字体"
+        android:id="@+id/menu_flip_mode"
+        android:title="翻页模式"
         app:showAsAction="collapseActionView" />
     <item
         android:id="@+id/menu_cached"

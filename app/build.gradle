@@ -58,6 +58,14 @@ android {
         sourceCompatibility = '1.8'
         targetCompatibility = '1.8'
     }
+    packagingOptions {
+        pickFirst 'lib/armeabi/libc++_shared.so'
+        pickFirst 'lib/armeabi-v7a/libc++_shared.so'
+        pickFirst 'lib/armeabi-v8a/libc++_shared.so'
+        pickFirst 'lib/arm64-v8a/libc++_shared.so'
+        pickFirst 'lib/x86/libc++_shared.so'
+        pickFirst 'lib/x86_64/libc++_shared.so'
+    }
 
 }
 def dbflow_version = "4.1.1"
@@ -166,7 +174,7 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
 
     //mmkv 代替SharedPreferences
-    implementation 'com.tencent:mmkv:latest.release'
+    implementation 'com.tencent:mmkv:1.0.15'
     implementation 'com.tencent.bugly:crashreport_upgrade:latest.release'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:0.5'
@@ -183,10 +191,11 @@ dependencies {
     implementation project(path: ':fastscroller')
     implementation 'com.google.android:flexbox:1.0.0'
     implementation project(':refreshprogressbar')
-
     implementation 'org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5'
 
     //字符串比较
     implementation 'net.ricecode:string-similarity:1.0.0'
-//    implementation 'info.debatty:java-string-similarity:1.2.0'
+
+    //    implementation 'info.debatty:java-string-similarity:1.2.0'
+    implementation project(':page')
 }

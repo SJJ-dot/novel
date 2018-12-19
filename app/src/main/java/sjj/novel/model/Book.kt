@@ -24,13 +24,6 @@ data class Book(
         var chapterList: List<Chapter> = mutableListOf(),
 
         var loadStatus: LoadState = LoadState.UnLoad,
-        /**
-         * 阅读的章节
-         */
-        @Ignore
-        var index: Int = 0,
-        @Ignore
-        var isThrough: Boolean = false,
 
         @Ignore
         var origin: BookParseRule? = null
@@ -40,10 +33,6 @@ data class Book(
         get() {
             return field ?: chapterList.lastOrNull()
         }
-
-    @Ignore
-    var id: Long = 0
-        get() = url.id
 
     override fun equals(other: Any?): Boolean {
         if (other is Book && other.url == url) {

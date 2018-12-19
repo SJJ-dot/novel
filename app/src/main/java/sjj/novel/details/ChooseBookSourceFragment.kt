@@ -12,6 +12,7 @@ import kotlinx.android.synthetic.main.fragment_choose_book_source.*
 import sjj.novel.BaseFragment
 import sjj.novel.R
 import sjj.novel.databinding.FragmentChooseBookSourceBinding
+import sjj.novel.util.id
 import sjj.novel.util.lazyModel
 
 
@@ -78,7 +79,7 @@ class ChooseBookSourceFragment : BaseFragment() {
         }
 
         override fun getItemId(position: Int): Long {
-            return data[position].book.id
+            return data[position].id
         }
 
     }

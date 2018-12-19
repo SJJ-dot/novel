@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--read-->
+    <color name="nb_read_bg_1">#CEC29C</color>
+    <color name="nb_read_bg_2">#CCEBCC</color>
+    <color name="nb_read_bg_3">#AAAAAA</color>
+    <color name="nb_read_bg_4">#D1CEC5</color>
+    <color name="nb_read_bg_5">#001C27</color>
+    <color name="nb_read_bg_6">#DDCEC29C</color>
+
+
+    <color name="nb_read_font_1">#2C2C2C</color>
+    <color name="nb_read_font_2">#2F332D</color>
+    <color name="nb_read_font_3">#92918C</color>
+    <color name="nb_read_font_4">#383429</color>
+    <color name="nb_read_font_5">#627176</color>
+
+    <color name="nb_read_bg_night">#000000</color>
+    <color name="nb_read_font_night">#99ffffff</color>
+
+    <color name="nb_read_menu_bg">#191919</color>
+    <color name="nb_read_menu_text">#CBCBCB</color>
+    <color name="nb_read_bar_translucent">#88000000</color>
+</resources>
