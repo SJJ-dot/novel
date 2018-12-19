@@ -12,9 +12,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +24,6 @@ import sjj.novel.view.reader.bean.BookBean;
 import sjj.novel.view.reader.bean.BookRecordBean;
 import sjj.novel.view.reader.record.ReadSettingManager;
 import sjj.novel.view.reader.utils.Constant;
-import sjj.novel.view.reader.utils.IOUtils;
 import sjj.novel.view.reader.utils.RxUtils;
 import sjj.novel.view.reader.utils.ScreenUtils;
 import sjj.novel.view.reader.utils.StringUtils;
@@ -60,7 +56,6 @@ public abstract class PageLoader {
     protected BookBean mCollBook;
     // 监听器
     protected OnPageChangeListener mPageChangeListener;
-    protected BookRecordCallback mBookRecordCallback;
 
     private Context mContext;
     // 页面显示类
@@ -143,10 +138,9 @@ public abstract class PageLoader {
     private ScreenUtils screenUtils;
 
     /*****************************init params*******************************/
-    public PageLoader(PageView pageView, BookBean collBook) {
+    public PageLoader(PageView pageView) {
         mPageView = pageView;
         mContext = pageView.getContext();
-        mCollBook = collBook;
         mChapterList = new ArrayList<>(1);
         screenUtils = new ScreenUtils(mContext);
         // 初始化数据
@@ -169,7 +163,11 @@ public abstract class PageLoader {
         mMarginWidth = screenUtils.dpToPx(DEFAULT_MARGIN_WIDTH);
         mMarginHeight = screenUtils.dpToPx(DEFAULT_MARGIN_HEIGHT);
         // 配置文字有关的参数
-        setUpTextParams(mSettingManager.getTextSize());
+        setUpTextParams(screenUtils.spToPx(mSettingManager.getTextSize()));
+    }
+
+    public void setBook(BookBean book) {
+        mCollBook = book;
     }
 
     /**
@@ -549,7 +547,7 @@ public abstract class PageLoader {
      */
     public void saveRecord() {
 
-        if (mChapterList.isEmpty()) {
+        if (mChapterList.isEmpty() || mCollBook == null) {
             return;
         }
         mBookRecord.bookId = mCollBook.id;
@@ -560,18 +558,13 @@ public abstract class PageLoader {
         } else {
             mBookRecord.pagePos = 0;
         }
-        BookRecordCallback listener = this.mBookRecordCallback;
-        if (listener != null) {
-            listener.onChange(mBookRecord);
-        }
+        mPageChangeListener.onBookRecordChange(mBookRecord);
     }
 
     /**
      * 初始化书籍
      */
     private void prepareBook() {
-        mBookRecord = mBookRecordCallback.getBookRecord();
-
         if (mBookRecord == null) {
             mBookRecord = new BookRecordBean();
         }
@@ -683,7 +676,7 @@ public abstract class PageLoader {
             return null;
         }
         // 获取章节的文本流
-        List<TxtPage> chapters = loadPages(chapter, chapter.content);
+        List<TxtPage> chapters = loadPages(chapter);
         return chapters;
     }
 
@@ -700,7 +693,7 @@ public abstract class PageLoader {
      * @return
      */
     protected boolean hasChapterData(TxtChapter chapter) {
-        return chapter.hasData;
+        return chapter.getContent() != null;
     }
 
     /***********************************default method***********************************************/
@@ -1220,7 +1213,7 @@ public abstract class PageLoader {
      * @param br      ：章节的文本流
      * @return
      */
-    private List<TxtPage> loadPages(TxtChapter chapter, String br) {
+    private List<TxtPage> loadPages(TxtChapter chapter) {
         //生成的页面
         List<TxtPage> pages = new ArrayList<>();
         //使用流的方式加载
@@ -1229,7 +1222,7 @@ public abstract class PageLoader {
         int titleLinesCount = 0;
         boolean showTitle = true; // 是否展示标题
         String paragraph = chapter.title;//默认展示标题
-        String[] strings = chapter.content.split("\n");
+        String[] strings = chapter.getContent().split("\n");
         int i = 0;
         while (showTitle || strings.length > i) {
             paragraph = strings[i];
@@ -1319,7 +1312,6 @@ public abstract class PageLoader {
             //重置Lines
             lines.clear();
         }
-        chapter.clean();
         return pages;
     }
 
@@ -1432,12 +1424,13 @@ public abstract class PageLoader {
          * @param pos:当前的页面的序号
          */
         void onPageChange(int pos);
-    }
 
-    public interface BookRecordCallback {
-        void onChange(@NonNull BookRecordBean bean);
-
-        BookRecordBean getBookRecord();
+        /**
+         * 书籍阅读记录发生改变
+         *
+         * @param bean
+         */
+        void onBookRecordChange(@NonNull BookRecordBean bean);
     }
 
 }

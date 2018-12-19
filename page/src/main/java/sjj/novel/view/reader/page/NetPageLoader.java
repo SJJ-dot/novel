@@ -14,13 +14,13 @@ import sjj.novel.view.reader.bean.BookBean;
 public class NetPageLoader extends PageLoader {
     private static final String TAG = "PageFactory";
 
-    public NetPageLoader(PageView pageView, BookBean collBook) {
-        super(pageView, collBook);
+    public NetPageLoader(PageView pageView) {
+        super(pageView);
     }
 
     @Override
     public void refreshChapterList() {
-        if (mCollBook.bookChapterList == null) return;
+        if (mCollBook == null || mCollBook.bookChapterList == null) return;
 
         // 将 BookChapter 转换成当前可用的 Chapter
         mChapterList = mCollBook.bookChapterList;
@@ -168,5 +168,6 @@ public class NetPageLoader extends PageLoader {
             mPageChangeListener.requestChapters(chapters);
         }
     }
+
 }
 

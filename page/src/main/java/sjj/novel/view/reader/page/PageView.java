@@ -339,20 +339,14 @@ public class PageView extends View {
     /**
      * 获取 PageLoader
      *
-     * @param collBook
      * @return
      */
-    public PageLoader getPageLoader(BookBean collBook) {
+    public PageLoader getPageLoader() {
         // 判是否已经存在
         if (mPageLoader != null) {
             return mPageLoader;
         }
-        // 根据书籍类型，获取具体的加载器
-        if (collBook.isLocal()&&false) {
-//            mPageLoader = new LocalPageLoader(this, collBook);
-        } else {
-            mPageLoader = new NetPageLoader(this, collBook);
-        }
+            mPageLoader = new NetPageLoader(this);
         // 判断是否 PageView 已经初始化完成
         if (mViewWidth != 0 || mViewHeight != 0) {
             // 初始化 PageLoader 的屏幕大小

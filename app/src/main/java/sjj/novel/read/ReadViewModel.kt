@@ -1,9 +1,13 @@
 package sjj.novel.read
 
 import android.arch.lifecycle.ViewModel
+import android.text.Html
 import io.reactivex.Observable
 import sjj.novel.data.repository.novelDataRepository
 import sjj.novel.model.Chapter
+import sjj.novel.util.lazyFromIterable
+import sjj.novel.view.reader.page.TxtChapter
+import java.util.concurrent.TimeUnit
 
 class ReadViewModel(val name: String, val author: String) : ViewModel() {
 
@@ -20,6 +24,16 @@ class ReadViewModel(val name: String, val author: String) : ViewModel() {
 
     fun getChapter(url: String): Observable<Chapter> {
         return novelDataRepository.getChapter(url)
+    }
+
+    fun getChapter(requestChapters: List<TxtChapter>): Observable<List<TxtChapter>> {
+        return Observable.just(requestChapters).lazyFromIterable { txtChapter ->
+            novelDataRepository.getChapter(txtChapter.link).map { chapter ->
+                txtChapter.content = Html.fromHtml(chapter.content).toString()
+                txtChapter.title = chapter.chapterName
+                txtChapter
+            }.delay(500, TimeUnit.MILLISECONDS)
+        }.flatMap { it }.reduce(requestChapters) { _, _ -> requestChapters }.toObservable()
     }
 
     val readIndex = novelDataRepository.getBookSourceRecord(name, author).doOnNext {

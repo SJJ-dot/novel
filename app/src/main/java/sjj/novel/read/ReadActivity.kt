@@ -5,7 +5,6 @@ import android.arch.lifecycle.Observer
 import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
-import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Html
 import android.util.SparseBooleanArray
@@ -23,6 +22,12 @@ import sjj.alog.Log
 import sjj.novel.*
 import sjj.novel.model.Chapter
 import sjj.novel.util.lazyModel
+import sjj.novel.util.observeOnMain
+import sjj.novel.view.reader.bean.BookBean
+import sjj.novel.view.reader.bean.BookRecordBean
+import sjj.novel.view.reader.page.PageLoader
+import sjj.novel.view.reader.page.PageView
+import sjj.novel.view.reader.page.TxtChapter
 import kotlin.math.max
 import kotlin.math.min
 
@@ -42,7 +47,7 @@ class ReadActivity : BaseActivity() {
 
     private val model by lazyModel<ReadViewModel> { arrayOf(intent.getStringExtra(BOOK_NAME), intent.getStringExtra(BOOK_AUTHOR)) }
 
-    private val contentAdapter = ChapterContentAdapter()
+//    private val contentAdapter = ChapterContentAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,45 +57,114 @@ class ReadActivity : BaseActivity() {
         supportActionBar.setDisplayHomeAsUpEnabled(true)
 
         val chapterListAdapter = ChapterListAdapter()
-        chapterContent.adapter = contentAdapter
+//        chapterContent.adapter = contentAdapter
         chapterList.adapter = chapterListAdapter
+
+        val pageLoader = chapterContent.pageLoader
+        chapterContent.setTouchListener(object : PageView.TouchListener {
+            override fun onTouch(): Boolean {
+                return true
+            }
+
+            override fun center() {
+            }
+
+            override fun prePage() {
+            }
+
+            override fun nextPage() {
+            }
+
+            override fun cancel() {
+            }
+
+        })
+        pageLoader.setOnPageChangeListener(object : PageLoader.OnPageChangeListener {
+            override fun onBookRecordChange(bean: BookRecordBean) {
+            }
+
+            override fun onChapterChange(pos: Int) {
+            }
+
+            override fun requestChapters(requestChapters: MutableList<TxtChapter>) {
+                model.getChapter(requestChapters).observeOnMain().subscribe({
+                    Log.e("requestChapters success")
+                    pageLoader.openChapter()
+                }, {
+                    Log.e("requestChapters chapterError")
+                    pageLoader.chapterError()
+                }).destroy("requestChapters")
+            }
+
+            override fun onCategoryFinish(chapters: MutableList<TxtChapter>?) {
+            }
+
+            override fun onPageCountChange(count: Int) {
+            }
+
+            override fun onPageChange(pos: Int) {
+            }
+
+        })
+
         model.book.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe { book ->
             title = book.name
             seekBar.max = book.chapterList.size
-            contentAdapter.data = book.chapterList
             chapterListAdapter.data = book.chapterList
-            contentAdapter.notifyDataSetChanged()
             chapterListAdapter.notifyDataSetChanged()
-            model.readIndex.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
-                val index = min(max(book.chapterList.lastIndex,0),it.readIndex)
-                chapterList.scrollToPosition(index)
-                chapterContent.scrollToPosition(index)
-            }.destroy(DISPOSABLE_ACTIVITY_READ_READ_INDEX)
-        }.destroy()
-        chapterContent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    val manager = recyclerView.layoutManager as LinearLayoutManager
-                    var position = manager.findFirstVisibleItemPosition()
-                    seekBar.progress = position
 
-                    val b = recyclerView.computeVerticalScrollExtent() + recyclerView.computeVerticalScrollOffset() - recyclerView.computeVerticalScrollRange() >= -chapterContent.height / 4 &&
-                            contentAdapter.isLoadContent[position]
-                    if (contentAdapter.data.size > position) {
-
-                        if (b) {
-                            position = manager.findLastVisibleItemPosition()
-                            seekBar.progress = position
-                        }
-                        val chapter = contentAdapter.data[position]
-                        chapterName.text = chapter.chapterName
-
-                        model.setReadIndex(chapter, b).subscribe().destroy(DISPOSABLE_READ_INDEX)
+            pageLoader.setBook(BookBean().apply {
+                id = book.url
+                title = book.name
+                author = book.author
+                shortIntro = book.intro
+                cover = book.bookCoverImgUrl
+                bookChapterList = book.chapterList.map { chapter ->
+                    TxtChapter().apply {
+                        this.bookId = book.url
+                        this.link = chapter.url
+                        this.title = chapter.chapterName
+                        this.content = chapter.content
                     }
                 }
-            }
-        })
+
+            })
+            pageLoader.refreshChapterList()
+
+            //阅读记录
+            model.readIndex.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
+                val index = min(max(book.chapterList.lastIndex, 0), it.readIndex)
+                chapterList.scrollToPosition(index)
+//                chapterContent.scrollToPosition(index)
+            }.destroy(DISPOSABLE_ACTIVITY_READ_READ_INDEX)
+        }.destroy()
+//        chapterContent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+//            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+//                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+//                    val manager = recyclerView.layoutManager as LinearLayoutManager
+//                    var position = manager.findFirstVisibleItemPosition()
+//                    seekBar.progress = position
+//
+//                    val b = recyclerView.computeVerticalScrollExtent() + recyclerView.computeVerticalScrollOffset() - recyclerView.computeVerticalScrollRange() >= -chapterContent.height / 4 &&
+//                            contentAdapter.isLoadContent[position]
+//                    if (contentAdapter.data.size > position) {
+//
+//                        if (b) {
+//                            position = manager.findLastVisibleItemPosition()
+//                            seekBar.progress = position
+//                        }
+//                        val chapter = contentAdapter.data[position]
+//                        chapterName.text = chapter.chapterName
+//
+//                        model.setReadIndex(chapter, b).subscribe().destroy(DISPOSABLE_READ_INDEX)
+//                    }
+//                }
+//            }
+//        })
+
+
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.activity_read_menu, menu)
@@ -128,8 +202,8 @@ class ReadActivity : BaseActivity() {
                 AlertDialog.Builder(this).setSingleChoiceItems(ttfs, ttfs.indexOf(AppConfig.ttf.value)) { dialog, which ->
                     dialog.dismiss()
                     AppConfig.ttf.value = ttfs[which]
-                    contentAdapter.ttf = Typeface.createFromAsset(assets, "fonts/${ttfs[which]}")
-                    contentAdapter.notifyDataSetChanged()
+//                    contentAdapter.ttf = Typeface.createFromAsset(assets, "fonts/${ttfs[which]}")
+//                    contentAdapter.notifyDataSetChanged()
                 }.show()
                 true
             }
@@ -262,7 +336,7 @@ class ReadActivity : BaseActivity() {
             holder.itemView.find<TextView>(R.id.text1).text = c.chapterName
             holder.itemView.setOnClickListener {
                 model.setReadIndex(c).subscribe().destroy(DISPOSABLE_READ_INDEX)
-                chapterContent.scrollToPosition(position)
+//                chapterContent.scrollToPosition(position)
             }
         }
 

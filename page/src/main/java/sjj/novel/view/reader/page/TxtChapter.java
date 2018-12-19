@@ -1,5 +1,6 @@
 package sjj.novel.view.reader.page;
 
+import android.support.v4.util.LruCache;
 import android.text.TextUtils;
 
 /**
@@ -7,11 +8,12 @@ import android.text.TextUtils;
  */
 
 public class TxtChapter {
-
+    //保存10章的章节内容
+    private static LruCache<String, String> contents = new LruCache<>(10);
     //章节所属的小说(网络)
     public String bookId;
     //章节的链接(网络)
-    public  String link;
+    public String link;
 
     //章节名(共用)
     public String title;
@@ -19,13 +21,13 @@ public class TxtChapter {
     /**
      * 章节内容
      */
-    public String content;
+    public String getContent() {
+        return contents.get(link);
+    }
 
-    public boolean hasData = false;
-
-    public void clean() {
-        content = null;
-        hasData = false;
+    public void setContent(String content) {
+        if (!TextUtils.isEmpty(content))
+            contents.put(link, content);
     }
 
 }
