@@ -554,13 +554,19 @@ public abstract class PageLoader {
         mBookRecord.chapter = mCurChapterPos;
 
         if (mCurPage != null) {
-            mBookRecord.pagePos = mCancelPage.position;
+            mBookRecord.pagePos = mCurPage.position;
         } else {
             mBookRecord.pagePos = 0;
         }
+        mBookRecord.isThrough = mCurPageList.size() == mCurPage.position + 1;
         mPageChangeListener.onBookRecordChange(mBookRecord);
     }
 
+    public void setBookRecord(BookRecordBean record) {
+        mBookRecord = record;
+        prepareBook();
+        isChapterOpen = false;
+    }
     /**
      * 初始化书籍
      */

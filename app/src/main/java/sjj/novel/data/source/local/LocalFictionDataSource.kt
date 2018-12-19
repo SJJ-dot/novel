@@ -67,9 +67,9 @@ class LocalFictionDataSource : NovelDataRepository.LocalSource {
         return bookDao.getBookSourceRecord(name, author)
     }
 
-    override fun setReadIndex(name: String, author: String, index: Chapter, isThrough: Boolean): Observable<Int> {
+    override fun setReadIndex(name: String, author: String, index: Chapter, pagePos: Int, isThrough: Boolean): Observable<Int> {
         return fromCallableOrNull {
-            bookDao.setReadIndex(name, author, index.index, index.chapterName, isThrough)
+            bookDao.setReadIndex(name, author, index.index, index.chapterName, pagePos, isThrough)
         }.subscribeOn(Schedulers.io())
     }
 
@@ -83,7 +83,7 @@ class LocalFictionDataSource : NovelDataRepository.LocalSource {
                 bookDao.insertChapters(book.chapterList)
                 book.chapterList.forEach {
                     //更新章节索引避免将已读记录清除
-                    bookDao.updateChapterIndex(it.index,it.url)
+                    bookDao.updateChapterIndex(it.index, it.url)
                 }
 
                 try {
@@ -110,7 +110,7 @@ class LocalFictionDataSource : NovelDataRepository.LocalSource {
                                     newIndex = chapters[c]
                                 }
                             }
-                            bookDao.setReadIndex(bookSourceRecord.bookName, bookSourceRecord.author, newIndex.index, bookSourceRecord.chapterName, bookSourceRecord.isThrough)
+                            bookDao.setReadIndex(bookSourceRecord.bookName, bookSourceRecord.author, newIndex.index, bookSourceRecord.chapterName,bookSourceRecord.pagePos,bookSourceRecord.isThrough)
                         }
                     }
                 } catch (e: Exception) {

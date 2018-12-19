@@ -1,5 +1,7 @@
 package sjj.novel.view.reader.bean;
 
+import android.support.annotation.NonNull;
+
 /**
  * Created by newbiechen on 17-5-20.
  */
@@ -10,4 +12,17 @@ public class BookRecordBean{
     public int chapter;
     //当前的页码
     public int pagePos;
+
+    public boolean isThrough = false;
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "BookRecordBean{" +
+                "bookId='" + bookId + '\'' +
+                ", chapter=" + chapter +
+                ", pagePos=" + pagePos +
+                ", isThrough=" + isThrough +
+                '}';
+    }
 }

@@ -74,6 +74,7 @@ public class PageView extends View {
 
     public PageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        mPageLoader = new EmptyPageLoader(this);
     }
 
     @Override
@@ -335,10 +336,10 @@ public class PageView extends View {
      */
     public PageLoader getPageLoader() {
         // 判是否已经存在
-        if (mPageLoader != null) {
+        if (mPageLoader != null && !(mPageLoader instanceof EmptyPageLoader)) {
             return mPageLoader;
         }
-            mPageLoader = new NetPageLoader(this);
+        mPageLoader = new NetPageLoader(this);
         // 判断是否 PageView 已经初始化完成
         if (mViewWidth != 0 || mViewHeight != 0) {
             // 初始化 PageLoader 的屏幕大小

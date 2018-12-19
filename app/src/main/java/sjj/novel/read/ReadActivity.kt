@@ -20,6 +20,7 @@ import org.jetbrains.anko.progressDialog
 import org.jetbrains.anko.toast
 import sjj.alog.Log
 import sjj.novel.*
+import sjj.novel.model.BookSourceRecord
 import sjj.novel.model.Chapter
 import sjj.novel.util.lazyModel
 import sjj.novel.util.observeOnMain
@@ -44,6 +45,8 @@ class ReadActivity : BaseActivity() {
 
 //    private val contentAdapter = ChapterContentAdapter()
 
+    private val pageLoader by lazy { chapterContent.pageLoader }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_read)
@@ -55,7 +58,6 @@ class ReadActivity : BaseActivity() {
 //        chapterContent.adapter = contentAdapter
         chapterList.adapter = chapterListAdapter
 
-        val pageLoader = chapterContent.pageLoader
         chapterContent.setTouchListener {
             Log.e("Touch center")
             if (supportActionBar.isShowing) {
@@ -64,63 +66,73 @@ class ReadActivity : BaseActivity() {
                 supportActionBar.show()
             }
         }
-        pageLoader.setOnPageChangeListener(object : PageLoader.OnPageChangeListener {
-            override fun onBookRecordChange(bean: BookRecordBean) {
-            }
 
-            override fun onChapterChange(pos: Int) {
-            }
-
-            override fun requestChapters(requestChapters: MutableList<TxtChapter>) {
-                model.getChapter(requestChapters).observeOnMain().subscribe({
-                    Log.e("requestChapters success")
-                    pageLoader.openChapter()
-                }, {
-                    Log.e("requestChapters chapterError")
-                    pageLoader.chapterError()
-                }).destroy("requestChapters")
-            }
-
-            override fun onCategoryFinish(chapters: MutableList<TxtChapter>?) {
-            }
-
-            override fun onPageCountChange(count: Int) {
-            }
-
-            override fun onPageChange(pos: Int) {
-            }
-
-        })
 
         model.book.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe { book ->
             title = book.name
             chapterListAdapter.data = book.chapterList
             chapterListAdapter.notifyDataSetChanged()
 
-            pageLoader.setBook(BookBean().apply {
-                id = book.url
-                title = book.name
-                author = book.author
-                shortIntro = book.intro
-                cover = book.bookCoverImgUrl
-                bookChapterList = book.chapterList.map { chapter ->
-                    TxtChapter().apply {
-                        this.bookId = book.url
-                        this.link = chapter.url
-                        this.title = chapter.chapterName
-                        this.content = chapter.content
-                    }
-                }
-
-            })
-            pageLoader.refreshChapterList()
-
             //阅读记录
             model.readIndex.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
                 val index = min(max(book.chapterList.lastIndex, 0), it.readIndex)
                 chapterList.scrollToPosition(index)
-//                chapterContent.scrollToPosition(index)
+
+                pageLoader.setBookRecord(BookRecordBean().apply {
+                    bookId = book.url
+                    chapter = it.readIndex
+                    pagePos = it.pagePos
+                    isThrough = it.isThrough
+                })
+
+                pageLoader.setBook(BookBean().apply {
+                    id = book.url
+                    title = book.name
+                    author = book.author
+                    shortIntro = book.intro
+                    cover = book.bookCoverImgUrl
+                    bookChapterList = book.chapterList.map { chapter ->
+                        TxtChapter().apply {
+                            this.bookId = book.url
+                            this.link = chapter.url
+                            this.title = chapter.chapterName
+                            this.content = chapter.content
+                        }
+                    }
+
+                })
+
+                pageLoader.setOnPageChangeListener(object : PageLoader.OnPageChangeListener {
+                    override fun onBookRecordChange(bean: BookRecordBean) {
+                        model.setReadIndex(book.chapterList[bean.chapter], bean.pagePos, bean.isThrough).subscribe()
+                    }
+
+                    override fun onChapterChange(pos: Int) {
+                    }
+
+                    override fun requestChapters(requestChapters: MutableList<TxtChapter>) {
+                        model.getChapter(requestChapters).observeOnMain().subscribe({
+                            pageLoader.openChapter()
+                        }, {
+                            pageLoader.chapterError()
+                        }).destroy("requestChapters")
+                    }
+
+                    override fun onCategoryFinish(chapters: MutableList<TxtChapter>?) {
+                    }
+
+                    override fun onPageCountChange(count: Int) {
+                    }
+
+                    override fun onPageChange(pos: Int) {
+                    }
+
+                })
+
+                pageLoader.refreshChapterList()
             }.destroy(DISPOSABLE_ACTIVITY_READ_READ_INDEX)
+
+
         }.destroy()
     }
 
@@ -173,6 +185,12 @@ class ReadActivity : BaseActivity() {
         }
     }
 
+
+    override fun onPause() {
+        super.onPause()
+        pageLoader.saveRecord()
+    }
+
     private inner class ChapterListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         var data = listOf<Chapter>()
@@ -187,7 +205,8 @@ class ReadActivity : BaseActivity() {
             val c = data[position]
             holder.itemView.find<TextView>(R.id.text1).text = c.chapterName
             holder.itemView.setOnClickListener {
-                model.setReadIndex(c).subscribe().destroy(DISPOSABLE_READ_INDEX)
+                model.setReadIndex(c, 0).subscribe().destroy(DISPOSABLE_READ_INDEX)
+                pageLoader.skipToChapter(position)
 //                chapterContent.scrollToPosition(position)
             }
         }

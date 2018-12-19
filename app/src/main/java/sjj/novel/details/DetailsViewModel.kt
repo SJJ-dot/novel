@@ -33,7 +33,7 @@ class DetailsViewModel(val name: String, val author: String) : ViewModel() {
     val bookSourceRecord = novelDataRepository.getBookSourceRecord(name, author)
 
     fun setReadIndex(index: Chapter): Observable<Int> {
-        return novelDataRepository.setReadIndex(name, author, index)
+        return novelDataRepository.setReadIndex(name, author, index,0)
     }
 
     fun refresh(it: Book): Observable<Book> {

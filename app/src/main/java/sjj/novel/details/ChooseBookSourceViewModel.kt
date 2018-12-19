@@ -111,7 +111,7 @@ class ChooseBookSourceViewModel(val bookName: String, val author: String) : View
                                 t = chapter
                             }
                         }
-                        novelDataRepository.setReadIndex(book.name, book.author, t!!, b.isThrough).flatMap {
+                        novelDataRepository.setReadIndex(book.name, book.author, t!!, b.pagePos,b.isThrough).flatMap {
                             novelDataRepository.setBookSource(bookName, author, book.url)
                         }
                     }
