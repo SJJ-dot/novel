@@ -759,50 +759,50 @@ public abstract class PageLoader {
 
         /******绘制电池********/
 
-        int visibleRight = mDisplayWidth - mMarginWidth;
-        int visibleBottom = mDisplayHeight - tipMarginHeight;
-
-        int outFrameWidth = (int) mTipPaint.measureText("xxx");
-        int outFrameHeight = (int) mTipPaint.getTextSize();
-
-        int polarHeight = screenUtils.dpToPx(6);
-        int polarWidth = screenUtils.dpToPx(2);
-        int border = 1;
-        int innerMargin = 1;
-
-        //电极的制作
-        int polarLeft = visibleRight - polarWidth;
-        int polarTop = visibleBottom - (outFrameHeight + polarHeight) / 2;
-        Rect polar = new Rect(polarLeft, polarTop, visibleRight,
-                polarTop + polarHeight - screenUtils.dpToPx(2));
-
-        mBatteryPaint.setStyle(Paint.Style.FILL);
-        canvas.drawRect(polar, mBatteryPaint);
-
-        //外框的制作
-        int outFrameLeft = polarLeft - outFrameWidth;
-        int outFrameTop = visibleBottom - outFrameHeight;
-        int outFrameBottom = visibleBottom - screenUtils.dpToPx(2);
-        Rect outFrame = new Rect(outFrameLeft, outFrameTop, polarLeft, outFrameBottom);
-
-        mBatteryPaint.setStyle(Paint.Style.STROKE);
-        mBatteryPaint.setStrokeWidth(border);
-        canvas.drawRect(outFrame, mBatteryPaint);
-
-        //内框的制作
-        float innerWidth = (outFrame.width() - innerMargin * 2 - border) * (mBatteryLevel / 100.0f);
-        RectF innerFrame = new RectF(outFrameLeft + border + innerMargin, outFrameTop + border + innerMargin,
-                outFrameLeft + border + innerMargin + innerWidth, outFrameBottom - border - innerMargin);
-
-        mBatteryPaint.setStyle(Paint.Style.FILL);
-        canvas.drawRect(innerFrame, mBatteryPaint);
-
-        /******绘制当前时间********/
-        //底部的字显示的位置Y
-        float y = mDisplayHeight - mTipPaint.getFontMetrics().bottom - tipMarginHeight;
-        String time = StringUtils.dateConvert(System.currentTimeMillis(), Constant.FORMAT_TIME);
-        float x = outFrameLeft - mTipPaint.measureText(time) - screenUtils.dpToPx(4);
-        canvas.drawText(time, x, y, mTipPaint);
+//        int visibleRight = mDisplayWidth - mMarginWidth;
+//        int visibleBottom = mDisplayHeight - tipMarginHeight;
+//
+//        int outFrameWidth = (int) mTipPaint.measureText("xxx");
+//        int outFrameHeight = (int) mTipPaint.getTextSize();
+//
+//        int polarHeight = screenUtils.dpToPx(6);
+//        int polarWidth = screenUtils.dpToPx(2);
+//        int border = 1;
+//        int innerMargin = 1;
+//
+//        //电极的制作
+//        int polarLeft = visibleRight - polarWidth;
+//        int polarTop = visibleBottom - (outFrameHeight + polarHeight) / 2;
+//        Rect polar = new Rect(polarLeft, polarTop, visibleRight,
+//                polarTop + polarHeight - screenUtils.dpToPx(2));
+//
+//        mBatteryPaint.setStyle(Paint.Style.FILL);
+//        canvas.drawRect(polar, mBatteryPaint);
+//
+//        //外框的制作
+//        int outFrameLeft = polarLeft - outFrameWidth;
+//        int outFrameTop = visibleBottom - outFrameHeight;
+//        int outFrameBottom = visibleBottom - screenUtils.dpToPx(2);
+//        Rect outFrame = new Rect(outFrameLeft, outFrameTop, polarLeft, outFrameBottom);
+//
+//        mBatteryPaint.setStyle(Paint.Style.STROKE);
+//        mBatteryPaint.setStrokeWidth(border);
+//        canvas.drawRect(outFrame, mBatteryPaint);
+//
+//        //内框的制作
+//        float innerWidth = (outFrame.width() - innerMargin * 2 - border) * (mBatteryLevel / 100.0f);
+//        RectF innerFrame = new RectF(outFrameLeft + border + innerMargin, outFrameTop + border + innerMargin,
+//                outFrameLeft + border + innerMargin + innerWidth, outFrameBottom - border - innerMargin);
+//
+//        mBatteryPaint.setStyle(Paint.Style.FILL);
+//        canvas.drawRect(innerFrame, mBatteryPaint);
+//
+//        /******绘制当前时间********/
+//        //底部的字显示的位置Y
+//        float y = mDisplayHeight - mTipPaint.getFontMetrics().bottom - tipMarginHeight;
+//        String time = StringUtils.dateConvert(System.currentTimeMillis(), Constant.FORMAT_TIME);
+//        float x = outFrameLeft - mTipPaint.measureText(time) - screenUtils.dpToPx(4);
+//        canvas.drawText(time, x, y, mTipPaint);
     }
 
     private void drawContent(Bitmap bitmap) {
