@@ -1,11 +1,11 @@
 package sjj.novel.view.reader.record;
 
+import android.content.Context;
 import android.content.SharedPreferences;
-
-import com.tencent.mmkv.MMKV;
 
 import sjj.novel.view.reader.page.PageMode;
 import sjj.novel.view.reader.page.PageStyle;
+import sjj.novel.view.reader.utils.ScreenUtils;
 import sjj.novel.view.reader.utils.SharedPreUtils;
 
 /**
@@ -33,23 +33,12 @@ public class ReadSettingManager {
     public static final String SHARED_READ_FULL_SCREEN = "shared_read_full_screen";
     public static final String SHARED_READ_CONVERT_TYPE = "shared_read_convert_type";
 
-    private static volatile ReadSettingManager sInstance;
-
     private SharedPreferences sharedPreUtils;
+    private ScreenUtils screenUtils;
 
-    public static ReadSettingManager getInstance() {
-        if (sInstance == null) {
-            synchronized (ReadSettingManager.class) {
-                if (sInstance == null) {
-                    sInstance = new ReadSettingManager();
-                }
-            }
-        }
-        return sInstance;
-    }
-
-    private ReadSettingManager() {
+    public ReadSettingManager(Context context) {
         sharedPreUtils = SharedPreUtils.getInstance();
+        screenUtils = new ScreenUtils(context);
     }
 
     public void setPageStyle(PageStyle pageStyle) {
@@ -68,9 +57,6 @@ public class ReadSettingManager {
         sharedPreUtils.edit().putBoolean(SHARED_READ_IS_TEXT_DEFAULT, isDefault).apply();
     }
 
-    public void setTextSize(int textSize) {
-        sharedPreUtils.edit().putInt(SHARED_READ_TEXT_SIZE, textSize).apply();
-    }
 
     public void setPageMode(PageMode mode) {
         sharedPreUtils.edit().putInt(SHARED_READ_PAGE_MODE, mode.ordinal()).apply();
@@ -88,11 +74,13 @@ public class ReadSettingManager {
         return sharedPreUtils.getBoolean(SHARED_READ_IS_BRIGHTNESS_AUTO, false);
     }
 
-    /**
-     * px size
-     */
+
+    public void setTextSize(int textSize) {
+        sharedPreUtils.edit().putInt(SHARED_READ_TEXT_SIZE, textSize).apply();
+    }
+
     public int getTextSize() {
-        return sharedPreUtils.getInt(SHARED_READ_TEXT_SIZE, 28);
+        return sharedPreUtils.getInt(SHARED_READ_TEXT_SIZE, screenUtils.spToPx(28));
     }
 
     public boolean isDefaultTextSize() {
@@ -114,7 +102,7 @@ public class ReadSettingManager {
     }
 
     public void setVolumeTurnPage(boolean isTurn) {
-        sharedPreUtils.edit().putBoolean(SHARED_READ_VOLUME_TURN_PAGE, isTurn);
+        sharedPreUtils.edit().putBoolean(SHARED_READ_VOLUME_TURN_PAGE, isTurn).apply();
     }
 
     public boolean isVolumeTurnPage() {
@@ -122,7 +110,7 @@ public class ReadSettingManager {
     }
 
     public void setFullScreen(boolean isFullScreen) {
-        sharedPreUtils.edit().putBoolean(SHARED_READ_FULL_SCREEN, isFullScreen);
+        sharedPreUtils.edit().putBoolean(SHARED_READ_FULL_SCREEN, isFullScreen).apply();
     }
 
     public boolean isFullScreen() {
@@ -130,7 +118,7 @@ public class ReadSettingManager {
     }
 
     public void setConvertType(int convertType) {
-        sharedPreUtils.edit().putInt(SHARED_READ_CONVERT_TYPE, convertType);
+        sharedPreUtils.edit().putInt(SHARED_READ_CONVERT_TYPE, convertType).apply();
     }
 
     public int getConvertType() {

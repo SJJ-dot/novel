@@ -155,7 +155,7 @@ public abstract class PageLoader {
 
     private void initData() {
         // 获取配置管理器
-        mSettingManager = ReadSettingManager.getInstance();
+        mSettingManager = new ReadSettingManager(mContext);
         // 获取配置参数
         mPageMode = mSettingManager.getPageMode();
         mPageStyle = mSettingManager.getPageStyle();
@@ -163,7 +163,7 @@ public abstract class PageLoader {
         mMarginWidth = screenUtils.dpToPx(DEFAULT_MARGIN_WIDTH);
         mMarginHeight = screenUtils.dpToPx(DEFAULT_MARGIN_HEIGHT);
         // 配置文字有关的参数
-        setUpTextParams(screenUtils.spToPx(mSettingManager.getTextSize()));
+        setUpTextParams(mSettingManager.getTextSize());
     }
 
     public void setBook(BookBean book) {
