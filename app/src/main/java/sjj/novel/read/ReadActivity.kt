@@ -27,6 +27,7 @@ import sjj.novel.util.observeOnMain
 import sjj.novel.view.reader.bean.BookBean
 import sjj.novel.view.reader.bean.BookRecordBean
 import sjj.novel.view.reader.page.PageLoader
+import sjj.novel.view.reader.page.PageLoader.STATUS_LOADING
 import sjj.novel.view.reader.page.PageMode
 import sjj.novel.view.reader.page.PageView
 import sjj.novel.view.reader.page.TxtChapter
@@ -97,7 +98,6 @@ class ReadActivity : BaseActivity() {
                             this.bookId = book.url
                             this.link = chapter.url
                             this.title = chapter.chapterName
-                            this.content = chapter.content
                         }
                     }
 
@@ -113,7 +113,8 @@ class ReadActivity : BaseActivity() {
 
                     override fun requestChapters(requestChapters: MutableList<TxtChapter>) {
                         model.getChapter(requestChapters).observeOnMain().subscribe({
-                            pageLoader.openChapter()
+                            if (pageLoader.pageStatus == STATUS_LOADING)
+                                pageLoader.openChapter()
                         }, {
                             pageLoader.chapterError()
                         }).destroy("requestChapters")
@@ -171,7 +172,7 @@ class ReadActivity : BaseActivity() {
                 true
             }
             R.id.menu_flip_mode -> {
-                AlertDialog.Builder(this).setSingleChoiceItems(arrayOf("仿真","覆盖","平移","无","滚动"), PageMode.valueOf(AppConfig.flipPageMode).ordinal) { dialog, which ->
+                AlertDialog.Builder(this).setSingleChoiceItems(arrayOf("仿真", "覆盖", "平移", "无", "滚动"), PageMode.valueOf(AppConfig.flipPageMode).ordinal) { dialog, which ->
                     dialog.dismiss()
                     val mode = PageMode.values()[which]
                     AppConfig.flipPageMode = mode.name
