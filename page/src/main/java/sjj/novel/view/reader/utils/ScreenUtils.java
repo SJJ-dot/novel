@@ -34,12 +34,12 @@ public class ScreenUtils {
 
     public int spToPx(int sp) {
         DisplayMetrics metrics = getDisplayMetrics();
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, metrics);
+        return (int) (sp * 1.0 * metrics.scaledDensity + 0.5);
     }
 
     public int pxToSp(int px) {
         DisplayMetrics metrics = getDisplayMetrics();
-        return (int) (px / metrics.scaledDensity);
+        return (int) (px * 1.0 / metrics.scaledDensity + 0.5);
     }
 
     /**
