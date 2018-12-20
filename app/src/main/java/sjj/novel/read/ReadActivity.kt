@@ -4,6 +4,7 @@ import android.app.ProgressDialog
 import android.arch.lifecycle.Observer
 import android.graphics.Typeface
 import android.os.Bundle
+import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
 import android.text.Html
@@ -34,7 +35,7 @@ import sjj.novel.view.reader.page.TxtChapter
 import kotlin.math.max
 import kotlin.math.min
 
-class ReadActivity : BaseActivity() {
+class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
     companion object {
         val BOOK_NAME = "BOOK_NAME"
         val BOOK_AUTHOR = "BOOK_AUTHOR"
@@ -44,7 +45,9 @@ class ReadActivity : BaseActivity() {
 
     private val model by lazyModel<ReadViewModel> { arrayOf(intent.getStringExtra(BOOK_NAME), intent.getStringExtra(BOOK_AUTHOR)) }
 
-    private val pageLoader by lazy { chapterContent.pageLoader }
+    private val mPageLoader by lazy { chapterContent.pageLoader }
+
+    private val menuFragment by lazy { ReaderSettingFragment() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,17 +56,15 @@ class ReadActivity : BaseActivity() {
         val supportActionBar = supportActionBar!!
         supportActionBar.setDisplayHomeAsUpEnabled(true)
         supportActionBar.hide()
+        //禁止手势滑出
+        drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+
         val chapterListAdapter = ChapterListAdapter()
 //        chapterContent.adapter = contentAdapter
         chapterList.adapter = chapterListAdapter
 
         chapterContent.setTouchListener {
-            Log.e("Touch center")
-            if (supportActionBar.isShowing) {
-                supportActionBar.hide()
-            } else {
-                supportActionBar.show()
-            }
+            toggleMenu()
         }
 
 
@@ -77,14 +78,14 @@ class ReadActivity : BaseActivity() {
                 val index = min(max(book.chapterList.lastIndex, 0), it.readIndex)
                 chapterList.scrollToPosition(index)
 
-                pageLoader.setBookRecord(BookRecordBean().apply {
+                mPageLoader.setBookRecord(BookRecordBean().apply {
                     bookId = book.url
                     chapter = it.readIndex
                     pagePos = it.pagePos
                     isThrough = it.isThrough
                 })
 
-                pageLoader.setBook(BookBean().apply {
+                mPageLoader.setBook(BookBean().apply {
                     id = book.url
                     title = book.name
                     author = book.author
@@ -100,7 +101,7 @@ class ReadActivity : BaseActivity() {
 
                 })
 
-                pageLoader.setOnPageChangeListener(object : PageLoader.OnPageChangeListener {
+                mPageLoader.setOnPageChangeListener(object : PageLoader.OnPageChangeListener {
                     override fun onBookRecordChange(bean: BookRecordBean) {
                         model.setReadIndex(book.chapterList[bean.chapter], bean.pagePos, bean.isThrough).subscribe()
                     }
@@ -110,10 +111,10 @@ class ReadActivity : BaseActivity() {
 
                     override fun requestChapters(requestChapters: MutableList<TxtChapter>) {
                         model.getChapter(requestChapters).observeOnMain().subscribe({
-                            if (pageLoader.pageStatus == STATUS_LOADING)
-                                pageLoader.openChapter()
+                            if (mPageLoader.pageStatus == STATUS_LOADING)
+                                mPageLoader.openChapter()
                         }, {
-                            pageLoader.chapterError()
+                            mPageLoader.chapterError()
                         }).destroy("requestChapters")
                     }
 
@@ -121,14 +122,16 @@ class ReadActivity : BaseActivity() {
                     }
 
                     override fun onPageCountChange(count: Int) {
+                        menuFragment.setPageCount(count)
                     }
 
                     override fun onPageChange(pos: Int) {
+                        menuFragment.setPagePos(pos)
                     }
 
                 })
 
-                pageLoader.refreshChapterList()
+                mPageLoader.refreshChapterList()
             }.destroy(DISPOSABLE_ACTIVITY_READ_READ_INDEX)
 
 
@@ -173,26 +176,59 @@ class ReadActivity : BaseActivity() {
                     dialog.dismiss()
                     val mode = PageMode.values()[which]
                     AppConfig.flipPageMode = mode.name
-                    pageLoader.setPageMode(mode)
+                    mPageLoader.setPageMode(mode)
                 }.show()
                 true
             }
             R.id.menu_add -> {
-                pageLoader.setTextSizeIncrease(true)
+                mPageLoader.setTextSizeIncrease(true)
                 true
             }
             R.id.menu_minus -> {
-                pageLoader.setTextSizeIncrease(false)
+                mPageLoader.setTextSizeIncrease(false)
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
+    override fun onBackPressed() {
+        if (drawer_layout?.isDrawerOpen(Gravity.START) == true) {
+            drawer_layout?.closeDrawers()
+        }else if (supportActionBar?.isShowing == true) {
+            toggleMenu()
+        } else {
+            super.onBackPressed()
+        }
+    }
+
+    private fun toggleMenu() {
+        if (supportActionBar?.isShowing == true) {
+            supportActionBar?.hide()
+            supportFragmentManager.beginTransaction().remove(menuFragment).commitAllowingStateLoss()
+        } else {
+            supportActionBar?.show()
+            supportFragmentManager.beginTransaction().replace(R.id.menu_fragment_container, menuFragment).commit()
+        }
+    }
 
     override fun onPause() {
         super.onPause()
-        pageLoader.saveRecord()
+        mPageLoader.saveRecord()
+    }
+
+    /**
+     * 底部菜单回调
+     */
+    override fun openChapterList() {
+        drawer_layout.openDrawer(Gravity.START)
+    }
+
+    /**
+     * 底部菜单回调
+     */
+    override fun getPageLoader(): PageLoader? {
+        return mPageLoader
     }
 
     private inner class ChapterListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -210,7 +246,7 @@ class ReadActivity : BaseActivity() {
             holder.itemView.find<TextView>(R.id.text1).text = c.chapterName
             holder.itemView.setOnClickListener {
                 model.setReadIndex(c, 0).subscribe().destroy(DISPOSABLE_READ_INDEX)
-                pageLoader.skipToChapter(position)
+                mPageLoader.skipToChapter(position)
 //                chapterContent.scrollToPosition(position)
             }
         }

@@ -18,4 +18,5 @@
 
     <color name="sign_up_background">#E6E6E5</color>
     <color name="sign_up_background_bottom">#D4D4D4</color>
+    <color name="orange">#DE6014</color>
 </resources>

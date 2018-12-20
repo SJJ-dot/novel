@@ -533,6 +533,10 @@ public abstract class PageLoader {
         return mCurPage.position;
     }
 
+    public int getPageCount() {
+        return mCurPageList == null ? 0 : mCurPageList.size();
+    }
+
     /**
      * 获取当前章节的章节位置
      *
