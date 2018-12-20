@@ -170,10 +170,8 @@ public class SimulationPageAnim extends HorizonPageAnim{
         switch (direction){
             case PRE:
                 //上一页滑动不出现对角
-                if (mStartX > mScreenWidth / 2){
-                    calcCornerXY(mScreenWidth-mStartX,mScreenHeight);
-                }else{
-                    calcCornerXY(mStartX,mScreenHeight);
+                if (mStartX > mScreenWidth / 2) {
+                    calcCornerXY(mScreenWidth - mStartX, mStartY);
                 }
                 break;
             case NEXT:
@@ -194,8 +192,8 @@ public class SimulationPageAnim extends HorizonPageAnim{
     public void setTouchPoint(float x, float y) {
         super.setTouchPoint(x, y);
         //触摸y中间位置吧y变成屏幕高度
-        if ((mStartY > mScreenHeight / 3 && mStartY < mScreenHeight * 2 / 3) ||  mDirection.equals(Direction.PRE)){
-            mTouchY = mScreenHeight;
+        if ((mStartY > mScreenHeight / 3 && mStartY < mScreenHeight / 2) &&  mDirection.equals(Direction.PRE)){
+            mTouchY = 1;
         }
 
         if (mStartY > mScreenHeight / 3 && mStartY < mScreenHeight / 2 && mDirection.equals(Direction.NEXT)){
