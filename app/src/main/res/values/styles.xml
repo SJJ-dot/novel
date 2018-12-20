@@ -8,13 +8,15 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="android:textColorPrimary">@color/colorText</item>
-        <item name="android:textColorSecondary">@color/colorTextLight</item>
+        <item name="android:textColorPrimary">@color/material_textBlack_text</item>
+        <item name="android:textColorSecondary">@color/material_textBlack_secondaryText</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentStatus">true</item>
     </style>
 
-    <style name="AppTheme.NoActionBarColorPrimaryDark" >
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+    <style name="AppTheme.StatusBar">
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
     </style>
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 

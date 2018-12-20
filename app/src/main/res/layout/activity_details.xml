@@ -14,27 +14,47 @@
 
     </data>
 
-    <sjj.novel.view.SwipeRefreshLayout_
-        android:id="@+id/detailsRefreshLayout"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimaryDark"
+        android:fitsSystemWindows="true"
+        android:orientation="vertical">
 
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appBarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.AppBarOverlay"
+            app:layout_constraintTop_toTopOf="parent">
 
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_scrollFlags="scroll|enterAlways|snap"
+                app:popupTheme="@style/AppTheme.PopupOverlay"
+                app:title="书架" />
+        </android.support.design.widget.AppBarLayout>
+
+        <sjj.novel.view.SwipeRefreshLayout_
+            android:id="@+id/detailsRefreshLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/material_white">
 
             <android.support.constraint.ConstraintLayout
-
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                >
+                android:layout_height="match_parent">
 
                 <com.facebook.drawee.view.SimpleDraweeView
                     android:id="@+id/bookCover"
                     android:layout_width="100dp"
                     android:layout_height="150dp"
-                    android:layout_marginBottom="16dp"
-                    android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
                     android:outlineProvider="bounds"
                     android:padding="2dp"
                     android:scaleType="centerInside"
@@ -52,10 +72,10 @@
                     android:id="@+id/bookName"
                     android:layout_width="0dp"
                     android:layout_height="27dp"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="8dp"
                     android:text="@{book.name}"
                     android:textColor="@color/colorText"
                     android:textSize="20sp"
@@ -71,10 +91,10 @@
                     android:id="@+id/authorTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
                     android:text="作者："
                     android:textColor="@color/colorTextLight"
                     android:textSize="16sp"
@@ -89,10 +109,10 @@
                     android:id="@+id/author"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="8dp"
                     android:text="@{book.author}"
                     android:textColor="@color/colorText"
                     android:textSize="16sp"
@@ -109,10 +129,10 @@
                     android:id="@+id/introTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
                     android:text="简介："
                     android:textColor="@color/colorText"
                     android:textSize="16sp"
@@ -142,10 +162,10 @@
                     android:id="@+id/latestChapterTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
                     android:text="最新章节："
                     android:textColor="@color/colorTextLight"
                     android:textSize="16sp"
@@ -160,10 +180,10 @@
                     android:id="@+id/latestChapter"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
                     android:textColor="@color/colorText"
                     android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -177,10 +197,10 @@
                     android:id="@+id/intro"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
                     android:textColor="@color/colorTextLight"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -195,10 +215,10 @@
                     android:id="@+id/chapterListButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="8dp"
                     android:background="@drawable/btn_default"
                     android:text="@string/chapterList"
                     android:textColor="@color/material_white"
@@ -212,8 +232,8 @@
                     android:id="@+id/reading"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
                     android:background="@drawable/btn_default"
                     android:text="开始阅读"
                     android:textColor="@color/material_white"
@@ -225,20 +245,21 @@
                     android:id="@+id/chapterList"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
+                    android:layout_marginTop="72dp"
                     android:layout_marginBottom="8dp"
                     android:background="@color/material_white"
                     android:outlineProvider="bounds"
                     android:translationZ="5dp"
-                    android:layout_marginTop="72dp"
-                    app:layout_constraintTop_toBottomOf="@id/bookCover"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintVertical_bias="1"
-                    android:visibility="gone"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/bookCover"
+                    app:layout_constraintVertical_bias="1" />
             </android.support.constraint.ConstraintLayout>
 
 
-    </sjj.novel.view.SwipeRefreshLayout_>
+        </sjj.novel.view.SwipeRefreshLayout_>
+    </LinearLayout>
 
 </layout>

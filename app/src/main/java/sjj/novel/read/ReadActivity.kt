@@ -63,9 +63,24 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
 //        chapterContent.adapter = contentAdapter
         chapterList.adapter = chapterListAdapter
 
-        chapterContent.setTouchListener {
-            toggleMenu()
-        }
+        chapterContent.setTouchListener(object : PageView.TouchListener {
+            override fun intercept(event: MotionEvent?): Boolean {
+                val showing = supportActionBar.isShowing
+                if (showing && event?.action == MotionEvent.ACTION_DOWN) {
+                    return true
+                }
+                if (showing && event?.action == MotionEvent.ACTION_UP) {
+                    toggleMenu()
+                    return true
+                }
+                return showing
+            }
+
+            override fun center() {
+                toggleMenu()
+            }
+
+        })
 
 
         model.book.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe { book ->
@@ -195,7 +210,7 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
     override fun onBackPressed() {
         if (drawer_layout?.isDrawerOpen(Gravity.START) == true) {
             drawer_layout?.closeDrawers()
-        }else if (supportActionBar?.isShowing == true) {
+        } else if (supportActionBar?.isShowing == true) {
             toggleMenu()
         } else {
             super.onBackPressed()
