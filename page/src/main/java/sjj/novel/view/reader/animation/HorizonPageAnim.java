@@ -30,6 +30,7 @@ public abstract class HorizonPageAnim extends PageAnimation{
 
     //是否没下一页或者上一页
     private boolean noNext = false;
+    private final int mSlop;
 
     public HorizonPageAnim(int w, int h, View view, OnPageChangeListener listener) {
         this(w, h, 0, 0, view, listener);
@@ -41,6 +42,7 @@ public abstract class HorizonPageAnim extends PageAnimation{
         //创建图片
         mCurBitmap = Bitmap.createBitmap(mViewWidth, mViewHeight, Bitmap.Config.RGB_565);
         mNextBitmap = Bitmap.createBitmap(mViewWidth, mViewHeight, Bitmap.Config.RGB_565);
+        mSlop = ViewConfiguration.get(mView.getContext()).getScaledTouchSlop();
     }
 
     /**
@@ -85,10 +87,10 @@ public abstract class HorizonPageAnim extends PageAnimation{
                 abortAnim();
                 break;
             case MotionEvent.ACTION_MOVE:
-                final int slop = ViewConfiguration.get(mView.getContext()).getScaledTouchSlop();
+
                 //判断是否移动了
                 if (!isMove) {
-                    isMove = Math.abs(mStartX - x) > slop || Math.abs(mStartY - y) > slop;
+                    isMove = Math.abs(mStartX - x) > mSlop;
                 }
 
                 if (isMove){
