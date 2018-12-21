@@ -1,7 +1,6 @@
 package sjj.novel.view.reader.utils;
 
 import android.content.Context;
-import android.support.annotation.StringRes;
 
 import com.zqc.opencc.android.lib.ChineseConverter;
 import com.zqc.opencc.android.lib.ConversionType;
@@ -12,8 +11,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-
-import static sjj.novel.view.reader.record.ReadSettingManager.SHARED_READ_CONVERT_TYPE;
 
 /**
  * Created by newbiechen on 17-4-22.
@@ -123,9 +120,8 @@ public class StringUtils {
     }
 
     //繁簡轉換
-    public static String convertCC(String input, Context context) {
+    public static String convertCC(Context context, String input, int convertType) {
         ConversionType currentConversionType = ConversionType.S2TWP;
-        int convertType = SharedPreUtils.getInstance().getInt(SHARED_READ_CONVERT_TYPE, 0);
 
         if (input.length() == 0)
             return "";

@@ -4,7 +4,6 @@ import android.arch.lifecycle.ViewModel
 import android.text.Html
 import io.reactivex.Observable
 import sjj.novel.data.repository.novelDataRepository
-import sjj.novel.model.BookSourceRecord
 import sjj.novel.model.Chapter
 import sjj.novel.util.lazyFromIterable
 import sjj.novel.view.reader.page.TxtChapter
@@ -27,9 +26,9 @@ class ReadViewModel(val name: String, val author: String) : ViewModel() {
         return novelDataRepository.getChapter(url)
     }
 
-    fun getChapter(requestChapters: List<TxtChapter>): Observable<List<TxtChapter>> {
+    fun getChapter(requestChapters: List<TxtChapter>, force: Boolean = false): Observable<List<TxtChapter>> {
         return Observable.just(requestChapters).lazyFromIterable { txtChapter ->
-            novelDataRepository.getChapter(txtChapter.link).map { chapter ->
+            novelDataRepository.getChapter(txtChapter.link,force).map { chapter ->
                 txtChapter.content = Html.fromHtml(chapter.content).toString()
                 txtChapter.title = chapter.chapterName
                 txtChapter

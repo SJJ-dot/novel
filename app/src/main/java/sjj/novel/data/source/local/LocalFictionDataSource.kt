@@ -81,10 +81,13 @@ class LocalFictionDataSource : NovelDataRepository.LocalSource {
             booksDataBase.runInTransaction {
                 bookDao.updateBook(book)
                 bookDao.insertChapters(book.chapterList)
+                val ids = bookDao.getChapterIds(book.url).toMutableSet()
                 book.chapterList.forEach {
+                    ids.remove(it.url)
                     //更新章节索引避免将已读记录清除
                     bookDao.updateChapterIndex(it.index, it.url)
                 }
+                ids.forEach(bookDao::deleteChapter)
 
                 try {
                     //更新阅读纪录的索引
@@ -110,7 +113,7 @@ class LocalFictionDataSource : NovelDataRepository.LocalSource {
                                     newIndex = chapters[c]
                                 }
                             }
-                            bookDao.setReadIndex(bookSourceRecord.bookName, bookSourceRecord.author, newIndex.index, bookSourceRecord.chapterName,bookSourceRecord.pagePos,bookSourceRecord.isThrough)
+                            bookDao.setReadIndex(bookSourceRecord.bookName, bookSourceRecord.author, newIndex.index, bookSourceRecord.chapterName, bookSourceRecord.pagePos, bookSourceRecord.isThrough)
                         }
                     }
                 } catch (e: Exception) {

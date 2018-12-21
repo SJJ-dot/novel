@@ -1,11 +1,10 @@
 package sjj.novel.view.reader.utils;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.tencent.mmkv.MMKV;
-
 public class SharedPreUtils {
-    public static SharedPreferences getInstance() {
-        return MMKV.mmkvWithID("sjj.novel.view.reader.record.ReadSettingManager");
+    public static SharedPreferences getInstance(Context context) {
+        return context.getSharedPreferences("sjj.novel.view.reader.record.ReadSettingManager", Context.MODE_PRIVATE);
     }
 }

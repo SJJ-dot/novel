@@ -5,10 +5,9 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
 
@@ -23,7 +22,6 @@ import io.reactivex.disposables.Disposable;
 import sjj.novel.view.reader.bean.BookBean;
 import sjj.novel.view.reader.bean.BookRecordBean;
 import sjj.novel.view.reader.record.ReadSettingManager;
-import sjj.novel.view.reader.utils.Constant;
 import sjj.novel.view.reader.utils.RxUtils;
 import sjj.novel.view.reader.utils.ScreenUtils;
 import sjj.novel.view.reader.utils.StringUtils;
@@ -84,7 +82,7 @@ public abstract class PageLoader {
     // 被遮盖的页，或者认为被取消显示的页
     private TxtPage mCancelPage;
     // 存储阅读记录类
-    private BookRecordBean mBookRecord;
+    private BookRecordBean mBookRecord = new BookRecordBean();
 
     private Disposable mPreLoadDisp;
 
@@ -149,8 +147,6 @@ public abstract class PageLoader {
         initPaint();
         // 初始化PageView
         initPageView();
-        // 初始化书籍
-        prepareBook();
     }
 
     private void initData() {
@@ -269,6 +265,11 @@ public abstract class PageLoader {
         }
         mPageView.drawCurPage(false);
         return true;
+    }
+
+    public void refreshChapter(TxtChapter chapter) {
+        if (chapter == mChapterList.get(mCurChapterPos))
+            skipToChapter(mCurChapterPos);
     }
 
     /**
@@ -511,7 +512,8 @@ public abstract class PageLoader {
      *
      * @return
      */
-    public BookBean getCollBook() {
+    @Nullable
+    public BookBean getBook() {
         return mCollBook;
     }
 
@@ -546,6 +548,10 @@ public abstract class PageLoader {
         return mCurChapterPos;
     }
 
+    public TxtChapter getCurChapter() {
+        return mChapterList.size() > mCurChapterPos ? mChapterList.get(mCurChapterPos) : null;
+    }
+
     /**
      * 获取距离屏幕的高度
      *
@@ -578,20 +584,10 @@ public abstract class PageLoader {
 
     public void setBookRecord(BookRecordBean record) {
         mBookRecord = record;
-        prepareBook();
-        isChapterOpen = false;
-    }
-
-    /**
-     * 初始化书籍
-     */
-    private void prepareBook() {
-        if (mBookRecord == null) {
-            mBookRecord = new BookRecordBean();
-        }
-
         mCurChapterPos = mBookRecord.chapter;
         mLastChapterPos = mCurChapterPos;
+        skipToChapter(record.chapter);
+        skipToPage(record.pagePos);
     }
 
     /**
@@ -1235,6 +1231,7 @@ public abstract class PageLoader {
      * @return
      */
     private List<TxtPage> loadPages(TxtChapter chapter) {
+        int convertType = mSettingManager.getConvertType();
         //生成的页面
         List<TxtPage> pages = new ArrayList<>();
         //使用流的方式加载
@@ -1250,7 +1247,7 @@ public abstract class PageLoader {
                 paragraph = strings[i];
             }
             i++;
-            paragraph = StringUtils.convertCC(paragraph, mContext);
+            paragraph = StringUtils.convertCC(mContext, paragraph, convertType);
             // 重置段落
             if (!showTitle) {
                 paragraph = paragraph.replaceAll("\\s", "");
@@ -1275,7 +1272,7 @@ public abstract class PageLoader {
                     // 创建Page
                     TxtPage page = new TxtPage();
                     page.position = pages.size();
-                    page.title = StringUtils.convertCC(chapter.title, mContext);
+                    page.title = StringUtils.convertCC(mContext, chapter.title, convertType);
                     page.lines = new ArrayList<>(lines);
                     page.titleLines = titleLinesCount;
                     pages.add(page);
@@ -1328,7 +1325,7 @@ public abstract class PageLoader {
             //创建Page
             TxtPage page = new TxtPage();
             page.position = pages.size();
-            page.title = StringUtils.convertCC(chapter.title, mContext);
+            page.title = StringUtils.convertCC(mContext, chapter.title, convertType);
             page.lines = new ArrayList<>(lines);
             page.titleLines = titleLinesCount;
             pages.add(page);

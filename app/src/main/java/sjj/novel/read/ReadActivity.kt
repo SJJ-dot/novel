@@ -1,27 +1,18 @@
 package sjj.novel.read
 
 import android.app.ProgressDialog
-import android.arch.lifecycle.Observer
-import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
-import android.text.Html
-import android.util.SparseBooleanArray
 import android.view.*
 import android.widget.TextView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_read.*
-import kotlinx.android.synthetic.main.item_read_chapter_content.view.*
-import kotlinx.android.synthetic.main.item_read_chapter_content_text_line.view.*
-import org.jetbrains.anko.ctx
 import org.jetbrains.anko.find
 import org.jetbrains.anko.progressDialog
 import org.jetbrains.anko.toast
-import sjj.alog.Log
 import sjj.novel.*
-import sjj.novel.model.BookSourceRecord
 import sjj.novel.model.Chapter
 import sjj.novel.util.lazyModel
 import sjj.novel.util.observeOnMain
@@ -63,9 +54,24 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
 //        chapterContent.adapter = contentAdapter
         chapterList.adapter = chapterListAdapter
 
-        chapterContent.setTouchListener {
-            toggleMenu()
-        }
+        chapterContent.setTouchListener(object : PageView.TouchListener {
+            override fun intercept(event: MotionEvent?): Boolean {
+                val showing = supportActionBar.isShowing
+                if (showing && event?.action == MotionEvent.ACTION_DOWN) {
+                    return true
+                }
+                if (showing && event?.action == MotionEvent.ACTION_UP) {
+                    toggleMenu()
+                    return true
+                }
+                return showing
+            }
+
+            override fun center() {
+                toggleMenu()
+            }
+
+        })
 
 
         model.book.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe { book ->
@@ -85,7 +91,7 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
                     isThrough = it.isThrough
                 })
 
-                mPageLoader.setBook(BookBean().apply {
+                mPageLoader.book = BookBean().apply {
                     id = book.url
                     title = book.name
                     author = book.author
@@ -99,7 +105,7 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
                         }
                     }
 
-                })
+                }
 
                 mPageLoader.setOnPageChangeListener(object : PageLoader.OnPageChangeListener {
                     override fun onBookRecordChange(bean: BookRecordBean) {
@@ -188,6 +194,16 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
                 mPageLoader.setTextSizeIncrease(false)
                 true
             }
+            R.id.menu_refresh -> {
+                mPageLoader.curChapter?.also {
+                    model.getChapter(listOf(it), true).observeOnMain().subscribe({ txtChapter ->
+                        mPageLoader.refreshChapter(txtChapter.first())
+                    }, {
+                        toast("刷新失败")
+                    }).destroy("requestChapters menu_refresh")
+                }
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -195,7 +211,7 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
     override fun onBackPressed() {
         if (drawer_layout?.isDrawerOpen(Gravity.START) == true) {
             drawer_layout?.closeDrawers()
-        }else if (supportActionBar?.isShowing == true) {
+        } else if (supportActionBar?.isShowing == true) {
             toggleMenu()
         } else {
             super.onBackPressed()

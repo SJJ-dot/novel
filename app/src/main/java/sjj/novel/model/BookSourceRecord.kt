@@ -36,7 +36,7 @@ class BookSourceRecord {
     var currentBook: Book? = null
 
     override fun toString(): String {
-        return "BookSourceRecord(bookName='$bookName', author='$author', bookUrl='$bookUrl', readIndex=$readIndex)"
+        return "BookSourceRecord(bookName='$bookName', author='$author', bookUrl='$bookUrl', readIndex=$readIndex, pagePos=$pagePos, chapterName='$chapterName', isThrough=$isThrough, books=$books, currentBook=$currentBook)"
     }
 }
 

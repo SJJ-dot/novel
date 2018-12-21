@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -35,6 +36,11 @@ class DetailsActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val bind: ActivityDetailsBinding = DataBindingUtil.setContentView(this, R.layout.activity_details)
+
+        setSupportActionBar(toolbar)
+        val supportActionBar = supportActionBar!!
+        supportActionBar.setDisplayHomeAsUpEnabled(true)
+
         val adapter = ChapterListAdapter()
         model.book.observeOn(AndroidSchedulers.mainThread()).subscribe { book ->
             bind.book = book
@@ -96,6 +102,17 @@ class DetailsActivity : BaseActivity() {
 
         chapterList.layoutManager = LinearLayoutManager(this)
         chapterList.adapter = adapter
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                true
+            }
+            else -> false
+        }
     }
 
     private inner class ChapterListAdapter : RecyclerView.Adapter<ViewHolder>() {

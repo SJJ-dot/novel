@@ -199,7 +199,10 @@ public class PageView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        super.onTouchEvent(event);
+
+        if (mTouchListener != null&& mTouchListener.intercept(event)) {
+            return true;
+        }
 
         int x = (int) event.getX();
         int y = (int) event.getY();
@@ -350,6 +353,7 @@ public class PageView extends View {
     }
 
     public interface TouchListener {
+        boolean intercept(MotionEvent event);
         void center();
     }
 }

@@ -37,7 +37,7 @@ public class ReadSettingManager {
     private ScreenUtils screenUtils;
 
     public ReadSettingManager(Context context) {
-        sharedPreUtils = SharedPreUtils.getInstance();
+        sharedPreUtils = SharedPreUtils.getInstance(context);
         screenUtils = new ScreenUtils(context);
     }
 

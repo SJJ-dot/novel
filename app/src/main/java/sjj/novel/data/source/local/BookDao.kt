@@ -61,4 +61,9 @@ interface BookDao {
     @Query("select url,bookUrl,`index`,chapterName,isLoadSuccess from Chapter where bookUrl=:bookUrl order by `index`")
     fun getChapterIntro(bookUrl: String): Flowable<List<Chapter>>
 
+    @Query("select url from Chapter where bookUrl=:bookUrl")
+    fun getChapterIds(bookUrl: String): List<String>
+
+    @Query("delete from chapter where url=:url")
+    fun deleteChapter(url:String)
 }
