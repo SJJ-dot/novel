@@ -1,5 +1,7 @@
 package sjj.novel.view.reader.bean;
 
+import android.support.annotation.Nullable;
+
 import java.util.List;
 
 import sjj.novel.view.reader.page.TxtChapter;
@@ -14,6 +16,7 @@ public class BookBean {
     public String author;
     public String shortIntro;
     public String cover;
+    @Nullable
     public List<TxtChapter> bookChapterList;
 
     public boolean isLocal() {

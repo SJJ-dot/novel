@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
 
@@ -266,15 +267,17 @@ public abstract class PageLoader {
         return true;
     }
 
+    public void refreshChapter(TxtChapter chapter) {
+        if (chapter == mChapterList.get(mCurChapterPos))
+            skipToChapter(mCurChapterPos);
+    }
+
     /**
      * 跳转到指定章节
      *
      * @param pos:从 0 开始。
      */
     public void skipToChapter(int pos) {
-        if (mCurChapterPos == pos) {
-            return;
-        }
         // 设置参数
         mCurChapterPos = pos;
 
@@ -509,7 +512,8 @@ public abstract class PageLoader {
      *
      * @return
      */
-    public BookBean getCollBook() {
+    @Nullable
+    public BookBean getBook() {
         return mCollBook;
     }
 
@@ -542,6 +546,10 @@ public abstract class PageLoader {
      */
     public int getChapterPos() {
         return mCurChapterPos;
+    }
+
+    public TxtChapter getCurChapter() {
+        return mChapterList.size() > mCurChapterPos ? mChapterList.get(mCurChapterPos) : null;
     }
 
     /**

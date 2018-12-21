@@ -100,7 +100,7 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
                     isThrough = it.isThrough
                 })
 
-                mPageLoader.setBook(BookBean().apply {
+                mPageLoader.book = BookBean().apply {
                     id = book.url
                     title = book.name
                     author = book.author
@@ -114,7 +114,7 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
                         }
                     }
 
-                })
+                }
 
                 mPageLoader.setOnPageChangeListener(object : PageLoader.OnPageChangeListener {
                     override fun onBookRecordChange(bean: BookRecordBean) {
@@ -201,6 +201,16 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
             }
             R.id.menu_minus -> {
                 mPageLoader.setTextSizeIncrease(false)
+                true
+            }
+            R.id.menu_refresh -> {
+                mPageLoader.curChapter?.also {
+                    model.getChapter(listOf(it), true).observeOnMain().subscribe({ txtChapter ->
+                        mPageLoader.refreshChapter(txtChapter.first())
+                    }, {
+                        toast("刷新失败")
+                    }).destroy("requestChapters menu_refresh")
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)
