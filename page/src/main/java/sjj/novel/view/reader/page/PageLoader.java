@@ -1245,8 +1245,8 @@ public abstract class PageLoader {
         while (showTitle || strings.length > i) {
             if (!showTitle) {
                 paragraph = strings[i];
+                i++;
             }
-            i++;
             paragraph = StringUtils.convertCC(mContext, paragraph, convertType);
             // 重置段落
             if (!showTitle) {
