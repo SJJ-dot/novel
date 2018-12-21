@@ -1,27 +1,18 @@
 package sjj.novel.read
 
 import android.app.ProgressDialog
-import android.arch.lifecycle.Observer
-import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
-import android.text.Html
-import android.util.SparseBooleanArray
 import android.view.*
 import android.widget.TextView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_read.*
-import kotlinx.android.synthetic.main.item_read_chapter_content.view.*
-import kotlinx.android.synthetic.main.item_read_chapter_content_text_line.view.*
-import org.jetbrains.anko.ctx
 import org.jetbrains.anko.find
 import org.jetbrains.anko.progressDialog
 import org.jetbrains.anko.toast
-import sjj.alog.Log
 import sjj.novel.*
-import sjj.novel.model.BookSourceRecord
 import sjj.novel.model.Chapter
 import sjj.novel.util.lazyModel
 import sjj.novel.util.observeOnMain
