@@ -3,7 +3,6 @@ package sjj.novel.read
 import android.app.ProgressDialog
 import android.os.Bundle
 import android.support.v4.widget.DrawerLayout
-import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.widget.TextView
@@ -145,8 +144,12 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
     }
 
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.activity_read_menu, menu)
+        val subMenu = menu.addSubMenu("翻页模式")
+        for (m in PageMode.values()) {
+            subMenu.add(0, m.ordinal, 0, m.des)
+        }
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -157,7 +160,6 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
                 true
             }
             R.id.menu_cached -> {
-
                 model.book.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
                     cached?.dismiss()
                     cached = progressDialog("正在缓存章节内容")
@@ -175,15 +177,6 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
                         cached = null
                     }).destroy(DISPOSABLE_CACHED_BOOK_CHAPTER)
                 }.destroy(DISPOSABLE_CACHED_BOOK_CHAPTER)
-                true
-            }
-            R.id.menu_flip_mode -> {
-                AlertDialog.Builder(this).setSingleChoiceItems(arrayOf("仿真", "覆盖", "平移", "无", "滚动"), PageMode.valueOf(AppConfig.flipPageMode).ordinal) { dialog, which ->
-                    dialog.dismiss()
-                    val mode = PageMode.values()[which]
-                    AppConfig.flipPageMode = mode.name
-                    mPageLoader.setPageMode(mode)
-                }.show()
                 true
             }
             R.id.menu_add -> {
@@ -204,7 +197,15 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
                 }
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> when {
+                item.itemId < PageMode.values().size && item.itemId >= 0 -> {
+                    val mode = PageMode.values()[item.itemId]
+                    AppConfig.flipPageMode = mode.name
+                    mPageLoader.setPageMode(mode)
+                    true
+                }
+                else -> super.onOptionsItemSelected(item)
+            }
         }
     }
 

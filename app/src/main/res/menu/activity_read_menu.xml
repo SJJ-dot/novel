@@ -17,10 +17,6 @@
         android:title="缩小字号"
         app:showAsAction="collapseActionView" />
     <item
-        android:id="@+id/menu_flip_mode"
-        android:title="翻页模式"
-        app:showAsAction="collapseActionView" />
-    <item
         android:id="@+id/menu_cached"
         android:icon="@drawable/ic_cached_white"
         android:title="缓存章节内容"
