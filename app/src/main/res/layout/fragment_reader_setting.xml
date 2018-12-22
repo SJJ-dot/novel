@@ -40,11 +40,8 @@
 
         <TextView
             android:id="@+id/read_tv_pre_chapter"
-            android:layout_width="80dp"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="上一章"
-            android:textColor="@color/colorText" />
+            style="@style/fragment.reader.setting.chapter.btn"
+            android:text="上一章" />
 
         <SeekBar
             android:id="@+id/read_sb_chapter_progress"
@@ -58,11 +55,8 @@
 
         <TextView
             android:id="@+id/read_tv_next_chapter"
-            android:layout_width="80dp"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="下一章"
-            android:textColor="@color/colorText" />
+            style="@style/fragment.reader.setting.chapter.btn"
+            android:text="下一章" />
     </LinearLayout>
 
     <!--菜单栏-->
@@ -78,31 +72,29 @@
         app:layout_constraintTop_toBottomOf="@id/ll1">
 
         <ImageView
-            android:id="@+id/read_tv_category"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:contentDescription="目录"
-            android:scaleType="center"
-            android:src="@drawable/ic_read_menu_category" />
+            android:id="@+id/read_tv_cloud_download"
+            style="@style/fragment.reader.setting.bottom.btn"
+            android:contentDescription="下载"
+            android:src="@drawable/ic_cloud_download" />
 
         <ImageView
             android:id="@+id/read_tv_night_mode"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
+            style="@style/fragment.reader.setting.bottom.btn"
             android:contentDescription="亮度"
-            android:scaleType="center"
             android:src="@drawable/ic_read_menu_brightness" />
 
         <ImageView
             android:id="@+id/read_tv_setting"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
+            style="@style/fragment.reader.setting.bottom.btn"
             android:contentDescription="字体"
-            android:scaleType="center"
             android:src="@drawable/ic_read_menu_font" />
+
+        <ImageView
+            android:id="@+id/read_tv_category"
+            style="@style/fragment.reader.setting.bottom.btn"
+            android:contentDescription="目录"
+            android:src="@drawable/ic_read_menu_category" />
+
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

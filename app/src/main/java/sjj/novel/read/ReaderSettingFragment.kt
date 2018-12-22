@@ -9,12 +9,14 @@ import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.SeekBar
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_reader_setting.*
 import org.jetbrains.anko.support.v4.toast
-import sjj.alog.Log
 import sjj.novel.BaseFragment
 import sjj.novel.R
+import sjj.novel.util.lazyModel
 import sjj.novel.view.reader.page.PageLoader
+import sjj.rx.destroy
 
 /**
  *阅读器设置菜单
@@ -30,7 +32,7 @@ class ReaderSettingFragment : BaseFragment() {
                 else -> null
             }
         }
-
+    private val model by lazyModel<ReadViewModel>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_reader_setting, container, false)
@@ -75,7 +77,20 @@ class ReaderSettingFragment : BaseFragment() {
         read_tv_setting.setOnClickListener {
             toast("nonsupport")
         }
-
+        read_tv_cloud_download.setOnClickListener {
+//            <!--有时间的话下载需要改成service-->
+            model.book.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe { book ->
+                showSnackbar(read_tv_cloud_download, "正在下载章节")
+                model.cachedBookChapter(book.url).observeOn(AndroidSchedulers.mainThread()).doOnCancel {
+                    showSnackbar(read_tv_cloud_download, "章节下载取消")
+                }.subscribe({ p: Pair<Int, Int> ->
+                }, { throwable ->
+                    showSnackbar(read_tv_cloud_download, "章节下载中断:${throwable.message}")
+                }, {
+                    showSnackbar(read_tv_cloud_download, "章节下载完成")
+                }).destroy("cache chapters", activity?.lifecycle ?: return@subscribe)//绑定activity的生命周期。退出阅读界面后停止下载
+            }.destroy("cache chapters")
+        }
     }
 
     override fun onStart() {

@@ -16,10 +16,5 @@
         android:id="@+id/menu_minus"
         android:title="缩小字号"
         app:showAsAction="collapseActionView" />
-    <item
-        android:id="@+id/menu_cached"
-        android:icon="@drawable/ic_cached_white"
-        android:title="缓存章节内容"
-        app:showAsAction="collapseActionView" />
 
 </menu>

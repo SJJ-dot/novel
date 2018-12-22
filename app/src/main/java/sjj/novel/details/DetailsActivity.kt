@@ -2,13 +2,11 @@ package sjj.novel.details
 
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TextView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_details.*
@@ -51,17 +49,9 @@ class DetailsActivity : BaseActivity() {
             adapter.data = book.chapterList
             adapter.notifyDataSetChanged()
             chapterListButton.setOnClickListener { v ->
-                if (chapterList.visibility != View.VISIBLE) {
-                    chapterList.visibility = View.VISIBLE
-//                    model.getChapters(it.url).observe(this, Observer{
-//                        adapter.submitList(it)
-//
-//                    })
-                    model.bookSourceRecord.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe { index ->
-                        chapterList.scrollToPosition(index.readIndex)
-                    }
-                } else {
-                    chapterList.visibility = View.GONE
+                model.bookSourceRecord.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe { index ->
+                    chapterList.scrollToPosition(index.readIndex)
+                    drawer_layout.openDrawer(Gravity.END)
                 }
             }
             detailsRefreshLayout.setOnRefreshListener {
@@ -112,6 +102,14 @@ class DetailsActivity : BaseActivity() {
                 true
             }
             else -> false
+        }
+    }
+
+    override fun onBackPressed() {
+        if (drawer_layout.isDrawerOpen(Gravity.END)) {
+            drawer_layout.closeDrawer(Gravity.END)
+        } else {
+            super.onBackPressed()
         }
     }
 

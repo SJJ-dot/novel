@@ -159,26 +159,6 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
                 finish()
                 true
             }
-            R.id.menu_cached -> {
-                model.book.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
-                    cached?.dismiss()
-                    cached = progressDialog("正在缓存章节内容")
-
-                    model.cachedBookChapter(it.url).observeOn(AndroidSchedulers.mainThread()).subscribe({ p: Pair<Int, Int> ->
-                        cached?.max = p.second
-                        cached?.progress = p.first
-                    }, {
-                        toast("缓存章节内容出错：$it")
-                        cached?.dismiss()
-                        cached = null
-                    }, {
-                        toast("缓存章节内容完成")
-                        cached?.dismiss()
-                        cached = null
-                    }).destroy(DISPOSABLE_CACHED_BOOK_CHAPTER)
-                }.destroy(DISPOSABLE_CACHED_BOOK_CHAPTER)
-                true
-            }
             R.id.menu_add -> {
                 mPageLoader.setTextSizeIncrease(true)
                 true
@@ -238,7 +218,7 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
      * 底部菜单回调
      */
     override fun openChapterList() {
-        drawer_layout.openDrawer(Gravity.START)
+        drawer_layout.openDrawer(Gravity.END)
     }
 
     /**
