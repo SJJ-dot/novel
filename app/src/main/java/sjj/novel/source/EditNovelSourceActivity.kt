@@ -65,8 +65,8 @@ class EditNovelSourceActivity : BaseActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
             R.id.menu_help_novel_source -> {
                 startActivity<NovelSourceRuleExplanationActivity>()
                 true

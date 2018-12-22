@@ -48,12 +48,7 @@ class DetailsActivity : BaseActivity() {
             }
             adapter.data = book.chapterList
             adapter.notifyDataSetChanged()
-            chapterListButton.setOnClickListener { v ->
-                model.bookSourceRecord.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe { index ->
-                    chapterList.scrollToPosition(index.readIndex)
-                    drawer_layout.openDrawer(Gravity.END)
-                }
-            }
+
             detailsRefreshLayout.setOnRefreshListener {
                 model.refresh(book).observeOn(AndroidSchedulers.mainThread()).doOnTerminate {
                     detailsRefreshLayout.isRefreshing = false
@@ -94,14 +89,21 @@ class DetailsActivity : BaseActivity() {
         chapterList.adapter = adapter
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.activity_details_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            android.R.id.home -> {
-                finish()
+            R.id.chapter_list -> {
+                model.bookSourceRecord.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe { index ->
+                    chapterList.scrollToPosition(index.readIndex)
+                    drawer_layout.openDrawer(Gravity.END)
+                }
                 true
             }
-            else -> false
+            else -> super.onOptionsItemSelected(item)
         }
     }
 

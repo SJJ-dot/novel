@@ -2,6 +2,7 @@ package sjj.novel
 
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
+import android.view.MenuItem
 import android.view.View
 import sjj.rx.AutoDisposeEnhance
 
@@ -32,5 +33,14 @@ abstract class BaseActivity : AppCompatActivity(), AutoDisposeEnhance {
         snackbar = null
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                true
+            }
+            else -> false
+        }
+    }
 
 }

@@ -30,6 +30,7 @@ class FeedbackFragment : BaseFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Log.e(this)
         submit.setOnClickListener { _ ->
             showSnackbar(submit, "正在提交……", Snackbar.LENGTH_INDEFINITE)
             model.submit().observeOn(AndroidSchedulers.mainThread())

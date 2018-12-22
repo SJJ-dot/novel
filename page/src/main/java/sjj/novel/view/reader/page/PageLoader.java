@@ -578,7 +578,7 @@ public abstract class PageLoader {
             mBookRecord.pagePos = 0;
         }
         if (mCurPageList == null) return;
-        mBookRecord.isThrough = mCurPageList.size() == mCurPage.position + 1;
+        mBookRecord.isThrough = mCurChapterPos == mChapterList.size() - 1 && mCurPageList.size() == mCurPage.position + 1;
         mPageChangeListener.onBookRecordChange(mBookRecord);
     }
 

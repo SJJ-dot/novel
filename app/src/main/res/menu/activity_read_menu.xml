@@ -9,6 +9,10 @@
         android:icon="@drawable/ic_menu_refresh"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/menu_intro"
+        android:title="简介"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/menu_add"
         android:title="放大字号"
         app:showAsAction="collapseActionView" />

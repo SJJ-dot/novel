@@ -8,6 +8,7 @@ import android.view.*
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_books.*
+import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.startActivity
 import org.jetbrains.anko.support.v4.toast
@@ -16,6 +17,7 @@ import sjj.novel.DISPOSABLE_ACTIVITY_MAIN_REFRESH
 import sjj.novel.R
 import sjj.novel.databinding.ItemBookListBinding
 import sjj.novel.details.DetailsActivity
+import sjj.novel.read.ReadActivity
 import sjj.novel.util.lazyModel
 
 /**
@@ -80,7 +82,16 @@ class BookshelfFragment : BaseFragment() {
             val viewModel = data!!.get(position)
             bind!!.model = viewModel
             holder.itemView.setOnClickListener { v ->
-                startActivity<DetailsActivity>(DetailsActivity.BOOK_NAME to viewModel.book.name, DetailsActivity.BOOK_AUTHOR to viewModel.book.author)
+
+                if (viewModel.isThrough && viewModel.index <= ((viewModel.book.lastChapter?.index ?: 0) - 1)) {
+                    //有更新点击阅读直接进入下一章
+                    model.setReadIndex(viewModel.book.lastChapter!!,viewModel.book).observeOn(AndroidSchedulers.mainThread()).subscribe {
+                        startActivity<ReadActivity>(ReadActivity.BOOK_NAME to viewModel.book.name, ReadActivity.BOOK_AUTHOR to viewModel.book.author)
+                    }.destroy("read book")
+
+                } else {
+                    startActivity<ReadActivity>(ReadActivity.BOOK_NAME to viewModel.book.name, ReadActivity.BOOK_AUTHOR to viewModel.book.author)
+                }
             }
             holder.itemView.setOnLongClickListener { _ ->
                 alert {

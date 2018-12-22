@@ -10,8 +10,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_read.*
 import org.jetbrains.anko.find
 import org.jetbrains.anko.progressDialog
+import org.jetbrains.anko.startActivity
+import org.jetbrains.anko.support.v4.startActivity
 import org.jetbrains.anko.toast
 import sjj.novel.*
+import sjj.novel.details.DetailsActivity
 import sjj.novel.model.Chapter
 import sjj.novel.util.lazyModel
 import sjj.novel.util.observeOnMain
@@ -155,8 +158,8 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            android.R.id.home -> {
-                finish()
+            R.id.menu_intro -> {
+                startActivity<DetailsActivity>(DetailsActivity.BOOK_NAME to model.name, DetailsActivity.BOOK_AUTHOR to model.author)
                 true
             }
             R.id.menu_add -> {
@@ -190,12 +193,10 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
     }
 
     override fun onBackPressed() {
-        if (drawer_layout?.isDrawerOpen(Gravity.START) == true) {
-            drawer_layout?.closeDrawers()
-        } else if (supportActionBar?.isShowing == true) {
-            toggleMenu()
-        } else {
-            super.onBackPressed()
+        when {
+            drawer_layout?.isDrawerOpen(Gravity.START) == true -> drawer_layout?.closeDrawers()
+            supportActionBar?.isShowing == true -> toggleMenu()
+            else -> super.onBackPressed()
         }
     }
 
