@@ -166,7 +166,7 @@ dependencies {
 
     // optional - RxJava support, currently in release candidate
     implementation 'android.arch.paging:rxjava2:1.0.1'
-    def nav_version = "1.0.0-alpha07"
+    def nav_version = "1.0.0-alpha09"
     implementation "android.arch.navigation:navigation-fragment:$nav_version"
 
     // use -ktx for Kotlin

@@ -1,18 +1,20 @@
-package sjj.novel.main
+package sjj.novel.search
 
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.view.inputmethod.EditorInfo
 import android.widget.TextView
+import androidx.navigation.fragment.NavHostFragment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_search.*
+import org.jetbrains.anko.appcompat.v7.coroutines.onClose
 import org.jetbrains.anko.support.v4.longToast
 import org.jetbrains.anko.support.v4.startActivity
+import sjj.alog.Log
 import sjj.novel.BaseFragment
 import sjj.novel.R
 import sjj.novel.databinding.ItemBookSearchListBinding
@@ -31,10 +33,25 @@ class SearchFragment : BaseFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        setHasOptionsMenu(true)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater?.inflate(R.menu.fragment_main_search_menu, menu)
+        val searchView = menu?.findItem(R.id.search_view)?.actionView as SearchView
+        searchView.queryHint = "请输入书名或者作者"
+        searchView.imeOptions = EditorInfo.IME_ACTION_SEARCH
+        init(searchView)
+        searchView.isIconified = false
+    }
+
+    private fun init(searchView: SearchView) {
         searchRecyclerView.layoutManager = LinearLayoutManager(context)
         val resultBookAdapter = SearchResultBookAdapter()
         searchRecyclerView.adapter = resultBookAdapter
-
+        searchView.onClose {
+            NavHostFragment.findNavController(this@SearchFragment).navigateUp()
+        }
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
                 if (p0.isNullOrEmpty()) return true
@@ -58,11 +75,11 @@ class SearchFragment : BaseFragment() {
         })
         searchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
-                ll_search_history.visibility = View.VISIBLE
-                searchRecyclerView.visibility = View.INVISIBLE
+                ll_search_history?.visibility = View.VISIBLE
+                searchRecyclerView?.visibility = View.INVISIBLE
             } else {
-                searchRecyclerView.visibility = View.VISIBLE
-                ll_search_history.visibility = View.INVISIBLE
+                searchRecyclerView?.visibility = View.VISIBLE
+                ll_search_history?.visibility = View.INVISIBLE
             }
         }
         model.getSearchHistory().observeOn(AndroidSchedulers.mainThread()).subscribe { history ->
@@ -84,6 +101,7 @@ class SearchFragment : BaseFragment() {
             }
         }.destroy("get Search History")
     }
+
 
     private inner class SearchResultBookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         var data = listOf<SearchViewModel.BookSearchItemViewModel>()

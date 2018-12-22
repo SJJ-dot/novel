@@ -8,7 +8,7 @@
 
         <variable
             name="model"
-            type="sjj.novel.main.SearchViewModel.BookSearchItemViewModel" />
+            type="sjj.novel.search.SearchViewModel.BookSearchItemViewModel" />
     </data>
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"

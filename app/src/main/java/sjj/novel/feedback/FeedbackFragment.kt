@@ -5,9 +5,7 @@ import android.arch.lifecycle.Observer
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.design.widget.Snackbar
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_feedback.*
 import sjj.alog.Log
@@ -32,20 +30,6 @@ class FeedbackFragment : BaseFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        toolbar.inflateMenu(R.menu.fragment_login_menu)
-        AppConfig.gitHubAuthToken.observe(this, Observer {
-            val item = toolbar.menu.findItem(R.id.menu_login)
-            item?.title =if ( it.isNullOrBlank() ) "登陆" else "已登录"
-        })
-        toolbar.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.menu_login -> {
-                    LoginFragment().show(fragmentManager)
-                    true
-                }
-                else -> false
-            }
-        }
         submit.setOnClickListener { _ ->
             showSnackbar(submit, "正在提交……", Snackbar.LENGTH_INDEFINITE)
             model.submit().observeOn(AndroidSchedulers.mainThread())
@@ -57,5 +41,25 @@ class FeedbackFragment : BaseFragment() {
                     })
                     .destroy("submit issue")
         }
+        setHasOptionsMenu(true)
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater?.inflate(R.menu.fragment_login_menu, menu)
+        AppConfig.gitHubAuthToken.observe(this, Observer {
+            val item = menu?.findItem(R.id.menu_login)
+            item?.title = if (it.isNullOrBlank()) "登陆" else "已登录"
+        })
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return when (item?.itemId) {
+            R.id.menu_login -> {
+                LoginFragment().show(fragmentManager)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
 }
