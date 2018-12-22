@@ -3,7 +3,7 @@ package sjj.novel.main
 import android.Manifest
 import android.os.Bundle
 import android.view.Gravity
-import android.view.Menu
+import android.view.MenuItem
 import androidx.navigation.Navigation
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
@@ -29,9 +29,6 @@ class MainActivity : BaseActivity() {
                 .setDrawerLayout(drawer_layout)
                 .build()
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        return super.onCreateOptionsMenu(menu)
-    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -69,6 +66,15 @@ class MainActivity : BaseActivity() {
             }
         })
 
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                false
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
