@@ -131,6 +131,9 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
         AppConfig.readerPageStyle.observe(this, Observer {
             mPageLoader.setPageStyle(it)
         })
+        AppConfig.fontSize.observe(this, Observer {
+            mPageLoader.setTextSize(it!!)
+        })
     }
 
     private fun initBookData(book: Book) {
@@ -178,14 +181,6 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
         return when (item.itemId) {
             R.id.menu_intro -> {
                 startActivity<DetailsActivity>(DetailsActivity.BOOK_NAME to model.name, DetailsActivity.BOOK_AUTHOR to model.author)
-                true
-            }
-            R.id.menu_add -> {
-                mPageLoader.setTextSizeIncrease(true)
-                true
-            }
-            R.id.menu_minus -> {
-                mPageLoader.setTextSizeIncrease(false)
                 true
             }
             R.id.menu_refresh -> {

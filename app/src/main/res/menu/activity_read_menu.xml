@@ -12,12 +12,6 @@
         android:id="@+id/menu_intro"
         android:title="简介"
         app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/menu_add"
-        android:title="放大字号" />
-    <item
-        android:id="@+id/menu_minus"
-        android:title="缩小字号" />
 
     <item
         android:id="@+id/menu_refresh_chapters"

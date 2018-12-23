@@ -83,7 +83,12 @@ class ReaderSettingFragment : BaseFragment() {
                     .commitAllowingStateLoss()
         }
         read_tv_setting.setOnClickListener {
-            toast("nonsupport")
+            menu_item.visibility = VISIBLE
+            root.visibility = GONE
+            childFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.menu_item, ReaderFontSettingFragment())
+                    .commitAllowingStateLoss()
         }
         read_tv_cloud_download.setOnClickListener {
             //            <!--有时间的话下载需要改成service-->

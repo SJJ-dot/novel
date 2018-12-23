@@ -2,6 +2,7 @@ package sjj.novel
 
 import sjj.novel.util.DelegateLiveData
 import sjj.novel.util.DelegateSharedPreferences
+import sjj.novel.util.toDpx
 import sjj.novel.view.reader.page.PageMode
 import sjj.novel.view.reader.page.PageStyle
 
@@ -38,5 +39,8 @@ object AppConfig {
     var screenBrightnessProgress by DelegateSharedPreferences(1f)
 
     val readerPageStyle by DelegateLiveData(PageStyle.BG_def, toString = { it.name }, fromString = { PageStyle.valueOf(it!!) })
-
+    /**
+     * 阅读器文字大小
+     */
+    val fontSize by DelegateLiveData(28.toDpx())
 }
