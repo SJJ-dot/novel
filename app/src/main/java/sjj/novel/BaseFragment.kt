@@ -49,7 +49,7 @@ open class BaseFragment : DialogFragment(), AutoDisposeEnhance {
     }
 
     fun show(manager: FragmentManager?) {
-        super.show(manager, javaClass.name)
+        super.show(manager, null)
     }
 
     fun show(transaction: FragmentTransaction?): Int {

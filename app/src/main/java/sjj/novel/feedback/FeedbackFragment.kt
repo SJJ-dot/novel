@@ -14,16 +14,19 @@ import sjj.novel.BaseFragment
 import sjj.novel.R
 import sjj.novel.accounts.LoginFragment
 import sjj.novel.databinding.FragmentFeedbackBinding
-import sjj.novel.util.lazyModel
+import sjj.novel.util.getModel
 
 /**
  *意见反馈
  */
 class FeedbackFragment : BaseFragment() {
 
-    private val model by lazyModel<FeedbackViewModel>()
+    private lateinit var model: FeedbackViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
+        model = getModel()
+
         val binding = DataBindingUtil.inflate<FragmentFeedbackBinding>(layoutInflater, R.layout.fragment_feedback, container, false)
         binding.model = model
         return binding.root

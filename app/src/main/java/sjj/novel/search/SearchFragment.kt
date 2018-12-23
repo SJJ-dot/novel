@@ -14,19 +14,18 @@ import kotlinx.android.synthetic.main.fragment_search.*
 import org.jetbrains.anko.appcompat.v7.coroutines.onClose
 import org.jetbrains.anko.support.v4.longToast
 import org.jetbrains.anko.support.v4.startActivity
-import sjj.alog.Log
 import sjj.novel.BaseFragment
 import sjj.novel.R
 import sjj.novel.databinding.ItemBookSearchListBinding
 import sjj.novel.details.DetailsActivity
 import sjj.novel.model.SearchHistory
-import sjj.novel.util.lazyModel
+import sjj.novel.util.getModel
 
 /**
  * Created by SJJ on 2017/10/7.
  */
 class SearchFragment : BaseFragment() {
-    private val model by lazyModel<SearchViewModel>()
+    private lateinit var model: SearchViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_search, container, false)
@@ -82,6 +81,9 @@ class SearchFragment : BaseFragment() {
                 ll_search_history?.visibility = View.INVISIBLE
             }
         }
+
+        model = getModel()
+
         model.getSearchHistory().observeOn(AndroidSchedulers.mainThread()).subscribe { history ->
             tfl_search_history.removeAllViews()
             history.forEach {
