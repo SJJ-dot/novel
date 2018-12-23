@@ -586,8 +586,10 @@ public abstract class PageLoader {
         mBookRecord = record;
         mCurChapterPos = mBookRecord.chapter;
         mLastChapterPos = mCurChapterPos;
-        skipToChapter(record.chapter);
-        skipToPage(record.pagePos);
+        if (isChapterOpen) {
+            skipToChapter(record.chapter);
+            skipToPage(record.pagePos);
+        }
     }
 
     /**

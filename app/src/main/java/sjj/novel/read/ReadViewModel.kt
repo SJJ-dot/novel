@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModel
 import android.text.Html
 import io.reactivex.Observable
 import sjj.novel.data.repository.novelDataRepository
+import sjj.novel.model.Book
 import sjj.novel.model.Chapter
 import sjj.novel.util.lazyFromIterable
 import sjj.novel.view.reader.page.TxtChapter
@@ -51,5 +52,11 @@ class ReadViewModel(val name: String, val author: String) : ViewModel() {
 
 
     fun cachedBookChapter(bookUrl: String) = novelDataRepository.cachedBookChapter(bookUrl)
+
+    fun refresh(): Observable<Book> {
+        return book.firstElement().toObservable().flatMap {
+            novelDataRepository.refreshBook(it.url)
+        }
+    }
 
 }

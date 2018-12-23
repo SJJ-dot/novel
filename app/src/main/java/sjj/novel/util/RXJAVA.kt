@@ -1,5 +1,6 @@
 package sjj.novel.util
 
+import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -47,4 +48,5 @@ fun <T> fromCallableOrNull(callable:()->T): Observable<T> {
 }
 
 fun <T> Observable<T>.observeOnMain() = observeOn(AndroidSchedulers.mainThread())
+fun <T> Flowable<T>.observeOnMain() = observeOn(AndroidSchedulers.mainThread())
 fun <T> Observable<T>.subscribeOnIo() = subscribeOn(Schedulers.io())

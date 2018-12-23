@@ -12,8 +12,10 @@ import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
 import sjj.novel.*
 import sjj.novel.details.DetailsActivity
+import sjj.novel.model.Book
 import sjj.novel.model.Chapter
 import sjj.novel.util.getModel
+import sjj.novel.util.log
 import sjj.novel.util.observeOnMain
 import sjj.novel.view.reader.bean.BookBean
 import sjj.novel.view.reader.bean.BookRecordBean
@@ -37,6 +39,8 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
 
     private val menuFragment by lazy { ReaderSettingFragment() }
 
+    private val chapterListAdapter = ChapterListAdapter()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_read)
@@ -45,7 +49,7 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
         //禁止手势滑出
         drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
-        val chapterListAdapter = ChapterListAdapter()
+
 //        chapterContent.adapter = contentAdapter
         chapterList.adapter = chapterListAdapter
 
@@ -80,29 +84,12 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
             model.readIndex.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
                 val index = min(max(book.chapterList.lastIndex, 0), it.readIndex)
                 chapterList.scrollToPosition(index)
-
                 mPageLoader.setBookRecord(BookRecordBean().apply {
                     bookId = book.url
-                    chapter = it.readIndex
+                    chapter = index
                     pagePos = it.pagePos
                     isThrough = it.isThrough
                 })
-
-                mPageLoader.book = BookBean().apply {
-                    id = book.url
-                    title = book.name
-                    author = book.author
-                    shortIntro = book.intro
-                    cover = book.bookCoverImgUrl
-                    bookChapterList = book.chapterList.map { chapter ->
-                        TxtChapter().apply {
-                            this.bookId = book.url
-                            this.link = chapter.url
-                            this.title = chapter.chapterName
-                        }
-                    }
-
-                }
 
                 mPageLoader.setOnPageChangeListener(object : PageLoader.OnPageChangeListener {
                     override fun onBookRecordChange(bean: BookRecordBean) {
@@ -135,24 +122,42 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
 
                 })
 
-                mPageLoader.refreshChapterList()
+                initBookData(book)
             }.destroy(DISPOSABLE_ACTIVITY_READ_READ_INDEX)
 
 
         }.destroy()
     }
 
+    private fun initBookData(book: Book) {
+        mPageLoader.book = BookBean().apply {
+            id = book.url
+            title = book.name
+            author = book.author
+            shortIntro = book.intro
+            cover = book.bookCoverImgUrl
+            bookChapterList = book.chapterList.map { chapter ->
+                TxtChapter().apply {
+                    this.bookId = book.url
+                    this.link = chapter.url
+                    this.title = chapter.chapterName
+                }
+            }
+
+        }
+        mPageLoader.refreshChapterList()
+    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.activity_read_menu, menu)
-        val subMenu = menu.addSubMenu(0,R.id.menu_read_flip_page_mode,1,"翻页模式")
+        val subMenu = menu.addSubMenu(0, R.id.menu_read_flip_page_mode, 1, "翻页模式")
 
         val mode = AppConfig.flipPageMode
         for (m in PageMode.values()) {
             val item = subMenu.add(0, m.ordinal, 0, m.des)
             item.isChecked = mode == m.name
         }
-        subMenu.setGroupCheckable(0,true,true)
+        subMenu.setGroupCheckable(0, true, true)
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -187,6 +192,18 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
                         toast("刷新失败")
                     }).destroy("requestChapters menu_refresh")
                 }
+                true
+            }
+            R.id.menu_refresh_chapters -> {
+                showSnackbar(menu_fragment_container, "正在更新目录信息，请稍后……")
+                model.refresh().observeOnMain().subscribe({
+                    chapterListAdapter.data = it.chapterList
+                    chapterListAdapter.notifyDataSetChanged()
+                    initBookData(it)
+                    showSnackbar(menu_fragment_container, "目录更新成功")
+                }, {
+                    showSnackbar(menu_fragment_container, "目录更新失败：${it.message}")
+                }).destroy("activity read refresh chapter list")
                 true
             }
             else -> when {
