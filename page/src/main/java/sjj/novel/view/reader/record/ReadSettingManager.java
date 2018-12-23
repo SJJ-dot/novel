@@ -14,15 +14,8 @@ import sjj.novel.view.reader.utils.SharedPreUtils;
  */
 
 public class ReadSettingManager {
-    /*************实在想不出什么好记的命名方式。。******************/
-    public static final int READ_BG_DEFAULT = 0;
-    public static final int READ_BG_1 = 1;
-    public static final int READ_BG_2 = 2;
-    public static final int READ_BG_3 = 3;
-    public static final int READ_BG_4 = 4;
-    public static final int NIGHT_MODE = 5;
 
-    public static final String SHARED_READ_BG = "shared_read_bg";
+    public static final String SHARED_READ_BG = "shared_read_bg_name";
     public static final String SHARED_READ_BRIGHTNESS = "shared_read_brightness";
     public static final String SHARED_READ_IS_BRIGHTNESS_AUTO = "shared_read_is_brightness_auto";
     public static final String SHARED_READ_TEXT_SIZE = "shared_read_text_size";
@@ -42,7 +35,7 @@ public class ReadSettingManager {
     }
 
     public void setPageStyle(PageStyle pageStyle) {
-        sharedPreUtils.edit().putInt(SHARED_READ_BG, pageStyle.ordinal()).apply();
+        sharedPreUtils.edit().putString(SHARED_READ_BG, pageStyle.name()).apply();
     }
 
     public void setBrightness(int progress) {
@@ -93,8 +86,8 @@ public class ReadSettingManager {
     }
 
     public PageStyle getPageStyle() {
-        int style = sharedPreUtils.getInt(SHARED_READ_BG, PageStyle.BG_def.ordinal());
-        return PageStyle.values()[style];
+        String style = sharedPreUtils.getString(SHARED_READ_BG, PageStyle.BG_def.name());
+        return PageStyle.valueOf(style);
     }
 
     public boolean isNightMode() {

@@ -1,5 +1,6 @@
 package sjj.novel.read
 
+import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.RecyclerView
@@ -20,11 +21,8 @@ import sjj.novel.util.log
 import sjj.novel.util.observeOnMain
 import sjj.novel.view.reader.bean.BookBean
 import sjj.novel.view.reader.bean.BookRecordBean
-import sjj.novel.view.reader.page.PageLoader
+import sjj.novel.view.reader.page.*
 import sjj.novel.view.reader.page.PageLoader.STATUS_LOADING
-import sjj.novel.view.reader.page.PageMode
-import sjj.novel.view.reader.page.PageView
-import sjj.novel.view.reader.page.TxtChapter
 import kotlin.math.max
 import kotlin.math.min
 
@@ -129,6 +127,10 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
 
 
         }.destroy()
+
+        AppConfig.readerPageStyle.observe(this, Observer {
+            mPageLoader.setPageStyle(it)
+        })
     }
 
     private fun initBookData(book: Book) {

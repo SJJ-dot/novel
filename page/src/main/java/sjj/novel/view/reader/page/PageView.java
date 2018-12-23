@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -34,7 +35,7 @@ public class PageView extends View {
     private int mStartY = 0;
     private boolean isMove = false;
     // 初始化参数
-    private int mBgColor = 0xFFF6F4EE;
+    private Drawable mBackground;
     private PageMode mPageMode = PageMode.SIMULATION;
     // 唤醒菜单的区域
     private RectF mCenterRect = null;
@@ -183,16 +184,17 @@ public class PageView extends View {
         this.postInvalidate();
     }
 
-    public void setBgColor(int color) {
-        mBgColor = color;
+    public void setBackground(Drawable background) {
+        mBackground = background;
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
 
         //绘制背景
-        canvas.drawColor(mBgColor);
-
+        if (mBackground != null) {
+            mBackground.draw(canvas);
+        }
         //绘制动画
         mPageAnim.draw(canvas);
     }
