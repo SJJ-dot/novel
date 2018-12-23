@@ -2,10 +2,12 @@ package sjj.novel.read
 
 import android.arch.lifecycle.Observer
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.widget.TextView
+import androidx.navigation.Navigation
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_read.*
 import org.jetbrains.anko.find
@@ -17,12 +19,14 @@ import sjj.novel.model.Book
 import sjj.novel.model.Chapter
 import sjj.novel.util.getModel
 import sjj.novel.util.initScreenBrightness
-import sjj.novel.util.log
 import sjj.novel.util.observeOnMain
 import sjj.novel.view.reader.bean.BookBean
 import sjj.novel.view.reader.bean.BookRecordBean
-import sjj.novel.view.reader.page.*
+import sjj.novel.view.reader.page.PageLoader
 import sjj.novel.view.reader.page.PageLoader.STATUS_LOADING
+import sjj.novel.view.reader.page.PageMode
+import sjj.novel.view.reader.page.PageView
+import sjj.novel.view.reader.page.TxtChapter
 import kotlin.math.max
 import kotlin.math.min
 
@@ -36,16 +40,17 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
 
     private val mPageLoader by lazy { chapterContent.pageLoader }
 
-    private val menuFragment by lazy { ReaderSettingFragment() }
-
     private val chapterListAdapter = ChapterListAdapter()
+
+    private var controller: ReaderSettingFragment.CallBack.Controller?=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initScreenBrightness(this)
         setContentView(R.layout.activity_read)
 
-        supportActionBar!!.hide()
+        //关闭菜单栏
+        toggleMenu()
         //禁止手势滑出
         drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
@@ -93,7 +98,7 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
 
                 mPageLoader.setOnPageChangeListener(object : PageLoader.OnPageChangeListener {
                     override fun onBookRecordChange(bean: BookRecordBean) {
-                        model.setReadIndex(book.chapterList[bean.chapter], bean.pagePos, bean.isThrough).subscribe()
+                        model.setReadIndex(chapterListAdapter.data[bean.chapter], bean.pagePos, bean.isThrough).subscribe()
                     }
 
                     override fun onChapterChange(pos: Int) {
@@ -113,11 +118,11 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
                     }
 
                     override fun onPageCountChange(count: Int) {
-                        menuFragment.setPageCount(count)
+                        controller?.setPageCount(count)
                     }
 
                     override fun onPageChange(pos: Int) {
-                        menuFragment.setPagePos(pos)
+                        controller?.setPagePos(pos)
                     }
 
                 })
@@ -194,14 +199,14 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
                 true
             }
             R.id.menu_refresh_chapters -> {
-                showSnackbar(menu_fragment_container, "正在更新目录信息，请稍后……")
+                showSnackbar(chapterContent, "正在更新目录信息，请稍后……", Snackbar.LENGTH_INDEFINITE)
                 model.refresh().observeOnMain().subscribe({
                     chapterListAdapter.data = it.chapterList
                     chapterListAdapter.notifyDataSetChanged()
                     initBookData(it)
-                    showSnackbar(menu_fragment_container, "目录更新成功")
+                    showSnackbar(chapterContent, "目录更新成功")
                 }, {
-                    showSnackbar(menu_fragment_container, "目录更新失败：${it.message}")
+                    showSnackbar(chapterContent, "目录更新失败：${it.message}")
                 }).destroy("activity read refresh chapter list")
                 true
             }
@@ -228,10 +233,15 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
     private fun toggleMenu() {
         if (supportActionBar?.isShowing == true) {
             supportActionBar?.hide()
-            supportFragmentManager.beginTransaction().remove(menuFragment).commitAllowingStateLoss()
+            Navigation.findNavController(this, R.id.nav_host_fragment_read).navigate(R.id.fragment_reader_setting)
+            supportFragmentManager.beginTransaction()
+                    .hide(nav_host_fragment_read)
+                    .commitAllowingStateLoss()
         } else {
+            supportFragmentManager.beginTransaction()
+                    .show(nav_host_fragment_read)
+                    .commit()
             supportActionBar?.show()
-            supportFragmentManager.beginTransaction().replace(R.id.menu_fragment_container, menuFragment).commit()
         }
     }
 
@@ -252,6 +262,10 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
      */
     override fun getPageLoader(): PageLoader? {
         return mPageLoader
+    }
+
+    override fun setController(controller: ReaderSettingFragment.CallBack.Controller) {
+        this.controller = controller
     }
 
     private inner class ChapterListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {

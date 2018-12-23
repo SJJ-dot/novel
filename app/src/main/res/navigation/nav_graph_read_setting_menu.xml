@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_main_menu"
+    app:startDestination="@id/fragment_reader_setting">
+    <fragment
+        android:id="@+id/fragment_reader_setting"
+        android:name="sjj.novel.read.ReaderSettingFragment"
+        tools:layout="@layout/fragment_reader_setting"/>
+    <fragment
+        android:id="@+id/fragment_reader_brightness_setting"
+        android:name="sjj.novel.read.ReaderBrightnessSettingFragment"
+        tools:layout="@layout/fragment_reader_light_setting" />
+    <fragment
+        android:id="@+id/fragment_reader_font_setting"
+        android:name="sjj.novel.read.ReaderFontSettingFragment"
+        tools:layout="@layout/fragment_novel_source" />
+</navigation>

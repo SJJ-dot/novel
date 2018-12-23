@@ -530,7 +530,7 @@ public abstract class PageLoader {
      * @return
      */
     public int getPagePos() {
-        return mCurPage.position;
+        return mCurPage == null ? 0 : mCurPage.position;
     }
 
     public int getPageCount() {

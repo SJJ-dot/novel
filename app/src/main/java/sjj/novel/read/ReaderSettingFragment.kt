@@ -5,15 +5,15 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.*
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.SeekBar
+import androidx.navigation.fragment.NavHostFragment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_reader_setting.*
-import org.jetbrains.anko.support.v4.toast
 import sjj.novel.BaseFragment
 import sjj.novel.R
-import sjj.novel.util.getModel
 import sjj.novel.util.getModelActivity
 import sjj.novel.view.reader.page.PageLoader
 import sjj.rx.destroy
@@ -33,6 +33,7 @@ class ReaderSettingFragment : BaseFragment() {
             }
         }
     private lateinit var model: ReadViewModel
+    private lateinit var controller: CallBack.Controller
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_reader_setting, container, false)
@@ -75,20 +76,10 @@ class ReaderSettingFragment : BaseFragment() {
             callBack?.openChapterList()
         }
         read_tv_night_mode.setOnClickListener {
-            menu_item.visibility = VISIBLE
-            root.visibility = GONE
-            childFragmentManager
-                    .beginTransaction()
-                    .replace(R.id.menu_item, ReaderBrightnessSettingFragment())
-                    .commitAllowingStateLoss()
+            NavHostFragment.findNavController(this).navigate(R.id.fragment_reader_brightness_setting)
         }
         read_tv_setting.setOnClickListener {
-            menu_item.visibility = VISIBLE
-            root.visibility = GONE
-            childFragmentManager
-                    .beginTransaction()
-                    .replace(R.id.menu_item, ReaderFontSettingFragment())
-                    .commitAllowingStateLoss()
+            NavHostFragment.findNavController(this).navigate(R.id.fragment_reader_font_setting)
         }
         read_tv_cloud_download.setOnClickListener {
             //            <!--有时间的话下载需要改成service-->
@@ -105,6 +96,14 @@ class ReaderSettingFragment : BaseFragment() {
                         ?: return@subscribe)//绑定activity的生命周期。退出阅读界面后停止下载
             }.destroy("cache chapters")
         }
+        callBack?.setController(object : CallBack.Controller {
+            override fun setPagePos(pos: Int) {
+                this@ReaderSettingFragment.setPagePos(pos)
+            }
+            override fun setPageCount(count: Int) {
+                this@ReaderSettingFragment.setPageCount(count)
+            }
+        })
     }
 
     override fun onStart() {
@@ -140,7 +139,12 @@ class ReaderSettingFragment : BaseFragment() {
 
         fun getPageLoader(): PageLoader?
 
+        fun setController(controller: Controller)
 
+        interface Controller {
+            fun setPagePos(pos: Int)
+            fun setPageCount(count: Int)
+        }
     }
 
 
