@@ -220,7 +220,7 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
 
     override fun onBackPressed() {
         when {
-            drawer_layout?.isDrawerOpen(Gravity.START) == true -> drawer_layout?.closeDrawers()
+            drawer_layout?.isDrawerOpen(Gravity.END) == true -> drawer_layout?.closeDrawers()
             supportActionBar?.isShowing == true -> toggleMenu()
             else -> super.onBackPressed()
         }
