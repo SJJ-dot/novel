@@ -4,6 +4,7 @@ import android.Manifest
 import android.os.Bundle
 import android.view.Gravity
 import android.view.MenuItem
+import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
@@ -22,16 +23,18 @@ import sjj.permission.util.PermissionUtil
 class MainActivity : BaseActivity() {
 
     //lazy 有bug 需要绑定activity 生命周期
-    private val navController
-        get() = Navigation.findNavController(this, R.id.nav_host_fragment_main)
-    val appBarConfiguration
-        get() = AppBarConfiguration.Builder(navController.graph)
-                .setDrawerLayout(drawer_layout)
-                .build()
+    private lateinit var navController: NavController
+    private lateinit var appBarConfiguration:AppBarConfiguration
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+
+        navController = Navigation.findNavController(this, R.id.nav_host_fragment_main)
+        appBarConfiguration = AppBarConfiguration.Builder(navController.graph)
+                .setDrawerLayout(drawer_layout)
+                .build()
 
         setupActionBarWithNavController(this, navController, appBarConfiguration)
         NavigationUI.setupWithNavController(nav_ui, navController)

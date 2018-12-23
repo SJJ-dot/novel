@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -20,7 +19,7 @@ import sjj.novel.R
 import sjj.novel.logcat.LogCatIBinder
 import sjj.novel.logcat.LogCatIBinderCallBack
 import sjj.novel.logcat.LogCatService
-import sjj.novel.util.lazyModel
+import sjj.novel.util.getModel
 import java.util.*
 
 class NovelTestActivity : BaseActivity() {
@@ -31,16 +30,16 @@ class NovelTestActivity : BaseActivity() {
 
     private val adapter by lazy { Adapter() }
 
-    private val model by lazyModel<NovelTestViewModel> {
-        arrayOf(intent.getStringExtra(NOVEL_SOURCE_TOP_LEVEL_DOMAIN) ?: "")
-    }
+    private lateinit var model: NovelTestViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_novel_test)
         console.adapter = adapter
         bindService(Intent(this, LogCatService::class.java), connection, Context.BIND_AUTO_CREATE)
-
+        model = getModel {
+            arrayOf(intent.getStringExtra(NOVEL_SOURCE_TOP_LEVEL_DOMAIN) ?: "")
+        }
         search.setOnClickListener { _ ->
             model.search(search_name.text.toString().trim()).observeOn(AndroidSchedulers.mainThread()).subscribe { list ->
                 if (list.isEmpty()) {

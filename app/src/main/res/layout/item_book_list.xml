@@ -101,10 +101,22 @@
                 android:textColor="@color/colorTextLight"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@id/bookName"
+                app:layout_constraintEnd_toStartOf="@id/intro"
                 app:layout_constraintStart_toStartOf="@+id/bookName"
                 app:layout_constraintTop_toBottomOf="@+id/haveRead"
                 tools:text="标题" />
+
+            <TextView
+                android:id="@+id/intro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="简介"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@id/origin"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/origin" />
 
             <sjj.novel.view.BadgeView
                 android:id="@+id/bv_unread"

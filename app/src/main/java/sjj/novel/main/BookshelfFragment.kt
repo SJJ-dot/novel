@@ -8,7 +8,7 @@ import android.view.*
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_books.*
-import org.jetbrains.anko.startActivity
+import kotlinx.android.synthetic.main.item_book_list.view.*
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.startActivity
 import org.jetbrains.anko.support.v4.toast
@@ -16,23 +16,24 @@ import sjj.novel.BaseFragment
 import sjj.novel.DISPOSABLE_ACTIVITY_MAIN_REFRESH
 import sjj.novel.R
 import sjj.novel.databinding.ItemBookListBinding
+import sjj.novel.details.ChooseBookSourceFragment
 import sjj.novel.details.DetailsActivity
 import sjj.novel.read.ReadActivity
-import sjj.novel.util.lazyModel
+import sjj.novel.util.getModel
 
 /**
  * Created by SJJ on 2017/10/7.
  */
 class BookshelfFragment : BaseFragment() {
 
-    private val model by lazyModel<BookShelfViewModel>()
+    private lateinit var model: BookShelfViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_books, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        model = getModel()
         bookList.layoutManager = LinearLayoutManager(context)
         val adapter = Adapter()
         adapter.setHasStableIds(true)
@@ -83,9 +84,10 @@ class BookshelfFragment : BaseFragment() {
             bind!!.model = viewModel
             holder.itemView.setOnClickListener { v ->
 
-                if (viewModel.isThrough && viewModel.index <= ((viewModel.book.lastChapter?.index ?: 0) - 1)) {
+                if (viewModel.isThrough && viewModel.index <= ((viewModel.book.lastChapter?.index
+                                ?: 0) - 1)) {
                     //有更新点击阅读直接进入下一章
-                    model.setReadIndex(viewModel.book.lastChapter!!,viewModel.book).observeOn(AndroidSchedulers.mainThread()).subscribe {
+                    model.setReadIndex(viewModel.book.lastChapter!!, viewModel.book).observeOn(AndroidSchedulers.mainThread()).subscribe {
                         startActivity<ReadActivity>(ReadActivity.BOOK_NAME to viewModel.book.name, ReadActivity.BOOK_AUTHOR to viewModel.book.author)
                     }.destroy("read book")
 
@@ -103,6 +105,12 @@ class BookshelfFragment : BaseFragment() {
                     }
                 }.show()
                 true
+            }
+            holder.itemView.intro.setOnClickListener {
+                startActivity<DetailsActivity>(DetailsActivity.BOOK_NAME to viewModel.book.name, DetailsActivity.BOOK_AUTHOR to viewModel.book.author)
+            }
+            holder.itemView.origin.setOnClickListener {
+                ChooseBookSourceFragment.newInstance(viewModel.book.name, viewModel.book.author).show(fragmentManager)
             }
         }
 

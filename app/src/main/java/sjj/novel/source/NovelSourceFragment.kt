@@ -12,11 +12,11 @@ import sjj.alog.Log
 import sjj.novel.BaseFragment
 import sjj.novel.R
 import sjj.novel.data.source.remote.rule.BookParseRule
+import sjj.novel.util.getModel
 import sjj.novel.util.gson
-import sjj.novel.util.lazyModel
 
 class NovelSourceFragment : BaseFragment() {
-    private val model by lazyModel<NovelSourceViewModel>()
+    private lateinit var model: NovelSourceViewModel
 
     private val adapter by lazy { Adapter() }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -25,6 +25,7 @@ class NovelSourceFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         novel_source.adapter = adapter
+        model = getModel()
         model.getAllBookParseRule()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
@@ -41,7 +42,7 @@ class NovelSourceFragment : BaseFragment() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater?.inflate(R.menu.fragment_novel_source_menu,menu)
+        inflater?.inflate(R.menu.fragment_novel_source_menu, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -81,9 +82,9 @@ class NovelSourceFragment : BaseFragment() {
             holder.itemView.cb_book_source.text = rule.sourceName
             holder.itemView.iv_share_source.setOnClickListener {
                 model.share(rule).observeOn(AndroidSchedulers.mainThread()).subscribe({
-                    showSnackbar(holder.itemView,"分享成功")
-                },{
-                    showSnackbar(holder.itemView,"分享失败:${it.message}")
+                    showSnackbar(holder.itemView, "分享成功")
+                }, {
+                    showSnackbar(holder.itemView, "分享失败:${it.message}")
                 }).destroy("share novel source rule")
             }
             holder.itemView.iv_del_source.setOnClickListener {

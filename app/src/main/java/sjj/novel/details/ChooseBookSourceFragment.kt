@@ -12,8 +12,7 @@ import kotlinx.android.synthetic.main.fragment_choose_book_source.*
 import sjj.novel.BaseFragment
 import sjj.novel.R
 import sjj.novel.databinding.FragmentChooseBookSourceBinding
-import sjj.novel.util.id
-import sjj.novel.util.lazyModel
+import sjj.novel.util.getModel
 
 
 /**
@@ -26,21 +25,24 @@ class ChooseBookSourceFragment : BaseFragment() {
         const val BOOK_AUTHOR = "BOOK_AUTHOR"
 
         fun newInstance(name: String, author: String): ChooseBookSourceFragment {
-            return  ChooseBookSourceFragment().apply {
+            return ChooseBookSourceFragment().apply {
                 arguments = Bundle().apply {
-                    putString(BOOK_NAME,name)
-                    putString(BOOK_AUTHOR,author)
+                    putString(BOOK_NAME, name)
+                    putString(BOOK_AUTHOR, author)
                 }
             }
         }
 
     }
 
+    private lateinit var model: ChooseBookSourceViewModel
+    private val adapter = ChooseBookSourceAdapter()
 
-
-    private val model by lazyModel<ChooseBookSourceViewModel> { arrayOf(arguments!!.getString(BOOK_NAME)!!, arguments!!.getString(BOOK_AUTHOR)!!)}
-    private val adapter by lazy { ChooseBookSourceAdapter() }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        model = getModel {
+            arrayOf(arguments!!.getString(sjj.novel.details.ChooseBookSourceFragment.Companion.BOOK_NAME)!!, arguments!!.getString(sjj.novel.details.ChooseBookSourceFragment.Companion.BOOK_AUTHOR)!!)
+        }
+
         val binding = DataBindingUtil.inflate<FragmentChooseBookSourceBinding>(inflater, R.layout.fragment_choose_book_source, container, false)
         binding.model = model
         return binding.root

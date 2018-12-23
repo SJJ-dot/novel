@@ -9,7 +9,6 @@ import android.view.*
 import android.widget.TextView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_details.*
-import kotlinx.android.synthetic.main.appbar_layout.*
 import org.jetbrains.anko.find
 import org.jetbrains.anko.startActivity
 import sjj.novel.BaseActivity
@@ -18,7 +17,7 @@ import sjj.novel.R
 import sjj.novel.databinding.ActivityDetailsBinding
 import sjj.novel.model.Chapter
 import sjj.novel.read.ReadActivity
-import sjj.novel.util.lazyModel
+import sjj.novel.util.getModel
 
 /**
  * Created by SJJ on 2017/10/10.
@@ -29,10 +28,12 @@ class DetailsActivity : BaseActivity() {
         const val BOOK_AUTHOR = "book_author"
     }
 
-    private val model by lazyModel<DetailsViewModel> { arrayOf(intent.getStringExtra(BOOK_NAME), intent.getStringExtra(BOOK_AUTHOR)) }
+    private lateinit var model: DetailsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        model = getModel { arrayOf(intent.getStringExtra(BOOK_NAME), intent.getStringExtra(BOOK_AUTHOR)) }
 
         val bind: ActivityDetailsBinding = DataBindingUtil.setContentView(this, R.layout.activity_details)
 

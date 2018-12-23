@@ -12,13 +12,14 @@ import sjj.alog.Log
 import sjj.novel.BaseFragment
 import sjj.novel.R
 import sjj.novel.databinding.FragmentLoginBinding
-import sjj.novel.util.lazyModel
+import sjj.novel.util.getModel
 
 
 class LoginFragment : BaseFragment() {
-    private val model by lazyModel<LoginViewModel>()
+    private lateinit var model: LoginViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        model = getModel()
         val binding = DataBindingUtil.inflate<FragmentLoginBinding>(inflater, R.layout.fragment_login, container, false)
         binding.model = model
         return binding.root

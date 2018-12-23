@@ -6,8 +6,6 @@ import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import android.view.View
 import kotlinx.android.synthetic.main.appbar_layout.*
-import sjj.alog.Log
-import sjj.novel.util.log
 import sjj.rx.AutoDisposeEnhance
 
 

@@ -18,13 +18,13 @@ import sjj.novel.util.id
 import sjj.novel.util.resStr
 import kotlin.math.abs
 
-class ChooseBookSourceViewModel(val bookName: String, val author: String) : ViewModel() {
+class ChooseBookSourceViewModel( val bookName: String,val bookAuthor: String) : ViewModel() {
     val isRefreshing = ObservableBoolean()
 
     var bookList = listOf<ChooseBookSourceItemViewModel>()
 
     fun fillViewModel(): Flowable<List<ChooseBookSourceItemViewModel>> {
-        return localFictionDataSource.getBooks(bookName, author).flatMap {
+        return localFictionDataSource.getBooks(bookName, bookAuthor).flatMap {
             bookList = it.map {
                 val model = ChooseBookSourceItemViewModel()
                 model.book = it
@@ -58,7 +58,7 @@ class ChooseBookSourceViewModel(val bookName: String, val author: String) : View
 
     fun refresh(): Observable<Book> {
         isRefreshing.set(true)
-        return localFictionDataSource.getBooks(bookName, author).firstElement().toObservable().flatMap {
+        return localFictionDataSource.getBooks(bookName, bookAuthor).firstElement().toObservable().flatMap {
             Observable.fromIterable(it).flatMap {
                 novelDataRepository.refreshBook(it.url)
             }
@@ -72,7 +72,7 @@ class ChooseBookSourceViewModel(val bookName: String, val author: String) : View
             //当前阅读的章节名
             val chapterName = b.chapterName
             if (chapterName.isBlank()) {
-                novelDataRepository.setBookSource(bookName, author, book.url)
+                novelDataRepository.setBookSource(bookName, bookAuthor, book.url)
             } else {
                 localFictionDataSource.getChapterIntro(book.url).firstElement().toObservable().flatMap {
                     val dig = JaroWinklerStrategy()
@@ -99,7 +99,7 @@ class ChooseBookSourceViewModel(val bookName: String, val author: String) : View
                         }
                     }
                     if (cs.isEmpty()) {
-                        novelDataRepository.setBookSource(bookName, author, book.url)
+                        novelDataRepository.setBookSource(bookName, bookAuthor, book.url)
                     } else {
                         //这里有一点小问题 。 新来源的书籍可能没有当前的书源章节多。始终找不到最新书籍 可能会随机找上一个最相似的书籍章节。
                         //我认为作为一款免费的app这应当是可以忍受的
@@ -112,7 +112,7 @@ class ChooseBookSourceViewModel(val bookName: String, val author: String) : View
                             }
                         }
                         novelDataRepository.setReadIndex(book.name, book.author, t!!, b.pagePos,b.isThrough).flatMap {
-                            novelDataRepository.setBookSource(bookName, author, book.url)
+                            novelDataRepository.setBookSource(bookName, bookAuthor, book.url)
                         }
                     }
                 }

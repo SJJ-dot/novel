@@ -16,7 +16,7 @@ import sjj.novel.BaseActivity
 import sjj.novel.R
 import sjj.novel.databinding.ActivityEditNovelSourceBinding
 import sjj.novel.databinding.NovelSourceSearchResultRuleBinding
-import sjj.novel.util.lazyModel
+import sjj.novel.util.getModel
 import sjj.novel.util.observeOnMain
 
 class EditNovelSourceActivity : BaseActivity() {
@@ -24,15 +24,15 @@ class EditNovelSourceActivity : BaseActivity() {
         const val NOVEL_SOURCE_TOP_LEVEL_DOMAIN = "NOVEL_SOURCE_TOP_LEVEL_DOMAIN"
     }
 
-    private val model by lazyModel<EditNovelSourceViewModel> { arrayOf(intent.getStringExtra(NOVEL_SOURCE_TOP_LEVEL_DOMAIN)?:"") }
+    private lateinit var model: EditNovelSourceViewModel
 
     private val adapter by lazy { SearchResultPagerAdapter() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = DataBindingUtil.setContentView<ActivityEditNovelSourceBinding>(this, R.layout.activity_edit_novel_source)
-//        setContentView(R.layout.activity_edit_novel_source)
 
+        model = getModel { arrayOf(intent.getStringExtra(NOVEL_SOURCE_TOP_LEVEL_DOMAIN) ?: "") }
         binding.model = model
 
         search_rule_result.adapter = adapter

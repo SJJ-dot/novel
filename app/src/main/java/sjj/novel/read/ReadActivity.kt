@@ -9,14 +9,12 @@ import android.widget.TextView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_read.*
 import org.jetbrains.anko.find
-import org.jetbrains.anko.progressDialog
 import org.jetbrains.anko.startActivity
-import org.jetbrains.anko.support.v4.startActivity
 import org.jetbrains.anko.toast
 import sjj.novel.*
 import sjj.novel.details.DetailsActivity
 import sjj.novel.model.Chapter
-import sjj.novel.util.lazyModel
+import sjj.novel.util.getModel
 import sjj.novel.util.observeOnMain
 import sjj.novel.view.reader.bean.BookBean
 import sjj.novel.view.reader.bean.BookRecordBean
@@ -36,7 +34,7 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
 
     private var cached: ProgressDialog? = null
 
-    private val model by lazyModel<ReadViewModel> { arrayOf(intent.getStringExtra(BOOK_NAME), intent.getStringExtra(BOOK_AUTHOR)) }
+    private lateinit var model: ReadViewModel
 
     private val mPageLoader by lazy { chapterContent.pageLoader }
 
@@ -72,6 +70,8 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
             }
 
         })
+
+        model = getModel { arrayOf(intent.getStringExtra(BOOK_NAME), intent.getStringExtra(BOOK_AUTHOR)) }
 
 
         model.book.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe { book ->

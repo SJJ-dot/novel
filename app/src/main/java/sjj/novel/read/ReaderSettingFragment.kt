@@ -14,7 +14,8 @@ import kotlinx.android.synthetic.main.fragment_reader_setting.*
 import org.jetbrains.anko.support.v4.toast
 import sjj.novel.BaseFragment
 import sjj.novel.R
-import sjj.novel.util.lazyModel
+import sjj.novel.util.getModel
+import sjj.novel.util.getModelActivity
 import sjj.novel.view.reader.page.PageLoader
 import sjj.rx.destroy
 
@@ -32,13 +33,16 @@ class ReaderSettingFragment : BaseFragment() {
                 else -> null
             }
         }
-    private val model by lazyModel<ReadViewModel>()
+    private lateinit var model: ReadViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_reader_setting, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        model = getModelActivity()
+
         read_tv_pre_chapter.setOnClickListener {
             callBack?.getPageLoader()?.skipPreChapter()
         }
@@ -78,7 +82,7 @@ class ReaderSettingFragment : BaseFragment() {
             toast("nonsupport")
         }
         read_tv_cloud_download.setOnClickListener {
-//            <!--有时间的话下载需要改成service-->
+            //            <!--有时间的话下载需要改成service-->
             model.book.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe { book ->
                 showSnackbar(read_tv_cloud_download, "正在下载章节")
                 model.cachedBookChapter(book.url).observeOn(AndroidSchedulers.mainThread()).doOnCancel {
@@ -88,7 +92,8 @@ class ReaderSettingFragment : BaseFragment() {
                     showSnackbar(read_tv_cloud_download, "章节下载中断:${throwable.message}")
                 }, {
                     showSnackbar(read_tv_cloud_download, "章节下载完成")
-                }).destroy("cache chapters", activity?.lifecycle ?: return@subscribe)//绑定activity的生命周期。退出阅读界面后停止下载
+                }).destroy("cache chapters", activity?.lifecycle
+                        ?: return@subscribe)//绑定activity的生命周期。退出阅读界面后停止下载
             }.destroy("cache chapters")
         }
     }
