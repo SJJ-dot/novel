@@ -7,32 +7,20 @@ import android.support.v4.app.FragmentTransaction
 import android.util.DisplayMetrics
 import android.view.View
 import android.view.ViewGroup
-import io.reactivex.disposables.Disposable
-import sjj.novel.util.destroy
-import sjj.novel.util.pause
-import sjj.novel.util.stop
+import sjj.alog.Log
+import sjj.rx.AutoDisposeEnhance
 
 /**
  * Created by SJJ on 2017/10/7.
  */
-open class BaseFragment : DialogFragment() {
-    fun Disposable.destroy(onceKey: String? = null) {
-        destroy(onceKey, lifecycle)
-    }
-
-    fun Disposable.stop(onceKey: String? = null) {
-        stop(onceKey, lifecycle)
-    }
-
-    fun Disposable.pause(onceKey: String? = null) {
-        pause(onceKey, lifecycle)
-    }
+open class BaseFragment : DialogFragment(), AutoDisposeEnhance {
 
     private var snackbar: Snackbar? = null
 
-    fun showSnackbar(view: View, msg: String, duration: Int = Snackbar.LENGTH_SHORT) {
+    fun showSnackbar(view: View?, msg: String, duration: Int = Snackbar.LENGTH_SHORT) {
+        Log.i(msg)
         if (snackbar == null) {
-            snackbar = Snackbar.make(view, msg, duration)
+            snackbar = Snackbar.make(view ?: return, msg, duration)
         } else {
             snackbar?.setText(msg)
             snackbar?.duration = duration
@@ -40,8 +28,9 @@ open class BaseFragment : DialogFragment() {
         snackbar?.show()
     }
 
-    fun newSnackbar(view: View, msg: String, duration: Int = Snackbar.LENGTH_SHORT) {
-        snackbar = Snackbar.make(view, msg, duration)
+    fun newSnackbar(view: View?, msg: String, duration: Int = Snackbar.LENGTH_SHORT) {
+        Log.i(msg)
+        snackbar = Snackbar.make(view ?: return, msg, duration)
         snackbar?.show()
     }
 

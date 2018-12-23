@@ -6,24 +6,15 @@ package sjj.novel.view.reader.page;
  */
 
 public enum PageMode {
-    /**
-     * 仿真
-     */
-    SIMULATION,
-    /**
-     * 覆盖
-     */
-    COVER,
-    /**
-     * 平移
-     */
-    SLIDE,
-    /**
-     * 无
-     */
-    NONE,
-    /**
-     * 滚动
-     */
-    SCROLL
+    SIMULATION("仿真"),
+    COVER("覆盖"),
+    SLIDE("平移"),
+    NONE("无"),
+    SCROLL("滚动");
+
+    public final String des;
+
+    PageMode(String des) {
+        this.des = des;
+    }
 }

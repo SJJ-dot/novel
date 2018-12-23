@@ -4,13 +4,11 @@ import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_books.*
-import kotlinx.android.synthetic.main.item_book_list.view.*
+import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.startActivity
 import org.jetbrains.anko.support.v4.toast
@@ -19,7 +17,7 @@ import sjj.novel.DISPOSABLE_ACTIVITY_MAIN_REFRESH
 import sjj.novel.R
 import sjj.novel.databinding.ItemBookListBinding
 import sjj.novel.details.DetailsActivity
-import sjj.novel.model.Book
+import sjj.novel.read.ReadActivity
 import sjj.novel.util.lazyModel
 
 /**
@@ -35,18 +33,6 @@ class BookshelfFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        toolbar.inflateMenu(R.menu.fragment_book_shelf)
-        toolbar.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.search_book_shelf -> {
-                    findNavController(this).navigate(R.id.searchFragment)
-                    true
-                }
-                else -> false
-            }
-        }
-
         bookList.layoutManager = LinearLayoutManager(context)
         val adapter = Adapter()
         adapter.setHasStableIds(true)
@@ -65,6 +51,23 @@ class BookshelfFragment : BaseFragment() {
                     }.subscribe()
                     .destroy(DISPOSABLE_ACTIVITY_MAIN_REFRESH)
         }
+
+        setHasOptionsMenu(true)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater?.inflate(R.menu.fragment_book_shelf, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return when (item?.itemId) {
+            R.id.search_book_shelf -> {
+                findNavController(this).navigate(R.id.searchFragment)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     private inner class Adapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -79,7 +82,16 @@ class BookshelfFragment : BaseFragment() {
             val viewModel = data!!.get(position)
             bind!!.model = viewModel
             holder.itemView.setOnClickListener { v ->
-                startActivity<DetailsActivity>(DetailsActivity.BOOK_NAME to viewModel.book.name, DetailsActivity.BOOK_AUTHOR to viewModel.book.author)
+
+                if (viewModel.isThrough && viewModel.index <= ((viewModel.book.lastChapter?.index ?: 0) - 1)) {
+                    //有更新点击阅读直接进入下一章
+                    model.setReadIndex(viewModel.book.lastChapter!!,viewModel.book).observeOn(AndroidSchedulers.mainThread()).subscribe {
+                        startActivity<ReadActivity>(ReadActivity.BOOK_NAME to viewModel.book.name, ReadActivity.BOOK_AUTHOR to viewModel.book.author)
+                    }.destroy("read book")
+
+                } else {
+                    startActivity<ReadActivity>(ReadActivity.BOOK_NAME to viewModel.book.name, ReadActivity.BOOK_AUTHOR to viewModel.book.author)
+                }
             }
             holder.itemView.setOnLongClickListener { _ ->
                 alert {

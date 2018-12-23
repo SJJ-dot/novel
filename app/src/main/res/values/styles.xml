@@ -10,16 +10,31 @@
         <item name="windowNoTitle">true</item>
         <item name="android:textColorPrimary">@color/material_textBlack_text</item>
         <item name="android:textColorSecondary">@color/material_textBlack_secondaryText</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowTranslucentStatus">true</item>
     </style>
 
     <style name="AppTheme.StatusBar">
-        <item name="android:windowTranslucentStatus">false</item>
-        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+
+    <style name="fragment_reader_setting" />
+
+    <style name="fragment.reader.setting.bottom.btn" parent="fragment_reader_setting">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:scaleType">center</item>
+    </style>
+
+    <style name="fragment.reader.setting.chapter.btn" parent="fragment_reader_setting">
+        <item name="android:layout_width">80dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/colorText</item>
+    </style>
 
 </resources>

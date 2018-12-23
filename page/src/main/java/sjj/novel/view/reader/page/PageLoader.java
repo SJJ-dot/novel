@@ -578,7 +578,7 @@ public abstract class PageLoader {
             mBookRecord.pagePos = 0;
         }
         if (mCurPageList == null) return;
-        mBookRecord.isThrough = mCurPageList.size() == mCurPage.position + 1;
+        mBookRecord.isThrough = mCurChapterPos == mChapterList.size() - 1 && mCurPageList.size() == mCurPage.position + 1;
         mPageChangeListener.onBookRecordChange(mBookRecord);
     }
 
@@ -906,7 +906,7 @@ public abstract class PageLoader {
 
         // 获取内容显示位置的大小
         mVisibleWidth = mDisplayWidth - mMarginWidth * 2;
-        mVisibleHeight = mDisplayHeight - mMarginHeight;//至减去上边距
+        mVisibleHeight = mDisplayHeight - mMarginHeight - screenUtils.dpToPx(2);//至减去上边距
 
         // 重置 PageMode
         mPageView.setPageMode(mPageMode);
@@ -1245,8 +1245,8 @@ public abstract class PageLoader {
         while (showTitle || strings.length > i) {
             if (!showTitle) {
                 paragraph = strings[i];
+                i++;
             }
-            i++;
             paragraph = StringUtils.convertCC(mContext, paragraph, convertType);
             // 重置段落
             if (!showTitle) {

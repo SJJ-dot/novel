@@ -5,27 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/appBarLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:theme="@style/AppTheme.AppBarOverlay"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <android.support.v7.widget.SearchView
-            android:id="@+id/searchView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:imeOptions="actionSearch"
-            app:iconifiedByDefault="false"
-            app:queryHint="请输入书名或者作者" />
-    </android.support.design.widget.AppBarLayout>
 
     <sjj.novel.view.refreshprogressbar.RefreshProgressBar
         android:id="@+id/refresh_progress_bar"
         android:layout_width="match_parent"
         android:layout_height="3dp"
-        app:layout_constraintTop_toBottomOf="@id/appBarLayout2" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <sjj.novel.view.scroller.FastScrollRecyclerView
         android:id="@+id/searchRecyclerView"
@@ -44,7 +29,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout2"
+        app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible">
 
         <LinearLayout

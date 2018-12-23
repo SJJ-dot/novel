@@ -1,4 +1,4 @@
-package sjj.novel.main
+package sjj.novel.search
 
 import android.arch.lifecycle.ViewModel
 import android.databinding.ObservableField
@@ -6,7 +6,6 @@ import io.reactivex.Observable
 import sjj.novel.R
 import sjj.novel.data.repository.novelDataRepository
 import sjj.novel.data.source.local.localFictionDataSource
-import sjj.novel.model.Book
 import sjj.novel.model.BookSourceRecord
 import sjj.novel.model.SearchHistory
 import sjj.novel.util.resStr

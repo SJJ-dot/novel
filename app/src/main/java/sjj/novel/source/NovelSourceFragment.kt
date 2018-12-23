@@ -3,9 +3,7 @@ package sjj.novel.source
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_novel_source.*
 import kotlinx.android.synthetic.main.item_book_source.view.*
@@ -26,30 +24,6 @@ class NovelSourceFragment : BaseFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        toolbar.inflateMenu(R.menu.fragment_novel_source_menu)
-        toolbar.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                R.id.menu_create_novel_source -> {
-                    startActivity<EditNovelSourceActivity>()
-                    true
-                }
-                R.id.menu_load_default_novel_source -> {
-                    //同步书源。退出后就会停止同步。体验可能不是很好但我并不关心
-                    newSnackbar(novel_source, "正在同步书源，请稍后……", Snackbar.LENGTH_INDEFINITE)
-                    model.syncNovelSource()
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe({
-                                newSnackbar(novel_source, "同步成功", Snackbar.LENGTH_SHORT)
-                            }, {
-                                newSnackbar(novel_source, "同步失败：${it.message}", Snackbar.LENGTH_SHORT)
-                            })
-                            .destroy("sync novel source")
-                    true
-                }
-                else -> false
-            }
-        }
-        toolbar.title = getString(R.string.novel_source_manager)
         novel_source.adapter = adapter
         model.getAllBookParseRule()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -61,6 +35,36 @@ class NovelSourceFragment : BaseFragment() {
                     adapter.data = it
                     adapter.notifyDataSetChanged()
                 }.destroy()
+
+        setHasOptionsMenu(true)
+
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater?.inflate(R.menu.fragment_novel_source_menu,menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return when (item?.itemId) {
+            R.id.menu_create_novel_source -> {
+                startActivity<EditNovelSourceActivity>()
+                true
+            }
+            R.id.menu_load_default_novel_source -> {
+                //同步书源。退出后就会停止同步。体验可能不是很好但我并不关心
+                newSnackbar(novel_source, "正在同步书源，请稍后……", Snackbar.LENGTH_INDEFINITE)
+                model.syncNovelSource()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({
+                            newSnackbar(novel_source, "同步成功", Snackbar.LENGTH_SHORT)
+                        }, {
+                            newSnackbar(novel_source, "同步失败：${it.message}", Snackbar.LENGTH_SHORT)
+                        })
+                        .destroy("sync novel source")
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     inner class Adapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {

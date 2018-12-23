@@ -1,5 +1,6 @@
-package sjj.novel.main
+package sjj.novel.about
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +17,7 @@ class AboutFragment : BaseFragment() {
         return inflater.inflate(R.layout.fragment_about, container, false)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         versionCode.text = "版本号：${BuildConfig.VERSION_NAME}"
         versionCode.setOnClickListener {

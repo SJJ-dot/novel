@@ -3,7 +3,6 @@ package sjj.novel.read
 import android.app.ProgressDialog
 import android.os.Bundle
 import android.support.v4.widget.DrawerLayout
-import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.widget.TextView
@@ -11,8 +10,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_read.*
 import org.jetbrains.anko.find
 import org.jetbrains.anko.progressDialog
+import org.jetbrains.anko.startActivity
+import org.jetbrains.anko.support.v4.startActivity
 import org.jetbrains.anko.toast
 import sjj.novel.*
+import sjj.novel.details.DetailsActivity
 import sjj.novel.model.Chapter
 import sjj.novel.util.lazyModel
 import sjj.novel.util.observeOnMain
@@ -43,10 +45,8 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_read)
-        setSupportActionBar(toolbar)
-        val supportActionBar = supportActionBar!!
-        supportActionBar.setDisplayHomeAsUpEnabled(true)
-        supportActionBar.hide()
+
+        supportActionBar!!.hide()
         //禁止手势滑出
         drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
@@ -56,7 +56,7 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
 
         chapterContent.setTouchListener(object : PageView.TouchListener {
             override fun intercept(event: MotionEvent?): Boolean {
-                val showing = supportActionBar.isShowing
+                val showing = supportActionBar!!.isShowing
                 if (showing && event?.action == MotionEvent.ACTION_DOWN) {
                     return true
                 }
@@ -145,45 +145,19 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
     }
 
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.activity_read_menu, menu)
+        val subMenu = menu.addSubMenu("翻页模式")
+        for (m in PageMode.values()) {
+            subMenu.add(0, m.ordinal, 0, m.des)
+        }
         return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            android.R.id.home -> {
-                finish()
-                true
-            }
-            R.id.menu_cached -> {
-
-                model.book.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
-                    cached?.dismiss()
-                    cached = progressDialog("正在缓存章节内容")
-
-                    model.cachedBookChapter(it.url).observeOn(AndroidSchedulers.mainThread()).subscribe({ p: Pair<Int, Int> ->
-                        cached?.max = p.second
-                        cached?.progress = p.first
-                    }, {
-                        toast("缓存章节内容出错：$it")
-                        cached?.dismiss()
-                        cached = null
-                    }, {
-                        toast("缓存章节内容完成")
-                        cached?.dismiss()
-                        cached = null
-                    }).destroy(DISPOSABLE_CACHED_BOOK_CHAPTER)
-                }.destroy(DISPOSABLE_CACHED_BOOK_CHAPTER)
-                true
-            }
-            R.id.menu_flip_mode -> {
-                AlertDialog.Builder(this).setSingleChoiceItems(arrayOf("仿真", "覆盖", "平移", "无", "滚动"), PageMode.valueOf(AppConfig.flipPageMode).ordinal) { dialog, which ->
-                    dialog.dismiss()
-                    val mode = PageMode.values()[which]
-                    AppConfig.flipPageMode = mode.name
-                    mPageLoader.setPageMode(mode)
-                }.show()
+            R.id.menu_intro -> {
+                startActivity<DetailsActivity>(DetailsActivity.BOOK_NAME to model.name, DetailsActivity.BOOK_AUTHOR to model.author)
                 true
             }
             R.id.menu_add -> {
@@ -204,17 +178,23 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
                 }
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> when {
+                item.itemId < PageMode.values().size && item.itemId >= 0 -> {
+                    val mode = PageMode.values()[item.itemId]
+                    AppConfig.flipPageMode = mode.name
+                    mPageLoader.setPageMode(mode)
+                    true
+                }
+                else -> super.onOptionsItemSelected(item)
+            }
         }
     }
 
     override fun onBackPressed() {
-        if (drawer_layout?.isDrawerOpen(Gravity.START) == true) {
-            drawer_layout?.closeDrawers()
-        } else if (supportActionBar?.isShowing == true) {
-            toggleMenu()
-        } else {
-            super.onBackPressed()
+        when {
+            drawer_layout?.isDrawerOpen(Gravity.START) == true -> drawer_layout?.closeDrawers()
+            supportActionBar?.isShowing == true -> toggleMenu()
+            else -> super.onBackPressed()
         }
     }
 
@@ -237,7 +217,7 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
      * 底部菜单回调
      */
     override fun openChapterList() {
-        drawer_layout.openDrawer(Gravity.START)
+        drawer_layout.openDrawer(Gravity.END)
     }
 
     /**

@@ -33,12 +33,6 @@ class EditNovelSourceActivity : BaseActivity() {
         val binding = DataBindingUtil.setContentView<ActivityEditNovelSourceBinding>(this, R.layout.activity_edit_novel_source)
 //        setContentView(R.layout.activity_edit_novel_source)
 
-        setSupportActionBar(toolbar)
-        val supportActionBar = supportActionBar!!
-        supportActionBar.setDisplayHomeAsUpEnabled(true)
-
-        title = "编辑解析规则"
-
         binding.model = model
 
         search_rule_result.adapter = adapter
@@ -65,8 +59,8 @@ class EditNovelSourceActivity : BaseActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
             R.id.menu_help_novel_source -> {
                 startActivity<NovelSourceRuleExplanationActivity>()
                 true

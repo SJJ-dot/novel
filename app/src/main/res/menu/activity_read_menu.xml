@@ -9,21 +9,16 @@
         android:icon="@drawable/ic_menu_refresh"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/menu_intro"
+        android:title="简介"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/menu_add"
         android:title="放大字号"
         app:showAsAction="collapseActionView" />
     <item
         android:id="@+id/menu_minus"
         android:title="缩小字号"
-        app:showAsAction="collapseActionView" />
-    <item
-        android:id="@+id/menu_flip_mode"
-        android:title="翻页模式"
-        app:showAsAction="collapseActionView" />
-    <item
-        android:id="@+id/menu_cached"
-        android:icon="@drawable/ic_cached_white"
-        android:title="缓存章节内容"
         app:showAsAction="collapseActionView" />
 
 </menu>

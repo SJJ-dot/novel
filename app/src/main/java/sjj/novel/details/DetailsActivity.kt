@@ -5,13 +5,11 @@ import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TextView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_details.*
+import kotlinx.android.synthetic.main.appbar_layout.*
 import org.jetbrains.anko.find
 import org.jetbrains.anko.startActivity
 import sjj.novel.BaseActivity
@@ -35,11 +33,8 @@ class DetailsActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val bind: ActivityDetailsBinding = DataBindingUtil.setContentView(this, R.layout.activity_details)
 
-        setSupportActionBar(toolbar)
-        val supportActionBar = supportActionBar!!
-        supportActionBar.setDisplayHomeAsUpEnabled(true)
+        val bind: ActivityDetailsBinding = DataBindingUtil.setContentView(this, R.layout.activity_details)
 
         val adapter = ChapterListAdapter()
         model.book.observeOn(AndroidSchedulers.mainThread()).subscribe { book ->
@@ -50,20 +45,7 @@ class DetailsActivity : BaseActivity() {
             }
             adapter.data = book.chapterList
             adapter.notifyDataSetChanged()
-            chapterListButton.setOnClickListener { v ->
-                if (chapterList.visibility != View.VISIBLE) {
-                    chapterList.visibility = View.VISIBLE
-//                    model.getChapters(it.url).observe(this, Observer{
-//                        adapter.submitList(it)
-//
-//                    })
-                    model.bookSourceRecord.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe { index ->
-                        chapterList.scrollToPosition(index.readIndex)
-                    }
-                } else {
-                    chapterList.visibility = View.GONE
-                }
-            }
+
             detailsRefreshLayout.setOnRefreshListener {
                 model.refresh(book).observeOn(AndroidSchedulers.mainThread()).doOnTerminate {
                     detailsRefreshLayout.isRefreshing = false
@@ -104,14 +86,29 @@ class DetailsActivity : BaseActivity() {
         chapterList.adapter = adapter
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.activity_details_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            android.R.id.home -> {
-                finish()
+            R.id.chapter_list -> {
+                model.bookSourceRecord.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe { index ->
+                    chapterList.scrollToPosition(index.readIndex)
+                    drawer_layout.openDrawer(Gravity.END)
+                }
                 true
             }
-            else -> false
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onBackPressed() {
+        if (drawer_layout.isDrawerOpen(Gravity.END)) {
+            drawer_layout.closeDrawer(Gravity.END)
+        } else {
+            super.onBackPressed()
         }
     }
 
