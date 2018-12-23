@@ -2,7 +2,6 @@ package sjj.novel.details
 
 import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
@@ -10,6 +9,7 @@ import android.view.*
 import android.widget.TextView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_details.*
+import kotlinx.android.synthetic.main.appbar_layout.*
 import org.jetbrains.anko.find
 import org.jetbrains.anko.startActivity
 import sjj.novel.BaseActivity
@@ -33,11 +33,8 @@ class DetailsActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val bind: ActivityDetailsBinding = DataBindingUtil.setContentView(this, R.layout.activity_details)
 
-        setSupportActionBar(toolbar)
-        val supportActionBar = supportActionBar!!
-        supportActionBar.setDisplayHomeAsUpEnabled(true)
+        val bind: ActivityDetailsBinding = DataBindingUtil.setContentView(this, R.layout.activity_details)
 
         val adapter = ChapterListAdapter()
         model.book.observeOn(AndroidSchedulers.mainThread()).subscribe { book ->

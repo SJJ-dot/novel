@@ -33,10 +33,6 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Set up ActionBar
-        setSupportActionBar(toolbar)
-
-
         setupActionBarWithNavController(this, navController, appBarConfiguration)
         NavigationUI.setupWithNavController(nav_ui, navController)
 

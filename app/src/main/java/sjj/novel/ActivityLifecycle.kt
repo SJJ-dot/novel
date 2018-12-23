@@ -3,6 +3,7 @@ package sjj.novel
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
+import org.jsoup.Connection
 import sjj.alog.Log
 
 object ActivityLifecycle {
@@ -34,6 +35,9 @@ object ActivityLifecycle {
 
             override fun onActivityCreated(activity: Activity?, savedInstanceState: Bundle?) {
                 Log.i("activity:$activity")
+                if (activity !is BaseActivity) {
+                    Log.w("${activity?.javaClass?.name} 没有继承 ${BaseActivity::class.java.name}")
+                }
             }
         })
     }

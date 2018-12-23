@@ -33,12 +33,6 @@ class EditNovelSourceActivity : BaseActivity() {
         val binding = DataBindingUtil.setContentView<ActivityEditNovelSourceBinding>(this, R.layout.activity_edit_novel_source)
 //        setContentView(R.layout.activity_edit_novel_source)
 
-        setSupportActionBar(toolbar)
-        val supportActionBar = supportActionBar!!
-        supportActionBar.setDisplayHomeAsUpEnabled(true)
-
-        title = "编辑解析规则"
-
         binding.model = model
 
         search_rule_result.adapter = adapter

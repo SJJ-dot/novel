@@ -45,10 +45,8 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_read)
-        setSupportActionBar(toolbar)
-        val supportActionBar = supportActionBar!!
-        supportActionBar.setDisplayHomeAsUpEnabled(true)
-        supportActionBar.hide()
+
+        supportActionBar!!.hide()
         //禁止手势滑出
         drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
@@ -58,7 +56,7 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
 
         chapterContent.setTouchListener(object : PageView.TouchListener {
             override fun intercept(event: MotionEvent?): Boolean {
-                val showing = supportActionBar.isShowing
+                val showing = supportActionBar!!.isShowing
                 if (showing && event?.action == MotionEvent.ACTION_DOWN) {
                     return true
                 }

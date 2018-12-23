@@ -18,7 +18,6 @@
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
         android:orientation="vertical">
 
         <LinearLayout
@@ -26,21 +25,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <android.support.design.widget.AppBarLayout
-                android:id="@+id/appBarLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:theme="@style/AppTheme.AppBarOverlay"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <android.support.v7.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    app:layout_scrollFlags="scroll|enterAlways|snap"
-                    app:popupTheme="@style/AppTheme.PopupOverlay"
-                    app:title="书架" />
-            </android.support.design.widget.AppBarLayout>
+            <include layout="@layout/appbar_layout" />
 
             <sjj.novel.view.SwipeRefreshLayout_
                 android:id="@+id/detailsRefreshLayout"
@@ -246,9 +231,7 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="end"
-            android:background="@color/colorPrimaryDark"
-            android:fitsSystemWindows="true">
+            android:layout_gravity="end">
 
             <sjj.novel.view.scroller.FastScrollRecyclerView
                 android:id="@+id/chapterList"

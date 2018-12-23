@@ -1,9 +1,13 @@
 package sjj.novel
 
+import android.content.SharedPreferences
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import android.view.View
+import kotlinx.android.synthetic.main.appbar_layout.*
+import sjj.alog.Log
+import sjj.novel.util.log
 import sjj.rx.AutoDisposeEnhance
 
 
@@ -33,6 +37,14 @@ abstract class BaseActivity : AppCompatActivity(), AutoDisposeEnhance {
         snackbar = null
     }
 
+    override fun setContentView(layoutResID: Int) {
+        super.setContentView(layoutResID)
+        toolbar?.also {
+            setSupportActionBar(it)
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        }
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
@@ -41,6 +53,10 @@ abstract class BaseActivity : AppCompatActivity(), AutoDisposeEnhance {
             }
             else -> false
         }
+    }
+
+    override fun getSharedPreferences(name: String?, mode: Int): SharedPreferences {
+        return application.getSharedPreferences(name, mode)
     }
 
 }

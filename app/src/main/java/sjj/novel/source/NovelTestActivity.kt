@@ -15,6 +15,7 @@ import kotlinx.android.synthetic.main.activity_novel_test.*
 import kotlinx.android.synthetic.main.item_log_text.view.*
 import org.jetbrains.anko.toast
 import sjj.alog.Log
+import sjj.novel.BaseActivity
 import sjj.novel.R
 import sjj.novel.logcat.LogCatIBinder
 import sjj.novel.logcat.LogCatIBinderCallBack
@@ -22,7 +23,7 @@ import sjj.novel.logcat.LogCatService
 import sjj.novel.util.lazyModel
 import java.util.*
 
-class NovelTestActivity : AppCompatActivity() {
+class NovelTestActivity : BaseActivity() {
 
     companion object {
         const val NOVEL_SOURCE_TOP_LEVEL_DOMAIN = "NOVEL_SOURCE_TOP_LEVEL_DOMAIN"
@@ -30,7 +31,9 @@ class NovelTestActivity : AppCompatActivity() {
 
     private val adapter by lazy { Adapter() }
 
-    private val model by lazyModel<NovelTestViewModel> { arrayOf(intent.getStringExtra(NOVEL_SOURCE_TOP_LEVEL_DOMAIN)?:"") }
+    private val model by lazyModel<NovelTestViewModel> {
+        arrayOf(intent.getStringExtra(NOVEL_SOURCE_TOP_LEVEL_DOMAIN) ?: "")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
