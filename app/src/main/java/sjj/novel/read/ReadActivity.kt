@@ -1,6 +1,6 @@
 package sjj.novel.read
 
-import android.app.ProgressDialog
+import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.RecyclerView
@@ -13,16 +13,16 @@ import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
 import sjj.novel.*
 import sjj.novel.details.DetailsActivity
+import sjj.novel.model.Book
 import sjj.novel.model.Chapter
 import sjj.novel.util.getModel
+import sjj.novel.util.initScreenBrightness
+import sjj.novel.util.log
 import sjj.novel.util.observeOnMain
 import sjj.novel.view.reader.bean.BookBean
 import sjj.novel.view.reader.bean.BookRecordBean
-import sjj.novel.view.reader.page.PageLoader
+import sjj.novel.view.reader.page.*
 import sjj.novel.view.reader.page.PageLoader.STATUS_LOADING
-import sjj.novel.view.reader.page.PageMode
-import sjj.novel.view.reader.page.PageView
-import sjj.novel.view.reader.page.TxtChapter
 import kotlin.math.max
 import kotlin.math.min
 
@@ -32,23 +32,24 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
         val BOOK_AUTHOR = "BOOK_AUTHOR"
     }
 
-    private var cached: ProgressDialog? = null
-
     private lateinit var model: ReadViewModel
 
     private val mPageLoader by lazy { chapterContent.pageLoader }
 
     private val menuFragment by lazy { ReaderSettingFragment() }
 
+    private val chapterListAdapter = ChapterListAdapter()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initScreenBrightness(this)
         setContentView(R.layout.activity_read)
 
         supportActionBar!!.hide()
         //禁止手势滑出
         drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
-        val chapterListAdapter = ChapterListAdapter()
+
 //        chapterContent.adapter = contentAdapter
         chapterList.adapter = chapterListAdapter
 
@@ -83,29 +84,12 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
             model.readIndex.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
                 val index = min(max(book.chapterList.lastIndex, 0), it.readIndex)
                 chapterList.scrollToPosition(index)
-
                 mPageLoader.setBookRecord(BookRecordBean().apply {
                     bookId = book.url
-                    chapter = it.readIndex
+                    chapter = index
                     pagePos = it.pagePos
                     isThrough = it.isThrough
                 })
-
-                mPageLoader.book = BookBean().apply {
-                    id = book.url
-                    title = book.name
-                    author = book.author
-                    shortIntro = book.intro
-                    cover = book.bookCoverImgUrl
-                    bookChapterList = book.chapterList.map { chapter ->
-                        TxtChapter().apply {
-                            this.bookId = book.url
-                            this.link = chapter.url
-                            this.title = chapter.chapterName
-                        }
-                    }
-
-                }
 
                 mPageLoader.setOnPageChangeListener(object : PageLoader.OnPageChangeListener {
                     override fun onBookRecordChange(bean: BookRecordBean) {
@@ -113,6 +97,7 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
                     }
 
                     override fun onChapterChange(pos: Int) {
+                        chapterList.scrollToPosition(pos)
                     }
 
                     override fun requestChapters(requestChapters: MutableList<TxtChapter>) {
@@ -137,35 +122,65 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
 
                 })
 
-                mPageLoader.refreshChapterList()
+                initBookData(book)
             }.destroy(DISPOSABLE_ACTIVITY_READ_READ_INDEX)
 
 
         }.destroy()
+
+        AppConfig.readerPageStyle.observe(this, Observer {
+            mPageLoader.setPageStyle(it)
+        })
+        AppConfig.fontSize.observe(this, Observer {
+            mPageLoader.setTextSize(it!!)
+        })
     }
 
+    private fun initBookData(book: Book) {
+        mPageLoader.book = BookBean().apply {
+            id = book.url
+            title = book.name
+            author = book.author
+            shortIntro = book.intro
+            cover = book.bookCoverImgUrl
+            bookChapterList = book.chapterList.map { chapter ->
+                TxtChapter().apply {
+                    this.bookId = book.url
+                    this.link = chapter.url
+                    this.title = chapter.chapterName
+                }
+            }
+
+        }
+        mPageLoader.refreshChapterList()
+    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.activity_read_menu, menu)
-        val subMenu = menu.addSubMenu("翻页模式")
+        val subMenu = menu.addSubMenu(0, R.id.menu_read_flip_page_mode, 1, "翻页模式")
+
+        val mode = AppConfig.flipPageMode
         for (m in PageMode.values()) {
-            subMenu.add(0, m.ordinal, 0, m.des)
+            val item = subMenu.add(0, m.ordinal, 0, m.des)
+            item.isChecked = mode == m.name
         }
+        subMenu.setGroupCheckable(0, true, true)
         return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        menu?.findItem(R.id.menu_read_flip_page_mode)?.also {
+            val subMenu = it.subMenu
+            val mode = PageMode.valueOf(AppConfig.flipPageMode)
+            subMenu.getItem(mode.ordinal).isChecked = true
+        }
+        return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_intro -> {
                 startActivity<DetailsActivity>(DetailsActivity.BOOK_NAME to model.name, DetailsActivity.BOOK_AUTHOR to model.author)
-                true
-            }
-            R.id.menu_add -> {
-                mPageLoader.setTextSizeIncrease(true)
-                true
-            }
-            R.id.menu_minus -> {
-                mPageLoader.setTextSizeIncrease(false)
                 true
             }
             R.id.menu_refresh -> {
@@ -176,6 +191,18 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
                         toast("刷新失败")
                     }).destroy("requestChapters menu_refresh")
                 }
+                true
+            }
+            R.id.menu_refresh_chapters -> {
+                showSnackbar(menu_fragment_container, "正在更新目录信息，请稍后……")
+                model.refresh().observeOnMain().subscribe({
+                    chapterListAdapter.data = it.chapterList
+                    chapterListAdapter.notifyDataSetChanged()
+                    initBookData(it)
+                    showSnackbar(menu_fragment_container, "目录更新成功")
+                }, {
+                    showSnackbar(menu_fragment_container, "目录更新失败：${it.message}")
+                }).destroy("activity read refresh chapter list")
                 true
             }
             else -> when {
@@ -192,7 +219,7 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
 
     override fun onBackPressed() {
         when {
-            drawer_layout?.isDrawerOpen(Gravity.START) == true -> drawer_layout?.closeDrawers()
+            drawer_layout?.isDrawerOpen(Gravity.END) == true -> drawer_layout?.closeDrawers()
             supportActionBar?.isShowing == true -> toggleMenu()
             else -> super.onBackPressed()
         }
@@ -243,7 +270,6 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
             holder.itemView.setOnClickListener {
                 model.setReadIndex(c, 0).subscribe().destroy(DISPOSABLE_READ_INDEX)
                 mPageLoader.skipToChapter(position)
-//                chapterContent.scrollToPosition(position)
             }
         }
 

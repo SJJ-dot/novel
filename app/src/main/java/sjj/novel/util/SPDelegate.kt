@@ -4,6 +4,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.content.SharedPreferences
 import android.os.Looper
 import com.tencent.mmkv.MMKV
+import org.jetbrains.anko.db.NULL
 import kotlin.reflect.KProperty
 import kotlin.reflect.jvm.jvmErasure
 
@@ -49,13 +50,17 @@ class DelegateSharedPreferences<T>(private val def: T, private val k: String? = 
  * only support String、Boolean、Float、Double、Int、Long、Set<String>、ByteArray
  * mmkv Set<String> 不允许为空
  */
-class DelegateLiveData<T>(private val def: T, private val k: String? = null, val sp: () -> SharedPreferences? = { MMKV.defaultMMKV() }) {
+class DelegateLiveData<T>(private val def: T,
+                          private val k: String? = null,
+                          val sp: () -> SharedPreferences? = { MMKV.defaultMMKV() },
+                          val toString: ((T) -> String)? = null,
+                          val fromString: ((String?) -> T)? = null) {
     private var liveData: MutableLiveData<T>? = null
 
     @Synchronized
     operator fun getValue(thisRef: Any?, property: KProperty<*>): MutableLiveData<T> {
         if (liveData == null) {
-            liveData = HoldLiveData(def, k ?: property.name, property, sp)
+            liveData = HoldLiveData(def, k ?: property.name, property, sp, toString, fromString)
         }
         return liveData!!
     }
@@ -66,7 +71,11 @@ class DelegateLiveData<T>(private val def: T, private val k: String? = null, val
  * only support String、Boolean、Float、Double、Int、Long、Set<String>、ByteArray
  */
 @Suppress("IMPLICIT_CAST_TO_ANY", "UNCHECKED_CAST")
-class HoldLiveData<T>(private val def: T, private val key: String, private val property: KProperty<*>, val sp: () -> SharedPreferences?) : MutableLiveData<T>() {
+class HoldLiveData<T>(private val def: T,
+                      private val key: String,
+                      private val property: KProperty<*>,
+                      val sp: () -> SharedPreferences?,
+                      val toString: ((T) -> String)? = null, val fromString: ((String?) -> T)? = null) : MutableLiveData<T>() {
 
     init {
 
@@ -87,7 +96,7 @@ class HoldLiveData<T>(private val def: T, private val key: String, private val p
         Int::class.java -> sp()?.getInt(key, def as Int)
         Long::class.java -> sp()?.getLong(key, def as Long)
         Set::class.java -> sp()?.getStringSet(key, def as? Set<String>)
-        else -> throw IllegalArgumentException("only support String、Boolean、Float、Int、Long、Set<String>")
+        else -> fromString!!(sp()?.getString(key, toString!!(def)))
     } as? T
 
     /**
@@ -102,7 +111,7 @@ class HoldLiveData<T>(private val def: T, private val key: String, private val p
             Int::class.java -> edit?.putInt(key, value as Int)
             Long::class.java -> edit?.putLong(key, value as Long)
             Set::class.java -> edit?.putStringSet(key, value as? Set<String>)
-            else -> throw IllegalArgumentException("only support String、Boolean、Float、Int、Long、Set<String>")
+            else -> edit?.putString(key, toString!!(value))
         }
         edit?.apply()
 

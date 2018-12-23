@@ -4,13 +4,13 @@ import android.arch.paging.DataSource
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
 import sjj.novel.data.repository.NovelDataRepository
 import sjj.novel.model.Book
 import sjj.novel.model.BookSourceRecord
 import sjj.novel.model.Chapter
 import sjj.novel.model.SearchHistory
 import sjj.novel.util.fromCallableOrNull
+import sjj.novel.util.subscribeOnSingle
 import kotlin.math.abs
 
 /**
@@ -28,49 +28,54 @@ class LocalFictionDataSource : NovelDataRepository.LocalSource {
             booksDataBase.runInTransaction {
                 bookDao.insertRecordAndBooks(books, books.books!!)
             }
-        }.subscribeOn(Schedulers.io()).flatMap {
+        }.subscribeOnSingle().flatMap {
             bookDao.getBooksInRecord().firstOrError()
         }
     }
 
     override fun getBookSource(name: String, author: String): Observable<List<String>> {
         return bookDao.getBookSource(name, author)
+                .subscribeOnSingle()
                 .firstElement()
                 .toObservable()
                 .map { it.map { it.url } }
-                .subscribeOn(Schedulers.io())
+
     }
 
     /**
      * 根据书名与作者获取不同来源的所有书籍
      */
     fun getBooks(name: String, author: String): Flowable<List<Book>> {
-        return bookDao.getBookSource(name, author).subscribeOn(Schedulers.io())
+        return bookDao.getBookSource(name, author)
+                .subscribeOnSingle()
     }
 
     override fun updateBookSource(name: String, author: String, url: String): Observable<Int> {
         return fromCallableOrNull {
             bookDao.updateBookSource(name, author, url)
-        }.subscribeOn(Schedulers.io())
+        }.subscribeOnSingle()
     }
 
     override fun getBookInBookSource(name: String, author: String): Flowable<Book> {
-        return bookDao.getBookInBookSource(name, author).flatMap {
-            getChapterIntro(it.url).first(listOf()).map { c ->
-                it.chapterList = c
-                it
-            }.toFlowable()
-        }
+        return bookDao.getBookInBookSource(name, author)
+                .subscribeOnSingle()
+                .flatMap {
+                    getChapterIntro(it.url).first(listOf()).map { c ->
+                        it.chapterList = c
+                        it
+                    }.toFlowable()
+                }
     }
 
     override fun getBookSourceRecord(name: String, author: String): Flowable<BookSourceRecord> {
         return bookDao.getBookSourceRecord(name, author)
+                .subscribeOnSingle()
     }
 
     override fun setReadIndex(name: String, author: String, index: Chapter, pagePos: Int, isThrough: Boolean): Observable<Int> {
         return fromCallableOrNull {
             bookDao.setReadIndex(name, author, index.index, index.chapterName, pagePos, isThrough)
-        }.subscribeOn(Schedulers.io())
+        }.subscribeOnSingle()
     }
 
     /**
@@ -121,7 +126,7 @@ class LocalFictionDataSource : NovelDataRepository.LocalSource {
                 }
             }
             book
-        }.subscribeOn(Schedulers.io())
+        }.subscribeOnSingle()
     }
 
     override fun batchUpdate(book: List<Book>): Observable<List<Book>> {
@@ -132,31 +137,32 @@ class LocalFictionDataSource : NovelDataRepository.LocalSource {
                 }
             }
             book
-        }.subscribeOn(Schedulers.io())
+        }.subscribeOnSingle()
     }
 
 
     override fun getAllReadingBook(): Flowable<List<Book>> {
         return bookDao.getBooksInRecord()
+                .subscribeOnSingle()
     }
 
     override fun deleteBook(bookName: String, author: String): Observable<Int> {
         return fromCallableOrNull {
             bookDao.deleteBook(bookName, author)
-        }.subscribeOn(Schedulers.io())
+        }.subscribeOnSingle()
     }
 
 
     override fun getLatestChapter(bookUrl: String): Observable<Chapter> {
         return fromCallableOrNull {
             bookDao.getLatestChapter(bookUrl)
-        }.subscribeOn(Schedulers.io())
+        }.subscribeOnSingle()
     }
 
     override fun getChapter(url: String): Observable<Chapter> {
         return fromCallableOrNull {
             bookDao.getChapter(url)
-        }.subscribeOn(Schedulers.io())
+        }.subscribeOnSingle()
     }
 
     override fun getChapters(bookUrl: String): DataSource.Factory<Int, Chapter> {
@@ -165,26 +171,29 @@ class LocalFictionDataSource : NovelDataRepository.LocalSource {
 
     override fun getChapterIntro(bookUrl: String): Flowable<List<Chapter>> {
         return bookDao.getChapterIntro(bookUrl)
+                .subscribeOnSingle()
     }
 
     override fun getUnLoadChapters(bookUrl: String): Observable<List<Chapter>> {
         return fromCallableOrNull {
             bookDao.getUnLoadChapters(bookUrl)
-        }.subscribeOn(Schedulers.io())
+        }.subscribeOnSingle()
     }
 
     override fun updateChapter(chapter: Chapter): Observable<Chapter> {
         return fromCallableOrNull {
             bookDao.updateChapter(chapter)
             chapter
-        }.subscribeOn(Schedulers.io())
+        }.subscribeOnSingle()
     }
 
     /**
      * 获取搜索历史列表
      */
     fun getSearchHistory(): Flowable<List<SearchHistory>> {
-        return booksDataBase.searchHistoryDao().getSearchHistory()
+        return booksDataBase.searchHistoryDao()
+                .getSearchHistory()
+                .subscribeOnSingle()
     }
 
     /**
@@ -194,7 +203,7 @@ class LocalFictionDataSource : NovelDataRepository.LocalSource {
         return fromCallableOrNull {
             booksDataBase.searchHistoryDao().addSearchHistory(searchHistory)
             searchHistory
-        }.subscribeOn(Schedulers.io())
+        }.subscribeOnSingle()
     }
 
     /**
@@ -204,7 +213,7 @@ class LocalFictionDataSource : NovelDataRepository.LocalSource {
         return fromCallableOrNull {
             booksDataBase.searchHistoryDao().deleteSearchHistory(searchHistory)
             searchHistory
-        }.subscribeOn(Schedulers.io())
+        }.subscribeOnSingle()
     }
 
 }

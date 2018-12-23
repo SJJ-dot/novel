@@ -5,20 +5,16 @@
     tools:showIn="navigation_view">
     <item
         android:id="@+id/menu_refresh"
-        android:title="刷新"
         android:icon="@drawable/ic_menu_refresh"
+        android:title="刷新"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/menu_intro"
         android:title="简介"
         app:showAsAction="ifRoom" />
+
     <item
-        android:id="@+id/menu_add"
-        android:title="放大字号"
-        app:showAsAction="collapseActionView" />
-    <item
-        android:id="@+id/menu_minus"
-        android:title="缩小字号"
-        app:showAsAction="collapseActionView" />
+        android:id="@+id/menu_refresh_chapters"
+        android:title="更新目录信息" />
 
 </menu>
