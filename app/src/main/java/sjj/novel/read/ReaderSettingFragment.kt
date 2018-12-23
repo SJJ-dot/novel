@@ -5,8 +5,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.INVISIBLE
-import android.view.View.VISIBLE
+import android.view.View.*
 import android.view.ViewGroup
 import android.widget.SeekBar
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -76,7 +75,12 @@ class ReaderSettingFragment : BaseFragment() {
             callBack?.openChapterList()
         }
         read_tv_night_mode.setOnClickListener {
-            toast("nonsupport")
+            menu_item.visibility = VISIBLE
+            root.visibility = GONE
+            childFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.menu_item, ReaderBrightnessSettingFragment())
+                    .commitAllowingStateLoss()
         }
         read_tv_setting.setOnClickListener {
             toast("nonsupport")

@@ -15,6 +15,7 @@ import sjj.novel.details.DetailsActivity
 import sjj.novel.model.Book
 import sjj.novel.model.Chapter
 import sjj.novel.util.getModel
+import sjj.novel.util.initScreenBrightness
 import sjj.novel.util.log
 import sjj.novel.util.observeOnMain
 import sjj.novel.view.reader.bean.BookBean
@@ -43,6 +44,7 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initScreenBrightness(this)
         setContentView(R.layout.activity_read)
 
         supportActionBar!!.hide()

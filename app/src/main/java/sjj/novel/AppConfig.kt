@@ -26,4 +26,14 @@ object AppConfig {
 
     var flipPageMode by DelegateSharedPreferences(PageMode.SIMULATION.name)
 
+
+    /**
+     * 亮度跟随系统
+     */
+    var isBrightnessFollowSys by DelegateSharedPreferences(true)
+    /**
+     * 亮度 0 - 1
+     */
+    var screenBrightnessProgress by DelegateSharedPreferences(1f)
+
 }
