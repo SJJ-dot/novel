@@ -25,10 +25,10 @@
         tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name=".source.NovelTestActivity"
-            android:label="书源测试" />
+            android:label="@string/book_source_test" />
         <activity
             android:name=".source.EditNovelSourceActivity"
-            android:label="编辑解析规则" />
+            android:label="@string/edit_parsing_rules" />
         <activity
             android:name=".main.MainActivity"
             android:theme="@style/AppTheme.StatusBar">
@@ -40,8 +40,10 @@
         </activity>
         <activity
             android:name=".details.DetailsActivity"
-            android:label="简介" />
-        <activity android:name=".read.ReadActivity" />
+            android:label="@string/intro" />
+        <activity
+            android:name=".read.ReadActivity"
+            android:launchMode="singleTask" />
         <activity
             android:name="com.tencent.bugly.beta.ui.BetaActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|locale"

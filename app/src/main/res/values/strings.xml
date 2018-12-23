@@ -56,5 +56,8 @@
     <string name="origin_">来源：%s 共%d个源</string>
     <string name="origin">来源：%s</string>
     <string name="list">目录</string>
+    <string name="intro">简介</string>
+    <string name="book_source_test">书源测试</string>
+    <string name="edit_parsing_rules">编辑解析规则</string>
 
 </resources>
