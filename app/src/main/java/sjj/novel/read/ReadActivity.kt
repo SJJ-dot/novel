@@ -1,6 +1,5 @@
 package sjj.novel.read
 
-import android.app.ProgressDialog
 import android.os.Bundle
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.RecyclerView
@@ -31,8 +30,6 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
         val BOOK_NAME = "BOOK_NAME"
         val BOOK_AUTHOR = "BOOK_AUTHOR"
     }
-
-    private var cached: ProgressDialog? = null
 
     private lateinit var model: ReadViewModel
 
@@ -113,6 +110,7 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
                     }
 
                     override fun onChapterChange(pos: Int) {
+                        chapterList.scrollToPosition(pos)
                     }
 
                     override fun requestChapters(requestChapters: MutableList<TxtChapter>) {
@@ -147,11 +145,24 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.activity_read_menu, menu)
-        val subMenu = menu.addSubMenu("翻页模式")
+        val subMenu = menu.addSubMenu(0,R.id.menu_read_flip_page_mode,1,"翻页模式")
+
+        val mode = AppConfig.flipPageMode
         for (m in PageMode.values()) {
-            subMenu.add(0, m.ordinal, 0, m.des)
+            val item = subMenu.add(0, m.ordinal, 0, m.des)
+            item.isChecked = mode == m.name
         }
+        subMenu.setGroupCheckable(0,true,true)
         return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        menu?.findItem(R.id.menu_read_flip_page_mode)?.also {
+            val subMenu = it.subMenu
+            val mode = PageMode.valueOf(AppConfig.flipPageMode)
+            subMenu.getItem(mode.ordinal).isChecked = true
+        }
+        return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -243,7 +254,6 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
             holder.itemView.setOnClickListener {
                 model.setReadIndex(c, 0).subscribe().destroy(DISPOSABLE_READ_INDEX)
                 mPageLoader.skipToChapter(position)
-//                chapterContent.scrollToPosition(position)
             }
         }
 

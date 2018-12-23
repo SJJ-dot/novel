@@ -9,4 +9,6 @@
     <item name="click_tag" type="id"/>
     <item name="click_count_tag" type="id"/>
     <item name="progressBar" type="id"/>
+    <!--阅读页翻页模式菜单-->
+    <item name="menu_read_flip_page_mode" type="id"/>
 </resources>
