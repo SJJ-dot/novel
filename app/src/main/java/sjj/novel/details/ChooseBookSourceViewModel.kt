@@ -18,7 +18,7 @@ import sjj.novel.util.id
 import sjj.novel.util.resStr
 import kotlin.math.abs
 
-class ChooseBookSourceViewModel( val bookName: String,val bookAuthor: String) : ViewModel() {
+class ChooseBookSourceViewModel(val bookName: String, val bookAuthor: String) : ViewModel() {
     val isRefreshing = ObservableBoolean()
 
     var bookList = listOf<ChooseBookSourceItemViewModel>()
@@ -31,6 +31,7 @@ class ChooseBookSourceViewModel( val bookName: String,val bookAuthor: String) : 
                 model.bookCover.set(it.bookCoverImgUrl)
                 model.bookName.set(it.name)
                 model.author.set(R.string.author_.resStr(it.author))
+                model.loading.set(it.loadStatus == Book.LoadState.Loading)
 //               model.origin.set(R.string.origin.resStr(it.))
                 model
             }
@@ -49,10 +50,10 @@ class ChooseBookSourceViewModel( val bookName: String,val bookAuthor: String) : 
                             m.lastChapter.set(R.string.newest_.resStr(chapter.chapterName))
                         }.toFlowable(BackpressureStrategy.BUFFER)
                     }
-                }.map {
-                    bookList
                 }
             }
+        }.map {
+            bookList
         }
     }
 
@@ -107,11 +108,11 @@ class ChooseBookSourceViewModel( val bookName: String,val bookAuthor: String) : 
                         cs.forEach { chapter ->
                             if (t == null) {
                                 t = chapter
-                            }else if (abs(chapter.index - b.readIndex) <= abs(t!!.index - b.readIndex)) {
+                            } else if (abs(chapter.index - b.readIndex) <= abs(t!!.index - b.readIndex)) {
                                 t = chapter
                             }
                         }
-                        novelDataRepository.setReadIndex(book.name, book.author, t!!, b.pagePos,b.isThrough).flatMap {
+                        novelDataRepository.setReadIndex(book.name, book.author, t!!, b.pagePos, b.isThrough).flatMap {
                             novelDataRepository.setBookSource(bookName, bookAuthor, book.url)
                         }
                     }
@@ -129,5 +130,6 @@ class ChooseBookSourceViewModel( val bookName: String,val bookAuthor: String) : 
         val lastChapter = ObservableField<String>()
         val origin = ObservableField<String>()
         val id: Long by lazy { book.url.id }
+        val loading = ObservableBoolean()
     }
 }

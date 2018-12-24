@@ -64,35 +64,16 @@ class BookShelfViewModel : ViewModel() {
                 .firstElement()
                 .toObservable()
                 .flatMap { list ->
+                    //对小说进行分组使同同一来源的小说一次性发射出去
+                    val map = mutableMapOf<String, MutableList<Book>>()
                     list.forEach {
-                        it.loadStatus = Book.LoadState.Loading
+                        map.getOrPut(it.url.host) { mutableListOf() }.add(it)
                     }
-                    val disposed = list.toMutableList()
-                    novelDataRepository.batchUpdate(list)
-                            .flatMap { bookList ->
-                                //对小说进行分组使同同一来源的小说一次性发射出去
-                                val map = mutableMapOf<String, MutableList<Book>>()
-                                bookList.forEach {
-                                    map.getOrPut(it.url.host) { mutableListOf() }.add(it)
-                                }
-                                Observable.fromIterable(map.values)
-                                        .lazyFromIterable { book ->
-                                            novelDataRepository.refreshBook(book.url)
-                                                    .delay(500, TimeUnit.MILLISECONDS)
-                                                    .onErrorResumeNext(Function { _ ->
-                                                        book.loadStatus = Book.LoadState.LoadFailed
-                                                        novelDataRepository.batchUpdate(listOf(book)).map { it.first() }
-                                                    }).doOnNext {
-                                                        disposed.remove(it)
-                                                    }
-                                        }.flatMap { it }
-                            }.doOnDispose {
-                                list.forEach {
-                                    it.loadStatus = Book.LoadState.UnLoad
-                                }
-                                //刷新被取消的时候将正在加载的数据改为未加载
-                                novelDataRepository.batchUpdate(list).subscribe()
-                            }
+                    Observable.fromIterable(map.values)
+                            .lazyFromIterable { book ->
+                                novelDataRepository.refreshBook(book.url)
+                                        .delay(500, TimeUnit.MILLISECONDS)
+                            }.flatMap { it }
                 }
     }
 

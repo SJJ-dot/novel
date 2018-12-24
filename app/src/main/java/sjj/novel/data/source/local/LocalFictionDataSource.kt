@@ -146,6 +146,11 @@ class LocalFictionDataSource : NovelDataRepository.LocalSource {
                 .subscribeOnSingle()
     }
 
+    override fun getBook(url: String): Flowable<Book> {
+        return bookDao.getBook(url)
+                .subscribeOnSingle()
+    }
+
     override fun deleteBook(bookName: String, author: String): Observable<Int> {
         return fromCallableOrNull {
             bookDao.deleteBook(bookName, author)
