@@ -1,15 +1,17 @@
 package sjj.novel.util
 
 import android.arch.lifecycle.MutableLiveData
+import android.content.Context
 import android.content.SharedPreferences
 import android.os.Looper
-import com.tencent.mmkv.MMKV
-import org.jetbrains.anko.db.NULL
+import sjj.novel.Session
 import kotlin.reflect.KProperty
 import kotlin.reflect.jvm.jvmErasure
 
 @Suppress("IMPLICIT_CAST_TO_ANY", "UNCHECKED_CAST")
-class DelegateSharedPreferences<T>(private val def: T, private val k: String? = null, val sp: () -> SharedPreferences? = { MMKV.defaultMMKV() }) {
+class DelegateSharedPreferences<T>(private val def: T,
+                                   private val k: String? = null,
+                                   val sp: () -> SharedPreferences? = { Session.ctx.getSharedPreferences("appconfig",Context.MODE_PRIVATE) }) {
     operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
 
         val key: String = k ?: property.name
@@ -52,7 +54,7 @@ class DelegateSharedPreferences<T>(private val def: T, private val k: String? = 
  */
 class DelegateLiveData<T>(private val def: T,
                           private val k: String? = null,
-                          val sp: () -> SharedPreferences? = { MMKV.defaultMMKV() },
+                          val sp: () -> SharedPreferences? = { Session.ctx.getSharedPreferences("appconfig",Context.MODE_PRIVATE)  },
                           val toString: ((T) -> String)? = null,
                           val fromString: ((String?) -> T)? = null) {
     private var liveData: MutableLiveData<T>? = null
