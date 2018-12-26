@@ -42,7 +42,7 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
 
     private val chapterListAdapter = ChapterListAdapter()
 
-    private var controller: ReaderSettingFragment.CallBack.Controller?=null
+    private var controller: ReaderSettingFragment.CallBack.Controller? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,7 +110,8 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
                             if (mPageLoader.pageStatus == STATUS_LOADING)
                                 mPageLoader.openChapter()
                         }, {
-                            mPageLoader.chapterError()
+                            if (mPageLoader.pageStatus == STATUS_LOADING)
+                                mPageLoader.chapterError()
                         }).destroy("requestChapters")
                     }
 
