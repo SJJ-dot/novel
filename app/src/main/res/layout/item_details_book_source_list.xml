@@ -8,7 +8,7 @@
         <import type="android.view.View" />
         <variable
             name="model"
-            type="sjj.novel.details.ChooseBookSourceViewModel.ChooseBookSourceItemViewModel" />
+            type="sjj.novel.view.fragment.ChooseBookSourceViewModel.ChooseBookSourceItemViewModel" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -33,7 +33,7 @@
                 fresco:failureImage="@drawable/ic_laokuoteng"
                 fresco:progressBarImage="@drawable/ic_wait" />
 
-            <sjj.novel.view.AutofitTextView
+            <sjj.novel.widget.AutofitTextView
                 android:id="@+id/bookName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -48,7 +48,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="标题" />
 
-            <sjj.novel.view.AutofitTextView
+            <sjj.novel.widget.AutofitTextView
                 android:id="@+id/author"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/bookName"
                 tools:text="标题" />
 
-            <sjj.novel.view.AutofitTextView
+            <sjj.novel.widget.AutofitTextView
                 android:id="@+id/lastChapter"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -76,7 +76,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/author"
                 tools:text="标题" />
 
-            <sjj.novel.view.AutofitTextView
+            <sjj.novel.widget.AutofitTextView
                 android:id="@+id/haveRead"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -90,7 +90,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/lastChapter"
                 tools:text="标题" />
 
-            <sjj.novel.view.RotateLoading2
+            <sjj.novel.widget.RotateLoading2
                 android:id="@+id/rl_loading"
                 android:layout_width="26dp"
                 android:layout_height="26dp"

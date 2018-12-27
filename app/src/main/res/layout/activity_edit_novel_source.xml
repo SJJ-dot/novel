@@ -6,7 +6,7 @@
 
         <variable
             name="model"
-            type="sjj.novel.source.EditNovelSourceViewModel" />
+            type="sjj.novel.view.module.source.EditNovelSourceViewModel" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout

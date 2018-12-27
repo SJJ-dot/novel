@@ -36,7 +36,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.983" />
 
-    <sjj.novel.view.LinksClickableTextView
+    <sjj.novel.widget.LinksClickableTextView
         android:layout_width="0dp"
         android:layout_height="152dp"
         android:layout_marginStart="8dp"

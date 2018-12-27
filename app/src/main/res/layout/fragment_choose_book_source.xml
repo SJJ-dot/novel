@@ -6,7 +6,7 @@
 
         <variable
             name="model"
-            type="sjj.novel.details.ChooseBookSourceViewModel" />
+            type="sjj.novel.view.fragment.ChooseBookSourceViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

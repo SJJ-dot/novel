@@ -4,7 +4,7 @@
 
         <variable
             name="model"
-            type="sjj.novel.accounts.LoginViewModel" />
+            type="sjj.novel.view.module.accounts.LoginViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -28,7 +28,7 @@
                 app:title="登陆授权" />
         </com.google.android.material.appbar.AppBarLayout>
 
-        <sjj.novel.view.LinksClickableTextView
+        <sjj.novel.widget.LinksClickableTextView
             android:id="@+id/sign_up"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -73,7 +73,7 @@
                 android:text="@={model.password}" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <sjj.novel.view.LinksClickableTextView
+        <sjj.novel.widget.LinksClickableTextView
             android:id="@+id/explanation"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

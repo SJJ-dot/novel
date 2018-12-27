@@ -6,14 +6,14 @@
     app:startDestination="@id/fragment_reader_setting">
     <fragment
         android:id="@+id/fragment_reader_setting"
-        android:name="sjj.novel.read.ReaderSettingFragment"
+        android:name="sjj.novel.view.module.read.ReaderSettingFragment"
         tools:layout="@layout/fragment_reader_setting"/>
     <fragment
         android:id="@+id/fragment_reader_brightness_setting"
-        android:name="sjj.novel.read.ReaderBrightnessSettingFragment"
+        android:name="sjj.novel.view.module.read.ReaderBrightnessSettingFragment"
         tools:layout="@layout/fragment_reader_light_setting" />
     <fragment
         android:id="@+id/fragment_reader_font_setting"
-        android:name="sjj.novel.read.ReaderFontSettingFragment"
+        android:name="sjj.novel.view.module.read.ReaderFontSettingFragment"
         tools:layout="@layout/fragment_novel_source" />
 </navigation>

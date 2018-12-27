@@ -4,7 +4,7 @@
 
         <variable
             name="model"
-            type="sjj.novel.source.NovelSourceRuleExplanationViewModel" />
+            type="sjj.novel.view.module.source.NovelSourceRuleExplanationViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"

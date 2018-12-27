@@ -8,7 +8,7 @@
 
         <variable
             name="model"
-            type="sjj.novel.search.SearchViewModel.BookSearchItemViewModel" />
+            type="sjj.novel.view.module.search.SearchViewModel.BookSearchItemViewModel" />
     </data>
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -32,7 +32,7 @@
                 fresco:failureImage="@drawable/ic_laokuoteng"
                 fresco:progressBarImage="@drawable/ic_wait" />
 
-            <sjj.novel.view.AutofitTextView
+            <sjj.novel.widget.AutofitTextView
                 android:id="@+id/bookName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -47,7 +47,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="标题" />
 
-            <sjj.novel.view.AutofitTextView
+            <sjj.novel.widget.AutofitTextView
                 android:id="@+id/author"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -61,7 +61,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/bookName"
                 tools:text="标题" />
 
-            <sjj.novel.view.AutofitTextView
+            <sjj.novel.widget.AutofitTextView
                 android:id="@+id/lastChapter"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/author"
                 tools:text="标题" />
 
-            <sjj.novel.view.AutofitTextView
+            <sjj.novel.widget.AutofitTextView
                 android:id="@+id/haveRead"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

@@ -24,13 +24,13 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name=".source.NovelTestActivity"
+            android:name="sjj.novel.view.module.source.NovelTestActivity"
             android:label="@string/book_source_test" />
         <activity
-            android:name=".source.EditNovelSourceActivity"
+            android:name="sjj.novel.view.module.source.EditNovelSourceActivity"
             android:label="@string/edit_parsing_rules" />
         <activity
-            android:name=".main.MainActivity"
+            android:name="sjj.novel.view.module.main.MainActivity"
             android:theme="@style/AppTheme.StatusBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,16 +39,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".details.DetailsActivity"
+            android:name="sjj.novel.view.module.details.DetailsActivity"
             android:label="@string/intro" />
         <activity
-            android:name=".read.ReadActivity"
+            android:name="sjj.novel.view.module.read.ReadActivity"
             android:launchMode="singleTask" />
         <activity
             android:name="com.tencent.bugly.beta.ui.BetaActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|locale"
             android:theme="@android:style/Theme.Translucent" />
-        <activity android:name=".source.NovelSourceRuleExplanationActivity" />
+        <activity android:name="sjj.novel.view.module.source.NovelSourceRuleExplanationActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

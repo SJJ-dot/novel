@@ -5,7 +5,7 @@
 
         <variable
             name="model"
-            type="sjj.novel.source.EditNovelSourceViewModel.SearchResultViewModel" />
+            type="sjj.novel.view.module.source.EditNovelSourceViewModel.SearchResultViewModel" />
     </data>
 
     <LinearLayout

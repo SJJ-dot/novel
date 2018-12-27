@@ -6,27 +6,27 @@
     app:startDestination="@id/bookShelfFragment">
     <fragment
         android:id="@+id/bookShelfFragment"
-        android:name="sjj.novel.main.BookshelfFragment"
+        android:name="sjj.novel.view.module.main.BookshelfFragment"
         android:label="书架"
         tools:layout="@layout/fragment_books"/>
     <fragment
         android:id="@+id/searchFragment"
-        android:name="sjj.novel.search.SearchFragment"
+        android:name="sjj.novel.view.module.search.SearchFragment"
         android:label="搜索"
         tools:layout="@layout/fragment_search" />
     <fragment
         android:id="@+id/novelSourceFragment"
-        android:name="sjj.novel.source.NovelSourceFragment"
+        android:name="sjj.novel.view.module.source.NovelSourceFragment"
         android:label="书源管理"
         tools:layout="@layout/fragment_novel_source" />
     <fragment
         android:id="@+id/feedbackFragment"
-        android:name="sjj.novel.feedback.FeedbackFragment"
+        android:name="sjj.novel.view.module.feedback.FeedbackFragment"
         android:label="意见反馈"
         tools:layout="@layout/fragment_novel_source" />
     <fragment
         android:id="@+id/aboutFragment"
-        android:name="sjj.novel.about.AboutFragment"
+        android:name="sjj.novel.view.module.about.AboutFragment"
         android:label="关于"
         tools:layout="@layout/fragment_about" />
 </navigation>

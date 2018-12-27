@@ -27,7 +27,7 @@
 
             <include layout="@layout/appbar_layout" />
 
-            <sjj.novel.view.SwipeRefreshLayout_
+            <sjj.novel.widget.SwipeRefreshLayout_
                 android:id="@+id/detailsRefreshLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -63,7 +63,7 @@
                             app:layout_constraintVertical_bias="0.0"
                             app:progressBarImage="@drawable/ic_wait" />
 
-                        <sjj.novel.view.AutofitTextView
+                        <sjj.novel.widget.AutofitTextView
                             android:id="@+id/bookName"
                             android:layout_width="0dp"
                             android:layout_height="27dp"
@@ -171,7 +171,7 @@
                             app:layout_constraintTop_toBottomOf="@+id/authorTitle"
                             app:layout_constraintVertical_bias="0.0" />
 
-                        <sjj.novel.view.AutofitTextView
+                        <sjj.novel.widget.AutofitTextView
                             android:id="@+id/latestChapter"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -225,7 +225,7 @@
                 </androidx.core.widget.NestedScrollView>
 
 
-            </sjj.novel.view.SwipeRefreshLayout_>
+            </sjj.novel.widget.SwipeRefreshLayout_>
         </LinearLayout>
 
         <FrameLayout
