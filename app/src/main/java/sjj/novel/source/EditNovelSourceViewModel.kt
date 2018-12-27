@@ -1,8 +1,8 @@
 package sjj.novel.source
 
-import android.arch.lifecycle.ViewModel
-import android.databinding.ObservableBoolean
-import android.databinding.ObservableField
+import androidx.lifecycle.ViewModel
+import androidx.databinding.ObservableBoolean
+import androidx.databinding.ObservableField
 import io.reactivex.Observable
 import io.reactivex.functions.Function
 import sjj.novel.data.repository.novelSourceRepository

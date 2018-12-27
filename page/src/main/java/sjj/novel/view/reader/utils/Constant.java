@@ -1,13 +1,10 @@
 package sjj.novel.view.reader.utils;
 
-import android.support.annotation.StringDef;
+import androidx.annotation.StringDef;
 
-import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**

@@ -1,6 +1,6 @@
 package sjj.novel.data.source.local
 
-import android.arch.paging.DataSource
+import androidx.paging.DataSource
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single

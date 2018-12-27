@@ -1,9 +1,9 @@
 package sjj.novel.details
 
 
-import android.databinding.DataBindingUtil
+import androidx.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -61,15 +61,15 @@ class ChooseBookSourceFragment : BaseFragment() {
         }
     }
 
-    private inner class ChooseBookSourceAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private inner class ChooseBookSourceAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>() {
         var data = listOf<ChooseBookSourceViewModel.ChooseBookSourceItemViewModel>()
         override fun getItemCount(): Int = data.size
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): androidx.recyclerview.widget.RecyclerView.ViewHolder {
             val binding = DataBindingUtil.inflate<sjj.novel.databinding.ItemDetailsBookSourceListBinding>(LayoutInflater.from(parent.context), R.layout.item_details_book_source_list, parent, false)
-            return object : RecyclerView.ViewHolder(binding.root) {}
+            return object : androidx.recyclerview.widget.RecyclerView.ViewHolder(binding.root) {}
         }
 
-        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
             val bind = DataBindingUtil.bind<sjj.novel.databinding.ItemDetailsBookSourceListBinding>(holder.itemView)
             val bookGroup = data[position]
             bind?.model = bookGroup

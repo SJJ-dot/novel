@@ -1,6 +1,6 @@
 package sjj.novel.data.source.local
 
-import android.arch.persistence.room.TypeConverter
+import androidx.room.TypeConverter
 import sjj.novel.data.source.remote.rule.BookChapterListRule
 import sjj.novel.data.source.remote.rule.BookIntroRule
 import sjj.novel.data.source.remote.rule.ChapterContentRule

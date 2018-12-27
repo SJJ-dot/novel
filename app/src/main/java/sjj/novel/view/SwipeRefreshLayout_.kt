@@ -1,7 +1,7 @@
 package sjj.novel.view
 
 import android.content.Context
-import android.support.v4.widget.SwipeRefreshLayout
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.ViewGroup
@@ -9,7 +9,7 @@ import android.graphics.Rect
 import android.view.View
 
 
-class SwipeRefreshLayout_ @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : SwipeRefreshLayout(context, attrs) {
+class SwipeRefreshLayout_ @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : androidx.swiperefreshlayout.widget.SwipeRefreshLayout(context, attrs) {
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
         if (canChildScrollUp(this,ev.x.toInt(),ev.y.toInt())) {
             return false

@@ -1,7 +1,7 @@
 package sjj.novel.data.source.remote.rule
 
-import android.arch.persistence.room.Entity
-import android.arch.persistence.room.PrimaryKey
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
 /**
  * 小说网站解析

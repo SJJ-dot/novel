@@ -1,23 +1,23 @@
 package sjj.novel.view
 
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import sjj.novel.R
+import androidx.recyclerview.widget.RecyclerView
 
 abstract class BaseAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    override fun onCreateViewHolder(p0: ViewGroup, p1: Int): RecyclerView.ViewHolder {
-        return createViewHolder(LayoutInflater.from(p0.context).inflate(itemLayoutRes(p1), p0, false))
+    @Deprecated("use itemLayoutRes", ReplaceWith("itemLayoutRes"))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): androidx.recyclerview.widget.RecyclerView.ViewHolder {
+        return createViewHolder(LayoutInflater.from(parent.context).inflate(itemLayoutRes(viewType), parent, false))
     }
 
-    protected fun createViewHolder(view: View): RecyclerView.ViewHolder {
-        return object : RecyclerView.ViewHolder(view) {
+    protected fun createViewHolder(view: View): androidx.recyclerview.widget.RecyclerView.ViewHolder {
+        return object : androidx.recyclerview.widget.RecyclerView.ViewHolder(view) {
         }
     }
 
 
-    protected open fun itemLayoutRes(pos: Int): Int {
+    protected open fun itemLayoutRes(viewType: Int): Int {
         return 0
     }
 

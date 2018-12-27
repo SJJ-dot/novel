@@ -1,7 +1,7 @@
 package sjj.novel.view.reader.page;
 
-import android.support.annotation.NonNull;
-import android.support.v4.util.LruCache;
+import androidx.annotation.NonNull;
+import androidx.collection.LruCache;
 import android.text.TextUtils;
 
 /**

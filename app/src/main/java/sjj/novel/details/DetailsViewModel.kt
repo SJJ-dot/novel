@@ -1,6 +1,6 @@
 package sjj.novel.details
 
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.ViewModel
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Observable
 import sjj.novel.data.repository.novelDataRepository

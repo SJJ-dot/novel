@@ -1,10 +1,10 @@
 package sjj.novel.read
 
-import android.arch.lifecycle.Observer
+import androidx.lifecycle.Observer
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v4.widget.DrawerLayout
-import android.support.v7.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.recyclerview.widget.RecyclerView
 import android.view.*
 import android.widget.TextView
 import androidx.navigation.Navigation
@@ -52,7 +52,7 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
         //关闭菜单栏
         toggleMenu()
         //禁止手势滑出
-        drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        drawer_layout.setDrawerLockMode(androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
 
 //        chapterContent.adapter = contentAdapter
@@ -269,17 +269,17 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
         this.controller = controller
     }
 
-    private inner class ChapterListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private inner class ChapterListAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>() {
 
         var data = listOf<Chapter>()
 
         override fun getItemCount(): Int = data.size
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            return object : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_text_text, parent, false)) {}
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): androidx.recyclerview.widget.RecyclerView.ViewHolder {
+            return object : androidx.recyclerview.widget.RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_text_text, parent, false)) {}
         }
 
-        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
             val c = data[position]
             holder.itemView.find<TextView>(R.id.text1).text = c.chapterName
             holder.itemView.setOnClickListener {

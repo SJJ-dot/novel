@@ -1,7 +1,7 @@
 package sjj.novel.model
 
-import android.arch.persistence.room.Entity
-import android.arch.persistence.room.Ignore
+import androidx.room.Entity
+import androidx.room.Ignore
 
 /**
  * Created by SJJ on 2017/10/14.

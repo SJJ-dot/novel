@@ -1,6 +1,6 @@
 package sjj.novel.read
 
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.ViewModel
 import android.text.Html
 import io.reactivex.Observable
 import sjj.novel.data.repository.novelDataRepository

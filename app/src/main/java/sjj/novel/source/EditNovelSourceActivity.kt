@@ -1,9 +1,9 @@
 package sjj.novel.source
 
-import android.databinding.DataBindingUtil
+import androidx.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
@@ -36,7 +36,7 @@ class EditNovelSourceActivity : BaseActivity() {
         binding.model = model
 
         search_rule_result.adapter = adapter
-        search_rule_result.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        search_rule_result.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this, androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL, false)
         initData()
     }
 
@@ -99,17 +99,17 @@ class EditNovelSourceActivity : BaseActivity() {
         }
     }
 
-    inner class SearchResultPagerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    inner class SearchResultPagerAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>() {
         var data: MutableList<EditNovelSourceViewModel.SearchResultViewModel>? = null
-        override fun onCreateViewHolder(p0: ViewGroup, p1: Int): RecyclerView.ViewHolder {
+        override fun onCreateViewHolder(p0: ViewGroup, p1: Int): androidx.recyclerview.widget.RecyclerView.ViewHolder {
             val inflate = DataBindingUtil.inflate<NovelSourceSearchResultRuleBinding>(layoutInflater, R.layout.novel_source_search_result_rule, p0, false)
-            return object : RecyclerView.ViewHolder(inflate.root) {
+            return object : androidx.recyclerview.widget.RecyclerView.ViewHolder(inflate.root) {
             }
         }
 
         override fun getItemCount(): Int = data?.size ?: 0
 
-        override fun onBindViewHolder(p0: RecyclerView.ViewHolder, p1: Int) {
+        override fun onBindViewHolder(p0: androidx.recyclerview.widget.RecyclerView.ViewHolder, p1: Int) {
             val bind = DataBindingUtil.bind<NovelSourceSearchResultRuleBinding>(p0.itemView)
             bind?.model = data!![p1]
             bind?.delete?.setOnClickListener {

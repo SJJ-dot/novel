@@ -1,8 +1,8 @@
 package sjj.novel.view.scroller;
 
 import android.content.Context;
-import android.support.annotation.ColorInt;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.ColorInt;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.AttributeSet;
 
 @SuppressWarnings("unused")

@@ -1,9 +1,9 @@
 package sjj.novel.source
 
 
-import android.databinding.DataBindingUtil
+import androidx.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.design.widget.Snackbar
+import com.google.android.material.snackbar.Snackbar
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_novel_source_rule_explanation.*
 import org.jetbrains.anko.toast
@@ -24,7 +24,7 @@ class NovelSourceRuleExplanationActivity : BaseActivity() {
         val settings = text.settings
         settings.builtInZoomControls = true
         settings.displayZoomControls = false
-        showSnackbar(text,"加载中……",Snackbar.LENGTH_INDEFINITE)
+        showSnackbar(text,"加载中……", Snackbar.LENGTH_INDEFINITE)
         model.refresh().observeOn(AndroidSchedulers.mainThread()).subscribe({
             showSnackbar(text,"加载成功")
             text.loadData(it, "text/html", "utf8")

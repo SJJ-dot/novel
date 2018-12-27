@@ -1,6 +1,6 @@
 package sjj.novel.source
 
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.ViewModel
 import io.reactivex.Observable
 import sjj.novel.data.repository.novelSourceRepository
 import sjj.novel.data.source.remote.CommonNovelEngine

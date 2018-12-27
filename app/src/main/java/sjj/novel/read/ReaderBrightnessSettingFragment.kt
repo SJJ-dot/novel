@@ -3,8 +3,8 @@ package sjj.novel.read
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -54,13 +54,13 @@ class ReaderBrightnessSettingFragment : BaseFragment() {
         val data = PageStyle.values().map {
             it.getBackgroundDrawable(context) to it
         }
-        recycle_view.layoutManager = GridLayoutManager(context,data.size)
+        recycle_view.layoutManager = androidx.recyclerview.widget.GridLayoutManager(context, data.size)
         recycle_view.adapter = Adapter(data)
     }
 
     class Adapter(val data:List<Pair<Drawable,PageStyle>>) : BaseAdapter() {
 
-        override fun itemLayoutRes(pos: Int): Int = R.layout.item_page_style
+        override fun itemLayoutRes(viewType: Int): Int = R.layout.item_page_style
 
         override fun getItemCount(): Int = data.size
 
@@ -68,7 +68,7 @@ class ReaderBrightnessSettingFragment : BaseFragment() {
             return data[position].second.ordinal.toLong()
         }
 
-        override fun onBindViewHolder(p0: RecyclerView.ViewHolder, p1: Int) {
+        override fun onBindViewHolder(p0: androidx.recyclerview.widget.RecyclerView.ViewHolder, p1: Int) {
             p0.itemView.page_style.background = data[p1].first
             p0.itemView.selected_flag.isChecked = AppConfig.readerPageStyle.value == data[p1].second
             p0.itemView.selected_flag.visibility = if (p0.itemView.selected_flag.isChecked) View.VISIBLE else View.INVISIBLE

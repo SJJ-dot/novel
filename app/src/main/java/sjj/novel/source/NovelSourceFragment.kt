@@ -1,9 +1,8 @@
 package sjj.novel.source
 
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v7.widget.RecyclerView
 import android.view.*
+import com.google.android.material.snackbar.Snackbar
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_novel_source.*
 import kotlinx.android.synthetic.main.item_book_source.view.*
@@ -14,6 +13,7 @@ import sjj.novel.R
 import sjj.novel.data.source.remote.rule.BookParseRule
 import sjj.novel.util.getModel
 import sjj.novel.util.gson
+import sjj.novel.view.BaseAdapter
 
 class NovelSourceFragment : BaseFragment() {
     private lateinit var model: NovelSourceViewModel
@@ -68,16 +68,16 @@ class NovelSourceFragment : BaseFragment() {
         }
     }
 
-    inner class Adapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    inner class Adapter() : BaseAdapter() {
         var data: List<BookParseRule> = listOf()
-        override fun onCreateViewHolder(parent: ViewGroup, p1: Int): RecyclerView.ViewHolder {
-            return object : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_book_source, parent, false)) {
-            }
+
+        override fun itemLayoutRes(viewType: Int): Int {
+            return R.layout.item_book_source
         }
 
         override fun getItemCount(): Int = data.size
 
-        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, p1: Int) {
+        override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, p1: Int) {
             val rule = data[p1]
             holder.itemView.cb_book_source.text = rule.sourceName
             holder.itemView.iv_share_source.setOnClickListener {

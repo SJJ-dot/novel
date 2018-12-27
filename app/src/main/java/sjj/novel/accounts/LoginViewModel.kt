@@ -1,8 +1,8 @@
 package sjj.novel.accounts
 
-import android.arch.lifecycle.ViewModel
-import android.databinding.ObservableBoolean
-import android.databinding.ObservableField
+import androidx.lifecycle.ViewModel
+import androidx.databinding.ObservableBoolean
+import androidx.databinding.ObservableField
 import android.text.Html
 import io.reactivex.Observable
 import sjj.novel.AppConfig

@@ -1,9 +1,9 @@
 package sjj.novel.main
 
-import android.arch.lifecycle.ViewModel
-import android.databinding.ObservableBoolean
-import android.databinding.ObservableField
-import android.databinding.ObservableInt
+import androidx.lifecycle.ViewModel
+import androidx.databinding.ObservableBoolean
+import androidx.databinding.ObservableField
+import androidx.databinding.ObservableInt
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.functions.Function

@@ -1,6 +1,6 @@
 package sjj.novel.data.source.local
 
-import android.arch.persistence.room.*
+import androidx.room.*
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import sjj.novel.data.source.remote.rule.BookParseRule

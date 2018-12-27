@@ -1,10 +1,10 @@
 package sjj.novel.details
 
-import android.databinding.DataBindingUtil
+import androidx.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.RecyclerView.ViewHolder
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import android.view.*
 import android.widget.TextView
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -83,7 +83,7 @@ class DetailsActivity : BaseActivity() {
             }
         }.destroy("book details activity")
 
-        chapterList.layoutManager = LinearLayoutManager(this)
+        chapterList.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
         chapterList.adapter = adapter
     }
 
@@ -113,7 +113,7 @@ class DetailsActivity : BaseActivity() {
         }
     }
 
-    private inner class ChapterListAdapter : RecyclerView.Adapter<ViewHolder>() {
+    private inner class ChapterListAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<ViewHolder>() {
         var data = listOf<Chapter>()
         override fun getItemCount(): Int = data.size
 

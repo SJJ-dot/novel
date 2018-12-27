@@ -1,9 +1,9 @@
 package sjj.novel.main
 
-import android.databinding.DataBindingUtil
+import androidx.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.*
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -34,7 +34,7 @@ class BookshelfFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         model = getModel()
-        bookList.layoutManager = LinearLayoutManager(context)
+        bookList.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
         val adapter = Adapter()
         adapter.setHasStableIds(true)
         bookList.adapter = adapter
@@ -71,14 +71,14 @@ class BookshelfFragment : BaseFragment() {
         }
     }
 
-    private inner class Adapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private inner class Adapter : androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>() {
         var data: List<BookShelfViewModel.BookShelfItemViewModel>? = null
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): androidx.recyclerview.widget.RecyclerView.ViewHolder {
             val binding = DataBindingUtil.inflate<ItemBookListBinding>(LayoutInflater.from(parent.context), R.layout.item_book_list, parent, false)
-            return object : RecyclerView.ViewHolder(binding.root) {}
+            return object : androidx.recyclerview.widget.RecyclerView.ViewHolder(binding.root) {}
         }
 
-        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
             val bind = DataBindingUtil.bind<ItemBookListBinding>(holder.itemView)
             val viewModel = data!!.get(position)
             bind!!.model = viewModel

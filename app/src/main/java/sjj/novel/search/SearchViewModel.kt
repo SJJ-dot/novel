@@ -1,7 +1,7 @@
 package sjj.novel.search
 
-import android.arch.lifecycle.ViewModel
-import android.databinding.ObservableField
+import androidx.lifecycle.ViewModel
+import androidx.databinding.ObservableField
 import io.reactivex.Observable
 import sjj.novel.R
 import sjj.novel.data.repository.novelDataRepository

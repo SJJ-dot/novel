@@ -1,7 +1,7 @@
 package sjj.novel.data.source.local
 
-import android.arch.paging.DataSource
-import android.arch.persistence.room.*
+import androidx.paging.DataSource
+import androidx.room.*
 import io.reactivex.Flowable
 import sjj.novel.model.Book
 import sjj.novel.model.BookSourceRecord

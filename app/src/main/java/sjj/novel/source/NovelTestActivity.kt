@@ -6,7 +6,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -105,18 +105,18 @@ class NovelTestActivity : BaseActivity() {
         }
     }
 
-    class Adapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    class Adapter : androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>() {
 
         val data = LinkedList<String>()
 
-        override fun onCreateViewHolder(p0: ViewGroup, p1: Int): RecyclerView.ViewHolder {
-            return object : RecyclerView.ViewHolder(LayoutInflater.from(p0.context).inflate(R.layout.item_log_text, p0, false)) {
+        override fun onCreateViewHolder(p0: ViewGroup, p1: Int): androidx.recyclerview.widget.RecyclerView.ViewHolder {
+            return object : androidx.recyclerview.widget.RecyclerView.ViewHolder(LayoutInflater.from(p0.context).inflate(R.layout.item_log_text, p0, false)) {
             }
         }
 
         override fun getItemCount(): Int = data.size
 
-        override fun onBindViewHolder(p0: RecyclerView.ViewHolder, p1: Int) {
+        override fun onBindViewHolder(p0: androidx.recyclerview.widget.RecyclerView.ViewHolder, p1: Int) {
             p0.itemView.text.text = data[p1]
         }
     }

@@ -1,6 +1,6 @@
 package sjj.novel.model
 
-import android.arch.persistence.room.*
+import androidx.room.*
 
 /**
  * Created by SJJ on 2017/10/10.

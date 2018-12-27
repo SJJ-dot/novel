@@ -1,7 +1,7 @@
 package sjj.novel.source
 
-import android.arch.lifecycle.ViewModel
-import android.databinding.ObservableField
+import androidx.lifecycle.ViewModel
+import androidx.databinding.ObservableField
 import android.text.Html
 import android.text.Spanned
 import io.reactivex.Observable

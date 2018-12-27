@@ -1,7 +1,7 @@
 package sjj.novel.model
 
-import android.arch.persistence.room.*
-import android.arch.persistence.room.ForeignKey.CASCADE
+import androidx.room.*
+import androidx.room.ForeignKey.CASCADE
 import sjj.novel.data.repository.NovelSourceRepository
 import sjj.novel.data.source.remote.rule.BookParseRule
 import sjj.novel.util.id

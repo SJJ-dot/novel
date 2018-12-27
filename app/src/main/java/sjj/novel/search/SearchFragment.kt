@@ -1,10 +1,10 @@
 package sjj.novel.search
 
-import android.databinding.DataBindingUtil
+import androidx.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.SearchView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.appcompat.widget.SearchView
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
@@ -45,7 +45,7 @@ class SearchFragment : BaseFragment() {
     }
 
     private fun init(searchView: SearchView) {
-        searchRecyclerView.layoutManager = LinearLayoutManager(context)
+        searchRecyclerView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
         val resultBookAdapter = SearchResultBookAdapter()
         searchRecyclerView.adapter = resultBookAdapter
         searchView.onClose {
@@ -105,15 +105,15 @@ class SearchFragment : BaseFragment() {
     }
 
 
-    private inner class SearchResultBookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private inner class SearchResultBookAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>() {
         var data = listOf<SearchViewModel.BookSearchItemViewModel>()
         override fun getItemCount(): Int = data.size
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): androidx.recyclerview.widget.RecyclerView.ViewHolder {
             val binding = DataBindingUtil.inflate<ItemBookSearchListBinding>(LayoutInflater.from(parent.context), R.layout.item_book_search_list, parent, false)
-            return object : RecyclerView.ViewHolder(binding.root) {}
+            return object : androidx.recyclerview.widget.RecyclerView.ViewHolder(binding.root) {}
         }
 
-        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
             val bind = DataBindingUtil.bind<ItemBookSearchListBinding>(holder.itemView)
             val bookGroup = data[position]
             bind?.model = bookGroup
