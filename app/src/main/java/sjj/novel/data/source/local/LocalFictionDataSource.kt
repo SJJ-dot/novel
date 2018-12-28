@@ -59,12 +59,6 @@ class LocalFictionDataSource : NovelDataRepository.LocalSource {
     override fun getBookInBookSource(name: String, author: String): Flowable<Book> {
         return bookDao.getBookInBookSource(name, author)
                 .subscribeOnSingle()
-                .flatMap {
-                    getChapterIntro(it.url).first(listOf()).map { c ->
-                        it.chapterList = c
-                        it
-                    }.toFlowable()
-                }
     }
 
     override fun getBookSourceRecord(name: String, author: String): Flowable<BookSourceRecord> {

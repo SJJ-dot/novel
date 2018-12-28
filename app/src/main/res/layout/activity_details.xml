@@ -229,19 +229,10 @@
         </LinearLayout>
 
         <FrameLayout
+            android:id="@+id/chapter_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="end">
-
-            <sjj.novel.view.scroller.FastScrollRecyclerView
-                android:id="@+id/chapterList"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/material_white"
-                android:outlineProvider="bounds"
-                android:translationZ="5dp" />
-        </FrameLayout>
-
+            android:layout_gravity="end"/>
     </androidx.drawerlayout.widget.DrawerLayout>
 
 </layout>

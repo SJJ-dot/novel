@@ -179,6 +179,10 @@ class NovelDataRepository {
 //            .setEnablePlaceholders(true) 默认true
             .build()).build()
 
+    fun getChapterIntro(bookUrl: String): Flowable<List<Chapter>> {
+       return localSource.getChapterIntro(bookUrl)
+    }
+
 
     interface RemoteSource {
         fun getChapterContent(chapter: Chapter): Observable<Chapter>

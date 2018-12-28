@@ -17,6 +17,7 @@ import sjj.novel.databinding.ActivityDetailsBinding
 import sjj.novel.model.Chapter
 import sjj.novel.view.module.read.ReadActivity
 import sjj.novel.util.getModel
+import sjj.novel.view.fragment.ChapterListFragment
 import sjj.novel.view.fragment.ChooseBookSourceFragment
 
 /**
@@ -35,17 +36,18 @@ class DetailsActivity : BaseActivity() {
 
         model = getModel { arrayOf(intent.getStringExtra(BOOK_NAME), intent.getStringExtra(BOOK_AUTHOR)) }
 
+        supportFragmentManager.beginTransaction()
+                .replace(R.id.chapter_list,ChapterListFragment.create(model.name,model.author))
+                .commitAllowingStateLoss()
+
         val bind: ActivityDetailsBinding = DataBindingUtil.setContentView(this, R.layout.activity_details)
 
-        val adapter = ChapterListAdapter()
         model.book.observeOn(AndroidSchedulers.mainThread()).subscribe { book ->
             bind.book = book
             originWebsite.text = book.origin?.sourceName
             originWebsite.setOnClickListener { v ->
                 ChooseBookSourceFragment.newInstance(book.name, book.author).show(supportFragmentManager)
             }
-            adapter.data = book.chapterList
-            adapter.notifyDataSetChanged()
 
             detailsRefreshLayout.setOnRefreshListener {
                 model.refresh(book).observeOn(AndroidSchedulers.mainThread()).doOnTerminate {
@@ -82,9 +84,6 @@ class DetailsActivity : BaseActivity() {
                 latestChapter.isClickable = false
             }
         }.destroy("book details activity")
-
-        chapterList.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
-        chapterList.adapter = adapter
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -96,7 +95,6 @@ class DetailsActivity : BaseActivity() {
         return when (item.itemId) {
             R.id.chapter_list -> {
                 model.bookSourceRecord.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe { index ->
-                    chapterList.scrollToPosition(index.readIndex)
                     drawer_layout.openDrawer(GravityCompat.END)
                 }
                 true
@@ -110,28 +108,6 @@ class DetailsActivity : BaseActivity() {
             drawer_layout.closeDrawer(GravityCompat.END)
         } else {
             super.onBackPressed()
-        }
-    }
-
-    private inner class ChapterListAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<ViewHolder>() {
-        var data = listOf<Chapter>()
-        override fun getItemCount(): Int = data.size
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            return object : ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_text_text, parent, false)) {}
-        }
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val book = data[position]
-            holder.itemView.find<TextView>(R.id.text1).text = book.chapterName
-            holder.itemView.setOnClickListener {
-                it.isEnabled = false
-                model.setReadIndex(book).observeOn(AndroidSchedulers.mainThread()).doOnTerminate {
-                    it.isEnabled = true
-                }.subscribe {
-                    startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)
-                }
-            }
         }
     }
 
