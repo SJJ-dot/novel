@@ -2,6 +2,7 @@ package sjj.novel.view.module.read
 
 import androidx.lifecycle.ViewModel
 import android.text.Html
+import io.reactivex.Flowable
 import io.reactivex.Observable
 import sjj.novel.data.repository.novelDataRepository
 import sjj.novel.model.Book
@@ -11,8 +12,14 @@ import sjj.novel.view.reader.page.TxtChapter
 import java.util.concurrent.TimeUnit
 
 class ReadViewModel(val name: String, val author: String) : ViewModel() {
-
-    val book = novelDataRepository.getBookInBookSource(name, author)
+    var chapterList:List<Chapter> = listOf()
+    val book:Flowable<Book> = novelDataRepository.getBookInBookSource(name, author).flatMap { b ->
+        novelDataRepository.getChapterIntro(b.url).map { chapters->
+            b.chapterList = chapters
+            chapterList = chapters
+            b
+        }
+    }
 
     private var lastReadIndex = 0
     private var isThrough: Boolean? = null

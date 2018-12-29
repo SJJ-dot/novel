@@ -4,11 +4,10 @@ import androidx.lifecycle.Observer
 import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
 import android.view.*
-import android.widget.TextView
+import androidx.core.view.GravityCompat
 import androidx.navigation.Navigation
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_read.*
-import org.jetbrains.anko.find
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
 import sjj.novel.*
@@ -18,6 +17,7 @@ import sjj.novel.model.Chapter
 import sjj.novel.util.getModel
 import sjj.novel.util.initScreenBrightness
 import sjj.novel.util.observeOnMain
+import sjj.novel.view.fragment.ChapterListFragment
 import sjj.novel.view.reader.bean.BookBean
 import sjj.novel.view.reader.bean.BookRecordBean
 import sjj.novel.view.reader.page.PageLoader
@@ -28,7 +28,7 @@ import sjj.novel.view.reader.page.TxtChapter
 import kotlin.math.max
 import kotlin.math.min
 
-class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
+class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack,ChapterListFragment.ItemClickListener,ChapterListFragment.ShowController {
     companion object {
         val BOOK_NAME = "BOOK_NAME"
         val BOOK_AUTHOR = "BOOK_AUTHOR"
@@ -38,9 +38,8 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
 
     private val mPageLoader by lazy { chapterContent.pageLoader }
 
-    private val chapterListAdapter = ChapterListAdapter()
-
     private var controller: ReaderSettingFragment.CallBack.Controller? = null
+    private var controllerChapterList: ChapterListFragment.Controller? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,10 +50,6 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
         toggleMenu()
         //禁止手势滑出
         drawer_layout.setDrawerLockMode(androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-
-
-//        chapterContent.adapter = contentAdapter
-        chapterList.adapter = chapterListAdapter
 
         chapterContent.setTouchListener(object : PageView.TouchListener {
             override fun intercept(event: MotionEvent?): Boolean {
@@ -77,16 +72,16 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
 
         model = getModel { arrayOf(intent.getStringExtra(BOOK_NAME), intent.getStringExtra(BOOK_AUTHOR)) }
 
+        supportFragmentManager.beginTransaction()
+                .replace(R.id.chapter_list,ChapterListFragment.create(model.name,model.author))
+                .commitAllowingStateLoss()
 
         model.book.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe { book ->
             title = book.name
-            chapterListAdapter.data = book.chapterList
-            chapterListAdapter.notifyDataSetChanged()
-
             //阅读记录
             model.readIndex.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
                 val index = min(max(book.chapterList.lastIndex, 0), it.readIndex)
-                chapterList.scrollToPosition(index)
+
                 mPageLoader.setBookRecord(BookRecordBean().apply {
                     bookId = book.url
                     chapter = index
@@ -96,11 +91,11 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
 
                 mPageLoader.setOnPageChangeListener(object : PageLoader.OnPageChangeListener {
                     override fun onBookRecordChange(bean: BookRecordBean) {
-                        model.setReadIndex(chapterListAdapter.data[bean.chapter], bean.pagePos, bean.isThrough).subscribe()
+                        model.setReadIndex(model.chapterList[bean.chapter], bean.pagePos, bean.isThrough).subscribe()
                     }
 
                     override fun onChapterChange(pos: Int) {
-                        chapterList.scrollToPosition(pos)
+                        controllerChapterList?.scrollToPosition(pos)
                     }
 
                     override fun requestChapters(requestChapters: MutableList<TxtChapter>) {
@@ -200,8 +195,6 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
             R.id.menu_refresh_chapters -> {
                 showSnackbar(chapterContent, "正在更新目录信息，请稍后……", Snackbar.LENGTH_INDEFINITE)
                 model.refresh().observeOnMain().subscribe({
-                    chapterListAdapter.data = it.chapterList
-                    chapterListAdapter.notifyDataSetChanged()
                     initBookData(it)
                     showSnackbar(chapterContent, "目录更新成功")
                 }, {
@@ -223,7 +216,7 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
 
     override fun onBackPressed() {
         when {
-            drawer_layout?.isDrawerOpen(Gravity.END) == true -> drawer_layout?.closeDrawers()
+            drawer_layout?.isDrawerOpen(GravityCompat.END) == true -> drawer_layout?.closeDrawers()
             supportActionBar?.isShowing == true -> toggleMenu()
             else -> super.onBackPressed()
         }
@@ -253,7 +246,7 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
      * 底部菜单回调
      */
     override fun openChapterList() {
-        drawer_layout.openDrawer(Gravity.END)
+        drawer_layout.openDrawer(GravityCompat.END)
     }
 
     /**
@@ -267,24 +260,18 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack {
         this.controller = controller
     }
 
-    private inner class ChapterListAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>() {
+    /**
+     * 章节列表点击回调
+     */
+    override fun onClick(chapter: Chapter) {
+        model.setReadIndex(chapter, 0).subscribe().destroy(DISPOSABLE_READ_INDEX)
+        mPageLoader.skipToChapter(chapter.index)
+    }
 
-        var data = listOf<Chapter>()
-
-        override fun getItemCount(): Int = data.size
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): androidx.recyclerview.widget.RecyclerView.ViewHolder {
-            return object : androidx.recyclerview.widget.RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_text_text, parent, false)) {}
-        }
-
-        override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
-            val c = data[position]
-            holder.itemView.find<TextView>(R.id.text1).text = c.chapterName
-            holder.itemView.setOnClickListener {
-                model.setReadIndex(c, 0).subscribe().destroy(DISPOSABLE_READ_INDEX)
-                mPageLoader.skipToChapter(position)
-            }
-        }
-
+    /**
+     * 章节列表控制回调
+     */
+    override fun set(controller: ChapterListFragment.Controller) {
+        controllerChapterList = controller
     }
 }

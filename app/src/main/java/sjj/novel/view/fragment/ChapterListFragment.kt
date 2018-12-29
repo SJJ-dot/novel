@@ -1,6 +1,7 @@
 package sjj.novel.view.fragment
 
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,9 +12,13 @@ import kotlinx.android.synthetic.main.fragment_chapter_list.*
 import sjj.alog.Log
 import sjj.novel.BaseFragment
 import sjj.novel.R
+import sjj.novel.databinding.FragmentChapterListBinding
 import sjj.novel.databinding.ItemTextTextBinding
+import sjj.novel.model.Chapter
 import sjj.novel.util.getModel
+import sjj.novel.util.id
 import sjj.novel.util.observeOnMain
+import sjj.novel.view.adapter.BaseAdapter
 
 
 /**
@@ -24,17 +29,26 @@ class ChapterListFragment : BaseFragment() {
     companion object {
         val BOOK_NAME = "BOOK_NAME"
         val BOOK_AUTHOR = "BOOK_AUTHOR"
-        fun create(bookName:String,bookAuthor:String): ChapterListFragment {
+        fun create(bookName: String, bookAuthor: String): ChapterListFragment {
             return ChapterListFragment().apply {
                 val bundle = Bundle()
-                bundle.putString(BOOK_NAME,bookName)
-                bundle.putString(BOOK_AUTHOR,bookAuthor)
+                bundle.putString(BOOK_NAME, bookName)
+                bundle.putString(BOOK_AUTHOR, bookAuthor)
                 arguments = bundle
             }
         }
     }
 
+    var listener: ItemClickListener? = null
+    var controller: ShowController? = null
+
     private lateinit var model: ChapterListViewModel
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        listener = findImpl()
+        controller = findImpl()
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_chapter_list, container, false)
@@ -48,22 +62,33 @@ class ChapterListFragment : BaseFragment() {
                 .observeOnMain()
                 .subscribe({
                     adapter.data = it
-                    Log.e("aaaaaaaaaaaaa $it")
                     adapter.notifyDataSetChanged()
-                },{
-                    showSnackbar(chapterList,"章节列表加载失败:${it.message}")
+                    model.scrollToReadIndex.set(true)
+                }, {
+                    showSnackbar(chapterList, "章节列表加载失败:${it.message}")
                 }).destroy()
+        val bind = DataBindingUtil.bind<FragmentChapterListBinding>(view)
+        bind!!.model = model
+        /**
+         * 如果有实现需要回调控制显示 设置回调
+         */
+        controller?.set(object : Controller {
+            override fun scrollToPosition(position: Int) {
+                chapterList?.scrollToPosition(position)
+            }
+        })
     }
 
-    private inner class ChapterListAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>() {
-
+    private inner class ChapterListAdapter : BaseAdapter() {
+        init {
+            setHasStableIds(true)
+        }
         var data = listOf<ChapterListViewModel.ChapterViewModel>()
 
         override fun getItemCount(): Int = data.size
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): androidx.recyclerview.widget.RecyclerView.ViewHolder {
-            val inflate = DataBindingUtil.inflate<ItemTextTextBinding>(LayoutInflater.from(parent.context), R.layout.item_text_text, parent, false)
-            return object : RecyclerView.ViewHolder(inflate.root) {}
+        override fun itemLayoutRes(viewType: Int): Int {
+            return  R.layout.item_text_text
         }
 
         override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
@@ -71,9 +96,25 @@ class ChapterListFragment : BaseFragment() {
             val bind = DataBindingUtil.bind<ItemTextTextBinding>(holder.itemView)
             bind?.model = c
             holder.itemView.setOnClickListener {
-
+                listener?.onClick(c.chapter)
             }
         }
 
+        override fun getItemId(position: Int): Long {
+            return data[position].id
+        }
     }
+
+    interface ItemClickListener {
+        fun onClick(chapter: Chapter)
+    }
+
+    interface ShowController{
+        fun set(controller: Controller)
+    }
+
+    interface Controller {
+        fun scrollToPosition(position: Int)
+    }
+
 }

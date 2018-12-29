@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentTransaction
 import android.util.DisplayMetrics
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import sjj.alog.Log
 import sjj.rx.AutoDisposeEnhance
 
@@ -54,6 +55,21 @@ open class BaseFragment : androidx.fragment.app.DialogFragment(), AutoDisposeEnh
 
     fun show(transaction: androidx.fragment.app.FragmentTransaction?): Int {
         return super.show(transaction, javaClass.name)
+    }
+
+    inline fun <reified T> findImpl(): T? {
+        var parent: Fragment? = parentFragment
+        while (parent != null) {
+            if (parent is T) {
+                return parent
+            }
+            parent = parent.parentFragment
+        }
+        val context = context
+        if (context is T) {
+            return context
+        }
+        return null
     }
 
 }

@@ -17,13 +17,14 @@ import sjj.novel.databinding.ActivityDetailsBinding
 import sjj.novel.model.Chapter
 import sjj.novel.view.module.read.ReadActivity
 import sjj.novel.util.getModel
+import sjj.novel.util.observeOnMain
 import sjj.novel.view.fragment.ChapterListFragment
 import sjj.novel.view.fragment.ChooseBookSourceFragment
 
 /**
  * Created by SJJ on 2017/10/10.
  */
-class DetailsActivity : BaseActivity() {
+class DetailsActivity : BaseActivity(),ChapterListFragment.ItemClickListener {
     companion object {
         const val BOOK_NAME = "book_name"
         const val BOOK_AUTHOR = "book_author"
@@ -95,8 +96,9 @@ class DetailsActivity : BaseActivity() {
         return when (item.itemId) {
             R.id.chapter_list -> {
                 model.bookSourceRecord.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe { index ->
-                    drawer_layout.openDrawer(GravityCompat.END)
+
                 }
+                drawer_layout.openDrawer(GravityCompat.END)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -111,4 +113,9 @@ class DetailsActivity : BaseActivity() {
         }
     }
 
+    override fun onClick(chapter: Chapter) {
+        model.setReadIndex(chapter).observeOnMain().subscribe {
+            startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)
+        }.destroy("details activity start read novel")
+    }
 }

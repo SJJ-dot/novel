@@ -18,14 +18,14 @@
             android:layout_gravity="center_vertical"
             android:layout_margin="8dp"
             android:text="@{model.chapterName}"
-            android:textColor="@color/colorText"
+            android:textColor="@{model.isReading?@color/material_red_A700:@color/colorText}"
             tools:text="标题" />
         <View
             android:id="@+id/mark"
             android:layout_width="5dp"
             android:rotation="-45"
             android:layout_marginTop="-5dp"
-            android:background="@{model.isLoadSuccess()?@color/material_green_900:@color/material_grey_500}"
+            android:background="@{model.isLoadSuccess()?@color/material_green_A700:@color/material_grey_500}"
             android:layout_gravity="end"
             android:layout_height="25dp"/>
     </androidx.cardview.widget.CardView>

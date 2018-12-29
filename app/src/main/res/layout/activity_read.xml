@@ -38,18 +38,11 @@
             app:navGraph="@navigation/nav_graph_read_setting_menu" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <FrameLayout
+        android:id="@+id/chapter_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="end"
         android:background="@color/colorPrimaryDark"
-        android:fitsSystemWindows="true">
-
-        <sjj.novel.view.scroller.FastScrollRecyclerView
-            android:id="@+id/chapterList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/material_white"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        android:fitsSystemWindows="true" />
 </androidx.drawerlayout.widget.DrawerLayout>
