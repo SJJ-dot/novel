@@ -1,7 +1,7 @@
 package sjj.novel.util
 
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import sjj.alog.Log
 import java.lang.Exception
 import java.net.URL
@@ -41,7 +41,7 @@ fun Throwable.stackTraceString(): String {
     return buffer.toString()
 }
 
-inline fun <reified T : Fragment> FragmentActivity.getFragment(containerViewId: Int = 0, tag: String): T {
+inline fun <reified T : androidx.fragment.app.Fragment> androidx.fragment.app.FragmentActivity.getFragment(containerViewId: Int = 0, tag: String): T {
     val byTag = supportFragmentManager.findFragmentByTag(tag) ?: T::class.java.newInstance().also {
         supportFragmentManager.beginTransaction().add(containerViewId, it, tag).commit()
     }

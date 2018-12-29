@@ -1,7 +1,7 @@
 package sjj.novel.data.source.local
 
-import android.arch.paging.DataSource
-import android.arch.persistence.room.*
+import androidx.paging.DataSource
+import androidx.room.*
 import io.reactivex.Flowable
 import sjj.novel.model.Book
 import sjj.novel.model.BookSourceRecord
@@ -15,6 +15,9 @@ interface BookDao {
 
     @Query("select * from Book where url in (select bookUrl from BookSourceRecord)")
     fun getBooksInRecord(): Flowable<List<Book>>
+
+    @Query("select * from Book where url=:url")
+    fun getBook(url: String): Flowable<Book>
 
     @Query("select * from Book where name=:name and author=:author")
     fun getBookSource(name: String, author: String): Flowable<List<Book>>
@@ -65,5 +68,5 @@ interface BookDao {
     fun getChapterIds(bookUrl: String): List<String>
 
     @Query("delete from chapter where url=:url")
-    fun deleteChapter(url:String)
+    fun deleteChapter(url: String)
 }

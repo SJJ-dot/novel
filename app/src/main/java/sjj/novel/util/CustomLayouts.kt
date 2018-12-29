@@ -1,14 +1,14 @@
 package sjj.novel.util
 
 import android.content.Context
-import android.support.v7.widget.CardView
+import androidx.cardview.widget.CardView
 import android.view.View
 import android.widget.FrameLayout
 
 /**
  * Created by Administrator on 2017/10/13.
  */
-class _CardView(context: Context) : CardView(context) {
+class _CardView(context: Context) : androidx.cardview.widget.CardView(context) {
     inline fun <T : View> T.lparams(
             width: Int = android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
             height: Int = android.view.ViewGroup.LayoutParams.WRAP_CONTENT,

@@ -1,19 +1,20 @@
 package sjj.novel
 
-import android.support.design.widget.Snackbar
-import android.support.v4.app.DialogFragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentTransaction
+import com.google.android.material.snackbar.Snackbar
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import android.util.DisplayMetrics
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import sjj.alog.Log
 import sjj.rx.AutoDisposeEnhance
 
 /**
  * Created by SJJ on 2017/10/7.
  */
-open class BaseFragment : DialogFragment(), AutoDisposeEnhance {
+open class BaseFragment : androidx.fragment.app.DialogFragment(), AutoDisposeEnhance {
 
     private var snackbar: Snackbar? = null
 
@@ -48,12 +49,27 @@ open class BaseFragment : DialogFragment(), AutoDisposeEnhance {
         }
     }
 
-    fun show(manager: FragmentManager?) {
+    fun show(manager: androidx.fragment.app.FragmentManager?) {
         super.show(manager, null)
     }
 
-    fun show(transaction: FragmentTransaction?): Int {
+    fun show(transaction: androidx.fragment.app.FragmentTransaction?): Int {
         return super.show(transaction, javaClass.name)
+    }
+
+    inline fun <reified T> findImpl(): T? {
+        var parent: Fragment? = parentFragment
+        while (parent != null) {
+            if (parent is T) {
+                return parent
+            }
+            parent = parent.parentFragment
+        }
+        val context = context
+        if (context is T) {
+            return context
+        }
+        return null
     }
 
 }

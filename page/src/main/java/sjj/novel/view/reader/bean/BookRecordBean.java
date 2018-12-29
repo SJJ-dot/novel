@@ -1,6 +1,6 @@
 package sjj.novel.view.reader.bean;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Created by newbiechen on 17-5-20.

@@ -1,25 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="5dp">
-
-    <TextView
-        android:id="@+id/text1"
-        android:layout_width="wrap_content"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="model"
+            type="sjj.novel.view.fragment.ChapterListViewModel.ChapterViewModel"/>
+    </data>
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_margin="8dp"
-        android:textColor="@color/colorText"
-        tools:text="标题" />
+        android:layout_margin="5dp">
 
-    <TextView
-        android:id="@+id/text2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|end"
-        android:layout_margin="8dp"
-        android:textColor="@color/colorTextLight"
-        tools:text="标题" />
-</android.support.v7.widget.CardView>
+        <TextView
+            android:id="@+id/text1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="8dp"
+            android:text="@{model.chapterName}"
+            android:textColor="@{model.isReading?@color/material_red_A700:@color/colorText}"
+            tools:text="标题" />
+        <View
+            android:id="@+id/mark"
+            android:layout_width="5dp"
+            android:rotation="-45"
+            android:layout_marginTop="-5dp"
+            android:background="@{model.isLoadSuccess()?@color/material_green_A700:@color/material_grey_500}"
+            android:layout_gravity="end"
+            android:layout_height="25dp"/>
+    </androidx.cardview.widget.CardView>
+</layout>

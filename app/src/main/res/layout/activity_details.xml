@@ -14,7 +14,7 @@
 
     </data>
 
-    <android.support.v4.widget.DrawerLayout
+    <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -27,18 +27,18 @@
 
             <include layout="@layout/appbar_layout" />
 
-            <sjj.novel.view.SwipeRefreshLayout_
+            <sjj.novel.widget.SwipeRefreshLayout_
                 android:id="@+id/detailsRefreshLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/material_white">
 
-                <android.support.v4.widget.NestedScrollView
+                <androidx.core.widget.NestedScrollView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:fillViewport="true">
 
-                    <android.support.constraint.ConstraintLayout
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
@@ -63,7 +63,7 @@
                             app:layout_constraintVertical_bias="0.0"
                             app:progressBarImage="@drawable/ic_wait" />
 
-                        <sjj.novel.view.AutofitTextView
+                        <sjj.novel.widget.AutofitTextView
                             android:id="@+id/bookName"
                             android:layout_width="0dp"
                             android:layout_height="27dp"
@@ -171,7 +171,7 @@
                             app:layout_constraintTop_toBottomOf="@+id/authorTitle"
                             app:layout_constraintVertical_bias="0.0" />
 
-                        <sjj.novel.view.AutofitTextView
+                        <sjj.novel.widget.AutofitTextView
                             android:id="@+id/latestChapter"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -221,27 +221,18 @@
                             app:layout_constraintStart_toStartOf="parent" />
 
 
-                    </android.support.constraint.ConstraintLayout>
-                </android.support.v4.widget.NestedScrollView>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.core.widget.NestedScrollView>
 
 
-            </sjj.novel.view.SwipeRefreshLayout_>
+            </sjj.novel.widget.SwipeRefreshLayout_>
         </LinearLayout>
 
         <FrameLayout
+            android:id="@+id/chapter_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="end">
-
-            <sjj.novel.view.scroller.FastScrollRecyclerView
-                android:id="@+id/chapterList"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/material_white"
-                android:outlineProvider="bounds"
-                android:translationZ="5dp" />
-        </FrameLayout>
-
-    </android.support.v4.widget.DrawerLayout>
+            android:layout_gravity="end"/>
+    </androidx.drawerlayout.widget.DrawerLayout>
 
 </layout>

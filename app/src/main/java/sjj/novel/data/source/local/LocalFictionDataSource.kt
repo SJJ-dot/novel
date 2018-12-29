@@ -1,6 +1,6 @@
 package sjj.novel.data.source.local
 
-import android.arch.paging.DataSource
+import androidx.paging.DataSource
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -59,12 +59,6 @@ class LocalFictionDataSource : NovelDataRepository.LocalSource {
     override fun getBookInBookSource(name: String, author: String): Flowable<Book> {
         return bookDao.getBookInBookSource(name, author)
                 .subscribeOnSingle()
-                .flatMap {
-                    getChapterIntro(it.url).first(listOf()).map { c ->
-                        it.chapterList = c
-                        it
-                    }.toFlowable()
-                }
     }
 
     override fun getBookSourceRecord(name: String, author: String): Flowable<BookSourceRecord> {
@@ -143,6 +137,11 @@ class LocalFictionDataSource : NovelDataRepository.LocalSource {
 
     override fun getAllReadingBook(): Flowable<List<Book>> {
         return bookDao.getBooksInRecord()
+                .subscribeOnSingle()
+    }
+
+    override fun getBook(url: String): Flowable<Book> {
+        return bookDao.getBook(url)
                 .subscribeOnSingle()
     }
 
