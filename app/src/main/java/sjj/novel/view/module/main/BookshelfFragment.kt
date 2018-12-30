@@ -1,9 +1,10 @@
 package sjj.novel.view.module.main
 
-import androidx.databinding.DataBindingUtil
 import android.os.Bundle
 import android.view.*
+import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.NavHostFragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_books.*
 import kotlinx.android.synthetic.main.item_book_list.view.*
@@ -14,10 +15,11 @@ import sjj.novel.BaseFragment
 import sjj.novel.DISPOSABLE_ACTIVITY_MAIN_REFRESH
 import sjj.novel.R
 import sjj.novel.databinding.ItemBookListBinding
+import sjj.novel.util.getModel
+import sjj.novel.view.adapter.BaseAdapter
 import sjj.novel.view.fragment.ChooseBookSourceFragment
 import sjj.novel.view.module.details.DetailsActivity
 import sjj.novel.view.module.read.ReadActivity
-import sjj.novel.util.getModel
 
 /**
  * Created by SJJ on 2017/10/7.
@@ -69,14 +71,14 @@ class BookshelfFragment : BaseFragment() {
         }
     }
 
-    private inner class Adapter : androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>() {
+    private inner class Adapter : BaseAdapter() {
         var data: List<BookShelfViewModel.BookShelfItemViewModel>? = null
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): androidx.recyclerview.widget.RecyclerView.ViewHolder {
-            val binding = DataBindingUtil.inflate<ItemBookListBinding>(LayoutInflater.from(parent.context), R.layout.item_book_list, parent, false)
-            return object : androidx.recyclerview.widget.RecyclerView.ViewHolder(binding.root) {}
+
+        override fun itemLayoutRes(viewType: Int): Int {
+            return R.layout.item_book_list
         }
 
-        override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val bind = DataBindingUtil.bind<ItemBookListBinding>(holder.itemView)
             val viewModel = data!!.get(position)
             bind!!.model = viewModel

@@ -6,8 +6,8 @@
     <data>
 
         <variable
-            name="book"
-            type="sjj.novel.model.Book" />
+            name="model"
+            type="sjj.novel.view.module.details.DetailsViewModel" />
 
         <import type="sjj.novel.model.Book" />
 
@@ -31,6 +31,7 @@
                 android:id="@+id/detailsRefreshLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                app:refreshing="@{model.isLoading}"
                 android:background="@color/material_white">
 
                 <androidx.core.widget.NestedScrollView
@@ -55,6 +56,7 @@
                             android:scaleType="centerInside"
                             android:translationZ="2dp"
                             app:failureImage="@drawable/ic_laokuoteng"
+                            app:imageURI="@{model.bookCoverImgUrl}"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.0"
@@ -71,7 +73,7 @@
                             android:layout_marginTop="16dp"
                             android:layout_marginEnd="16dp"
                             android:layout_marginBottom="8dp"
-                            android:text="@{book.name}"
+                            android:text="@{model.bookName}"
                             android:textColor="@color/colorText"
                             android:textSize="20sp"
                             app:layout_constraintBottom_toBottomOf="parent"
@@ -108,7 +110,7 @@
                             android:layout_marginTop="16dp"
                             android:layout_marginEnd="16dp"
                             android:layout_marginBottom="8dp"
-                            android:text="@{book.author}"
+                            android:text="@{model.bookAuthor}"
                             android:textColor="@color/colorText"
                             android:textSize="16sp"
                             app:layout_constraintBottom_toBottomOf="parent"
@@ -144,6 +146,7 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="8dp"
                             android:padding="8dp"
+                            android:text="@{model.origin}"
                             android:textColor="@color/colorTextLight"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
@@ -177,6 +180,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
                             android:layout_marginTop="16dp"
+                            android:text="@{model.lastChapter}"
                             android:layout_marginEnd="16dp"
                             android:layout_marginBottom="16dp"
                             android:textColor="@color/colorText"
@@ -200,6 +204,7 @@
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.0"
+                            android:text="@{model.bookIntro}"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/introTitle"
                             app:layout_constraintVertical_bias="0.0"
