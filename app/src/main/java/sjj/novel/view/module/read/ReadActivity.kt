@@ -1,23 +1,26 @@
 package sjj.novel.view.module.read
 
-import androidx.lifecycle.Observer
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
+import android.view.MotionEvent
 import androidx.core.view.GravityCompat
+import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
+import com.google.android.material.snackbar.Snackbar
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_read.*
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
 import sjj.novel.*
-import sjj.novel.view.module.details.DetailsActivity
 import sjj.novel.model.Book
 import sjj.novel.model.Chapter
 import sjj.novel.util.getModel
 import sjj.novel.util.initScreenBrightness
 import sjj.novel.util.observeOnMain
 import sjj.novel.view.fragment.ChapterListFragment
+import sjj.novel.view.fragment.ChapterListViewModel
+import sjj.novel.view.module.details.DetailsActivity
 import sjj.novel.view.reader.bean.BookBean
 import sjj.novel.view.reader.bean.BookRecordBean
 import sjj.novel.view.reader.page.PageLoader
@@ -28,18 +31,19 @@ import sjj.novel.view.reader.page.TxtChapter
 import kotlin.math.max
 import kotlin.math.min
 
-class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack,ChapterListFragment.ItemClickListener,ChapterListFragment.ShowController {
+class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack,ChapterListFragment.ItemClickListener {
     companion object {
-        val BOOK_NAME = "BOOK_NAME"
-        val BOOK_AUTHOR = "BOOK_AUTHOR"
+        const val BOOK_NAME = "BOOK_NAME"
+        const val BOOK_AUTHOR = "BOOK_AUTHOR"
     }
 
     private lateinit var model: ReadViewModel
+    private lateinit var modelChapterList: ChapterListViewModel
+    private lateinit var modelDownload: DownChapterViewModel
 
     private val mPageLoader by lazy { chapterContent.pageLoader }
 
     private var controller: ReaderSettingFragment.CallBack.Controller? = null
-    private var controllerChapterList: ChapterListFragment.Controller? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,6 +75,8 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack,ChapterListF
         })
 
         model = getModel { arrayOf(intent.getStringExtra(BOOK_NAME), intent.getStringExtra(BOOK_AUTHOR)) }
+        modelChapterList = getModel { arrayOf(intent.getStringExtra(BOOK_NAME), intent.getStringExtra(BOOK_AUTHOR)) }
+        modelDownload = getModel { arrayOf(intent.getStringExtra(BOOK_NAME), intent.getStringExtra(BOOK_AUTHOR)) }
 
         supportFragmentManager.beginTransaction()
                 .replace(R.id.chapter_list,ChapterListFragment.create(model.name,model.author))
@@ -95,7 +101,7 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack,ChapterListF
                     }
 
                     override fun onChapterChange(pos: Int) {
-                        controllerChapterList?.scrollToPosition(pos)
+                        modelChapterList.readIndex.set(pos)
                     }
 
                     override fun requestChapters(requestChapters: MutableList<TxtChapter>) {
@@ -266,12 +272,5 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack,ChapterListF
     override fun onClick(chapter: Chapter) {
         model.setReadIndex(chapter, 0).subscribe().destroy(DISPOSABLE_READ_INDEX)
         mPageLoader.skipToChapter(chapter.index)
-    }
-
-    /**
-     * 章节列表控制回调
-     */
-    override fun set(controller: ChapterListFragment.Controller) {
-        controllerChapterList = controller
     }
 }

@@ -16,6 +16,7 @@ import sjj.novel.databinding.FragmentChapterListBinding
 import sjj.novel.databinding.ItemTextTextBinding
 import sjj.novel.model.Chapter
 import sjj.novel.util.getModel
+import sjj.novel.util.getModelActivity
 import sjj.novel.util.id
 import sjj.novel.util.observeOnMain
 import sjj.novel.view.adapter.BaseAdapter
@@ -40,14 +41,12 @@ class ChapterListFragment : BaseFragment() {
     }
 
     var listener: ItemClickListener? = null
-    var controller: ShowController? = null
 
     private lateinit var model: ChapterListViewModel
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         listener = findImpl()
-        controller = findImpl()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -57,7 +56,7 @@ class ChapterListFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val adapter = ChapterListAdapter()
         chapterList.adapter = adapter
-        model = getModel { arrayOf(arguments!!.getString(BOOK_NAME), arguments!!.getString(BOOK_AUTHOR)) }
+        model = getModelActivity { arrayOf(arguments!!.getString(BOOK_NAME), arguments!!.getString(BOOK_AUTHOR)) }
         model.fillViewModel()
                 .observeOnMain()
                 .subscribe({
@@ -69,14 +68,6 @@ class ChapterListFragment : BaseFragment() {
                 }).destroy()
         val bind = DataBindingUtil.bind<FragmentChapterListBinding>(view)
         bind!!.model = model
-        /**
-         * 如果有实现需要回调控制显示 设置回调
-         */
-        controller?.set(object : Controller {
-            override fun scrollToPosition(position: Int) {
-                chapterList?.scrollToPosition(position)
-            }
-        })
     }
 
     private inner class ChapterListAdapter : BaseAdapter() {
@@ -107,14 +98,6 @@ class ChapterListFragment : BaseFragment() {
 
     interface ItemClickListener {
         fun onClick(chapter: Chapter)
-    }
-
-    interface ShowController{
-        fun set(controller: Controller)
-    }
-
-    interface Controller {
-        fun scrollToPosition(position: Int)
     }
 
 }

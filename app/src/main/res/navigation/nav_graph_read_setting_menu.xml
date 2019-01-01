@@ -15,5 +15,16 @@
     <fragment
         android:id="@+id/fragment_reader_font_setting"
         android:name="sjj.novel.view.module.read.ReaderFontSettingFragment"
-        tools:layout="@layout/fragment_novel_source" />
+        tools:layout="@layout/fragment_reader_font_setting" />
+    <fragment
+        android:id="@+id/fragment_reader_download_chapter"
+        android:name="sjj.novel.view.module.read.DownloadChapterFragment"
+        tools:layout="@layout/fragment_download_chapter" >
+        <argument
+            android:name="bookName"
+            app:argType="string"/>
+        <argument
+            android:name="bookAuthor"
+            app:argType="string"/>
+    </fragment>
 </navigation>

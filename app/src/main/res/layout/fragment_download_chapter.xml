@@ -1,0 +1,75 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="model"
+            type="sjj.novel.view.module.read.DownChapterViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="8dp"
+        android:background="@color/material_white"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="@string/select_download_chapters"
+            android:textColor="@color/colorText"
+            android:textSize="20sp" />
+
+        <sjj.novel.widget.AutofitTextView
+            android:id="@+id/download_start_chapter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="@{model.startChapter.chapterName}"
+            android:textColor="@color/colorText"
+            android:textSize="18sp" />
+
+        <sjj.novel.widget.AutofitTextView
+            android:id="@+id/download_end_chapter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="@{model.endChapter.chapterName}"
+            android:textColor="@color/colorText"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_default"
+                android:text="取消"
+                android:textColor="@color/material_white" />
+
+            <Button
+                android:id="@+id/download"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_default"
+                android:text="下载"
+                android:textColor="@color/material_white" />
+        </LinearLayout>
+    </LinearLayout>
+</layout>
+
