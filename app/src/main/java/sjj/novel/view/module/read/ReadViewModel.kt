@@ -2,6 +2,7 @@ package sjj.novel.view.module.read
 
 import androidx.lifecycle.ViewModel
 import android.text.Html
+import androidx.databinding.ObservableInt
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import sjj.novel.data.repository.novelDataRepository
@@ -12,6 +13,7 @@ import sjj.novel.view.reader.page.TxtChapter
 import java.util.concurrent.TimeUnit
 
 class ReadViewModel(val name: String, val author: String) : ViewModel() {
+
     var chapterList:List<Chapter> = listOf()
     val book:Flowable<Book> = novelDataRepository.getBookInBookSource(name, author).flatMap { b ->
         novelDataRepository.getChapterIntro(b.url).map { chapters->

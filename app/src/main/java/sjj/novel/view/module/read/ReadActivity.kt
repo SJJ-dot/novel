@@ -12,6 +12,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_read.*
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
+import sjj.alog.Log
 import sjj.novel.*
 import sjj.novel.model.Book
 import sjj.novel.model.Chapter
@@ -40,10 +41,9 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack,ChapterListF
     private lateinit var model: ReadViewModel
     private lateinit var modelChapterList: ChapterListViewModel
     private lateinit var modelDownload: DownChapterViewModel
+    private lateinit var modelReaderSetting: ReaderSettingViewModel
 
     private val mPageLoader by lazy { chapterContent.pageLoader }
-
-    private var controller: ReaderSettingFragment.CallBack.Controller? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,6 +77,7 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack,ChapterListF
         model = getModel { arrayOf(intent.getStringExtra(BOOK_NAME), intent.getStringExtra(BOOK_AUTHOR)) }
         modelChapterList = getModel { arrayOf(intent.getStringExtra(BOOK_NAME), intent.getStringExtra(BOOK_AUTHOR)) }
         modelDownload = getModel { arrayOf(intent.getStringExtra(BOOK_NAME), intent.getStringExtra(BOOK_AUTHOR)) }
+        modelReaderSetting = getModel { arrayOf(intent.getStringExtra(BOOK_NAME), intent.getStringExtra(BOOK_AUTHOR)) }
 
         supportFragmentManager.beginTransaction()
                 .replace(R.id.chapter_list,ChapterListFragment.create(model.name,model.author))
@@ -106,11 +107,15 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack,ChapterListF
 
                     override fun requestChapters(requestChapters: MutableList<TxtChapter>) {
                         model.getChapter(requestChapters).observeOnMain().subscribe({
-                            if (mPageLoader.pageStatus == STATUS_LOADING)
+                            if (mPageLoader.pageStatus == STATUS_LOADING) {
                                 mPageLoader.openChapter()
+                                modelReaderSetting.pageLoaderStatus.set(mPageLoader.pageStatus)
+                            }
                         }, {
-                            if (mPageLoader.pageStatus == STATUS_LOADING)
+                            if (mPageLoader.pageStatus == STATUS_LOADING) {
                                 mPageLoader.chapterError()
+                                modelReaderSetting.pageLoaderStatus.set(mPageLoader.pageStatus)
+                            }
                         }).destroy("requestChapters")
                     }
 
@@ -118,11 +123,13 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack,ChapterListF
                     }
 
                     override fun onPageCountChange(count: Int) {
-                        controller?.setPageCount(count)
+                        modelReaderSetting.pageCount.set(count)
+                        modelReaderSetting.pageLoaderStatus.set(mPageLoader.pageStatus)
                     }
 
                     override fun onPageChange(pos: Int) {
-                        controller?.setPagePos(pos)
+                        modelReaderSetting.pagePos.set(pos)
+                        modelReaderSetting.pageLoaderStatus.set(mPageLoader.pageStatus)
                     }
 
                 })
@@ -261,11 +268,6 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack,ChapterListF
     override fun getPageLoader(): PageLoader? {
         return mPageLoader
     }
-
-    override fun setController(controller: ReaderSettingFragment.CallBack.Controller) {
-        this.controller = controller
-    }
-
     /**
      * 章节列表点击回调
      */
