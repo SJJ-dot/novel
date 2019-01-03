@@ -4,11 +4,11 @@ import android.os.Bundle
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.NavHostFragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_books.*
 import kotlinx.android.synthetic.main.item_book_list.view.*
-import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.startActivity
 import org.jetbrains.anko.support.v4.toast
 import sjj.novel.BaseFragment
@@ -20,6 +20,7 @@ import sjj.novel.view.adapter.BaseAdapter
 import sjj.novel.view.fragment.ChooseBookSourceFragment
 import sjj.novel.view.module.details.DetailsActivity
 import sjj.novel.view.module.read.ReadActivity
+
 
 /**
  * Created by SJJ on 2017/10/7.
@@ -38,8 +39,31 @@ class BookshelfFragment : BaseFragment() {
         val adapter = Adapter()
         adapter.setHasStableIds(true)
         bookList.adapter = adapter
+
+        val mItemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.Callback() {
+            override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
+                return makeMovementFlags(ItemTouchHelper.DOWN or ItemTouchHelper.UP,ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT)
+            }
+
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                val removeAt = adapter.data.removeAt(viewHolder.adapterPosition)
+                adapter.data.add(target.adapterPosition,removeAt)
+                adapter.notifyItemMoved(viewHolder.adapterPosition,target.adapterPosition)
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                adapter.data.getOrNull(viewHolder.adapterPosition)?.also {
+                    model.delete(it.book)
+                }
+            }
+
+        })
+        mItemTouchHelper.attachToRecyclerView(bookList)
+
         model.books.observeOn(AndroidSchedulers.mainThread()).subscribe {
-            adapter.data = it
+            adapter.data.clear()
+            adapter.data.addAll(it)
             adapter.notifyDataSetChanged()
         }.destroy()
         bookListRefreshLayout.setOnRefreshListener {
@@ -72,7 +96,7 @@ class BookshelfFragment : BaseFragment() {
     }
 
     private inner class Adapter : BaseAdapter() {
-        var data: List<BookShelfViewModel.BookShelfItemViewModel>? = null
+        val data: MutableList<BookShelfViewModel.BookShelfItemViewModel> = mutableListOf()
 
         override fun itemLayoutRes(viewType: Int): Int {
             return R.layout.item_book_list
@@ -80,7 +104,7 @@ class BookshelfFragment : BaseFragment() {
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val bind = DataBindingUtil.bind<ItemBookListBinding>(holder.itemView)
-            val viewModel = data!!.get(position)
+            val viewModel = data.get(position)
             bind!!.model = viewModel
             holder.itemView.setOnClickListener { v ->
 
@@ -95,17 +119,6 @@ class BookshelfFragment : BaseFragment() {
                     startActivity<ReadActivity>(ReadActivity.BOOK_NAME to viewModel.book.name, ReadActivity.BOOK_AUTHOR to viewModel.book.author)
                 }
             }
-            holder.itemView.setOnLongClickListener { _ ->
-                alert {
-                    title = "确认删除？"
-                    message = "确认删除书籍：${viewModel.bookName.get()}？"
-                    negativeButton("取消") {}
-                    positiveButton("删除") {
-                        model.delete(viewModel.book)
-                    }
-                }.show()
-                true
-            }
             holder.itemView.intro.setOnClickListener {
                 startActivity<DetailsActivity>(DetailsActivity.BOOK_NAME to viewModel.book.name, DetailsActivity.BOOK_AUTHOR to viewModel.book.author)
             }
@@ -114,11 +127,10 @@ class BookshelfFragment : BaseFragment() {
             }
         }
 
-        override fun getItemCount(): Int = data?.size ?: 0
+        override fun getItemCount(): Int = data.size
 
         override fun getItemId(position: Int): Long {
-            val viewModel = data?.get(position) ?: return 0
-            return viewModel.id
+            return data[position].id
         }
     }
 }
