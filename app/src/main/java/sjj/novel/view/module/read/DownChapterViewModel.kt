@@ -67,8 +67,4 @@ class DownChapterViewModel(var bookName: String, var bookAuthor: String) : ViewM
     val endChapter: LiveData<Chapter> = Transformations.map(chapterList) {
         it.lastOrNull()
     }
-
-    override fun onCleared() {
-
-    }
 }
