@@ -41,6 +41,10 @@ class BookShelfViewModel : ViewModel() {
                 model.index = it.readIndex
                 model.isThrough = it.isThrough
                 model.haveRead.set(R.string.haveRead_.resStr(it.chapterName))
+                model.seq = it.sequence
+
+                model.remainingChapter.set(maxOf((model.book.lastChapter?.index
+                        ?: 0) - model.index + (if (model.isThrough) 0 else 1), 0))
                 model
             }
         }.flatMap { model ->
@@ -48,11 +52,10 @@ class BookShelfViewModel : ViewModel() {
                 model.origin.set(R.string.origin_.resStr(list.find { model.book.url.host.endsWith(it.topLevelDomain) }?.sourceName, list.size))
                 model
             }
-        }.reduce(map) { r, model ->
-            model.remainingChapter.set(maxOf((model.book.lastChapter?.index
-                    ?: 0) - model.index + (if (model.isThrough) 0 else 1), 0))
-            r //保持顺序
-        }.toFlowable()
+        }.toList().toFlowable().map { mutableList ->
+            mutableList.sortBy { it.seq }
+            mutableList
+        }
     }
 
     /**
@@ -102,6 +105,11 @@ class BookShelfViewModel : ViewModel() {
         var index: Int = 0
         var isThrough: Boolean = false
         val id: Long by lazy { book.url.id }
+
+        /**
+         * 书籍序列记录
+         */
+        var seq: Int = 0
 
     }
 

@@ -28,6 +28,10 @@ class BookSourceRecord {
      * 是否已经读完
      */
     var isThrough: Boolean = false
+    /**
+     * 序列号 用于排序
+     */
+    var sequence: Int = 0
 
     @Ignore
     var books: List<Book>? = null
