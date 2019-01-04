@@ -197,6 +197,11 @@ class NovelDataRepository {
 
     interface LocalSource {
         fun saveBookSourceRecord(books: BookSourceRecord): Single<List<Book>>
+        /**
+         * 更新书籍记录 排序
+         */
+        fun updateBookSourceRecordSeq(books: List<BookSourceRecord>): Observable<List<BookSourceRecord>>
+
         fun deleteBook(bookName: String, author: String): Observable<Int>
         fun refreshBook(book: Book): Observable<Book>
         fun batchUpdate(book: List<Book>): Observable<List<Book>>

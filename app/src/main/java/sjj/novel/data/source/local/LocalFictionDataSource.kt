@@ -26,11 +26,24 @@ class LocalFictionDataSource : NovelDataRepository.LocalSource {
     override fun saveBookSourceRecord(books: BookSourceRecord): Single<List<Book>> {
         return Single.fromCallable {
             booksDataBase.runInTransaction {
+                val get = bookDao.getBookSourceRecordMaxSeq()
+                books.sequence = get + 1
                 bookDao.insertRecordAndBooks(books, books.books!!)
             }
         }.subscribeOnSingle().flatMap {
             bookDao.getBooksInRecord().firstOrError()
         }
+    }
+
+    override fun updateBookSourceRecordSeq(books: List<BookSourceRecord>): Observable<List<BookSourceRecord>> {
+        return fromCallableOrNull {
+            booksDataBase.runInTransaction {
+                books.forEach {
+                    bookDao.updateBookSourceRecordSeq(it.sequence, it.bookName, it.author)
+                }
+            }
+            books
+        }.subscribeOnSingle()
     }
 
     override fun getBookSource(name: String, author: String): Observable<List<String>> {

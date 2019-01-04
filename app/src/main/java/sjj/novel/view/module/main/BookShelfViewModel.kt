@@ -9,12 +9,11 @@ import io.reactivex.Observable
 import sjj.novel.R
 import sjj.novel.data.repository.novelDataRepository
 import sjj.novel.data.repository.novelSourceRepository
+import sjj.novel.data.source.local.localFictionDataSource
 import sjj.novel.model.Book
+import sjj.novel.model.BookSourceRecord
 import sjj.novel.model.Chapter
-import sjj.novel.util.host
-import sjj.novel.util.id
-import sjj.novel.util.lazyFromIterable
-import sjj.novel.util.resStr
+import sjj.novel.util.*
 import java.util.concurrent.TimeUnit
 
 class BookShelfViewModel : ViewModel() {
@@ -38,13 +37,11 @@ class BookShelfViewModel : ViewModel() {
             }.switchIfEmpty(Observable.just(it))
         }.flatMap { model ->
             novelDataRepository.getBookSourceRecord(model.book.name, model.book.author).firstElement().toObservable().map {
-                model.index = it.readIndex
-                model.isThrough = it.isThrough
+                model.bookSourceRecord = it
                 model.haveRead.set(R.string.haveRead_.resStr(it.chapterName))
-                model.seq = it.sequence
 
                 model.remainingChapter.set(maxOf((model.book.lastChapter?.index
-                        ?: 0) - model.index + (if (model.isThrough) 0 else 1), 0))
+                        ?: 0) - it.readIndex + (if (it.isThrough) 0 else 1), 0))
                 model
             }
         }.flatMap { model ->
@@ -53,7 +50,8 @@ class BookShelfViewModel : ViewModel() {
                 model
             }
         }.toList().toFlowable().map { mutableList ->
-            mutableList.sortBy { it.seq }
+            mutableList.map { it.bookSourceRecord.sequence }.log()
+            mutableList.sortBy { it.bookSourceRecord.sequence }
             mutableList
         }
     }
@@ -83,6 +81,10 @@ class BookShelfViewModel : ViewModel() {
         return novelDataRepository.setReadIndex(book.name, book.author, index, 0)
     }
 
+    fun updateBookSourceRecordSeq(list: List<BookSourceRecord>): Observable<List<BookSourceRecord>> {
+        return localFictionDataSource.updateBookSourceRecordSeq(list)
+    }
+
 
     fun delete(book: Book) {
         novelDataRepository.deleteBook(book.name, book.author)
@@ -91,6 +93,8 @@ class BookShelfViewModel : ViewModel() {
 
     class BookShelfItemViewModel {
         lateinit var book: Book
+        lateinit var bookSourceRecord: BookSourceRecord
+
         val bookCover = ObservableField<String>()
         val bookName = ObservableField<String>()
         val author = ObservableField<String>()
@@ -99,18 +103,7 @@ class BookShelfViewModel : ViewModel() {
         val remainingChapter = ObservableInt()
         val origin = ObservableField<String>()
         val loading = ObservableBoolean()
-        /**
-         * 阅读进度索引
-         */
-        var index: Int = 0
-        var isThrough: Boolean = false
         val id: Long by lazy { book.url.id }
-
-        /**
-         * 书籍序列记录
-         */
-        var seq: Int = 0
-
     }
 
 }

@@ -5,6 +5,7 @@ import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_IDLE
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_books.*
@@ -58,6 +59,18 @@ class BookshelfFragment : BaseFragment() {
                 }
             }
 
+            override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
+                super.onSelectedChanged(viewHolder, actionState)
+                if (actionState == ACTION_STATE_IDLE) {
+                    val data = adapter.data.map { it.bookSourceRecord }
+                    data.forEachIndexed { index, bookSourceRecord ->
+                        bookSourceRecord.sequence = index
+                    }
+                    model.updateBookSourceRecordSeq(data)
+                            .subscribe()
+                            .destroy("fragment Book shelf update bookSourceRecord sequence")
+                }
+            }
         })
         mItemTouchHelper.attachToRecyclerView(bookList)
 
@@ -108,7 +121,7 @@ class BookshelfFragment : BaseFragment() {
             bind!!.model = viewModel
             holder.itemView.setOnClickListener { v ->
 
-                if (viewModel.isThrough && viewModel.index <= ((viewModel.book.lastChapter?.index
+                if (viewModel.bookSourceRecord.isThrough && viewModel.bookSourceRecord.readIndex <= ((viewModel.book.lastChapter?.index
                                 ?: 0) - 1)) {
                     //有更新点击阅读直接进入下一章
                     model.setReadIndex(viewModel.book.lastChapter!!, viewModel.book).observeOn(AndroidSchedulers.mainThread()).subscribe {
