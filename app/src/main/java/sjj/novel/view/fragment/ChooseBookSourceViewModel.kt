@@ -6,6 +6,8 @@ import androidx.databinding.ObservableField
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.processors.BehaviorProcessor
+import io.reactivex.subjects.BehaviorSubject
 import net.ricecode.similarity.JaroWinklerStrategy
 import sjj.novel.R
 import sjj.novel.data.repository.novelDataRepository
@@ -28,7 +30,7 @@ class ChooseBookSourceViewModel(val bookName: String, val bookAuthor: String) : 
             bookList = it.map {
                 val model = ChooseBookSourceItemViewModel()
                 model.book = it
-                model.bookCover.set(it.bookCoverImgUrl)
+                model.bookCover.onNext(it.bookCoverImgUrl)
                 model.bookName.set(it.name)
                 model.author.set(R.string.author_.resStr(it.author))
                 model.loading.set(it.loadStatus == Book.LoadState.Loading)
@@ -124,7 +126,7 @@ class ChooseBookSourceViewModel(val bookName: String, val bookAuthor: String) : 
 
     class ChooseBookSourceItemViewModel {
         lateinit var book: Book
-        val bookCover = ObservableField<String>()
+        val bookCover = BehaviorProcessor.create<String>()
         val bookName = ObservableField<String>()
         val author = ObservableField<String>()
         val lastChapter = ObservableField<String>()

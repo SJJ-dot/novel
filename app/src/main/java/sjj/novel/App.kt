@@ -2,7 +2,6 @@ package sjj.novel
 
 import android.app.Application
 import android.os.StrictMode
-import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.stetho.Stetho
 import com.tencent.bugly.Bugly
 import io.reactivex.plugins.RxJavaPlugins
@@ -26,8 +25,6 @@ class App:Application() {
         Bugly.init(this, "6dbb38183e", BuildConfig.DEBUG)
         ActivityLifecycle.setActivityLifecycleCallback(this)
 
-
-        Fresco.initialize(Session.ctx);
 
         // 分别为MainThread和VM设置Strict Mode
         if (BuildConfig.DEBUG && false) {

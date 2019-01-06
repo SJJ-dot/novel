@@ -7,8 +7,10 @@ import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import androidx.navigation.fragment.NavHostFragment
+import com.bumptech.glide.Glide
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_search.*
+import kotlinx.android.synthetic.main.item_book_search_list.view.*
 import org.jetbrains.anko.appcompat.v7.coroutines.onClose
 import org.jetbrains.anko.support.v4.longToast
 import org.jetbrains.anko.support.v4.startActivity
@@ -18,6 +20,9 @@ import sjj.novel.databinding.ItemBookSearchListBinding
 import sjj.novel.view.module.details.DetailsActivity
 import sjj.novel.model.SearchHistory
 import sjj.novel.util.getModel
+import sjj.novel.util.observeOnMain
+import sjj.novel.util.requestOptions
+import sjj.novel.view.adapter.BaseAdapter
 
 /**
  * Created by SJJ on 2017/10/7.
@@ -33,9 +38,9 @@ class SearchFragment : BaseFragment() {
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater?.inflate(R.menu.fragment_main_search_menu, menu)
-        val searchView = menu?.findItem(R.id.search_view)?.actionView as SearchView
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.fragment_main_search_menu, menu)
+        val searchView = menu.findItem(R.id.search_view)?.actionView as SearchView
         searchView.queryHint = "请输入书名或者作者"
         searchView.imeOptions = EditorInfo.IME_ACTION_SEARCH
         init(searchView)
@@ -103,17 +108,24 @@ class SearchFragment : BaseFragment() {
     }
 
 
-    private inner class SearchResultBookAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>() {
+    private inner class SearchResultBookAdapter : BaseAdapter() {
         var data = listOf<SearchViewModel.BookSearchItemViewModel>()
         override fun getItemCount(): Int = data.size
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): androidx.recyclerview.widget.RecyclerView.ViewHolder {
-            val binding = DataBindingUtil.inflate<ItemBookSearchListBinding>(LayoutInflater.from(parent.context), R.layout.item_book_search_list, parent, false)
-            return object : androidx.recyclerview.widget.RecyclerView.ViewHolder(binding.root) {}
+        override fun itemLayoutRes(viewType: Int): Int {
+            return R.layout.item_book_search_list
         }
 
         override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
             val bind = DataBindingUtil.bind<ItemBookSearchListBinding>(holder.itemView)
             val bookGroup = data[position]
+
+            bookGroup.bookCover.onBackpressureLatest().observeOnMain().subscribe {
+                Glide.with(this@SearchFragment)
+                        .applyDefaultRequestOptions(requestOptions)
+                        .load(it)
+                        .into(holder.itemView.bookCover)
+            }.destroy("fragment search result cover ${bookGroup.id}")
+
             bind?.model = bookGroup
             holder.itemView.setOnClickListener { _ ->
                 model.saveBookSourceRecord(bookGroup.book).observeOn(AndroidSchedulers.mainThread()).subscribe { _ ->

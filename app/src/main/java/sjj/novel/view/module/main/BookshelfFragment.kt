@@ -7,6 +7,7 @@ import androidx.navigation.fragment.NavHostFragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_IDLE
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_books.*
 import kotlinx.android.synthetic.main.item_book_list.view.*
@@ -17,6 +18,8 @@ import sjj.novel.DISPOSABLE_ACTIVITY_MAIN_REFRESH
 import sjj.novel.R
 import sjj.novel.databinding.ItemBookListBinding
 import sjj.novel.util.getModel
+import sjj.novel.util.observeOnMain
+import sjj.novel.util.requestOptions
 import sjj.novel.view.adapter.BaseAdapter
 import sjj.novel.view.fragment.ChooseBookSourceFragment
 import sjj.novel.view.module.details.DetailsActivity
@@ -93,13 +96,13 @@ class BookshelfFragment : BaseFragment() {
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater?.inflate(R.menu.fragment_book_shelf, menu)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.fragment_book_shelf, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
             R.id.search_book_shelf -> {
                 findNavController(this).navigate(R.id.searchFragment)
                 true
@@ -119,6 +122,13 @@ class BookshelfFragment : BaseFragment() {
             val bind = DataBindingUtil.bind<ItemBookListBinding>(holder.itemView)
             val viewModel = data.get(position)
             bind!!.model = viewModel
+            viewModel.bookCover.onBackpressureLatest().observeOnMain().subscribe {
+                Glide.with(this@BookshelfFragment)
+                        .applyDefaultRequestOptions(requestOptions)
+                        .load(it)
+                        .into(holder.itemView.bookCover)
+            }.destroy("fragment shelf book cover ${viewModel.id}")
+
             holder.itemView.setOnClickListener { v ->
                 startActivity<ReadActivity>(ReadActivity.BOOK_NAME to viewModel.book.name, ReadActivity.BOOK_AUTHOR to viewModel.book.author)
             }
@@ -126,7 +136,7 @@ class BookshelfFragment : BaseFragment() {
                 startActivity<DetailsActivity>(DetailsActivity.BOOK_NAME to viewModel.book.name, DetailsActivity.BOOK_AUTHOR to viewModel.book.author)
             }
             holder.itemView.origin.setOnClickListener {
-                ChooseBookSourceFragment.newInstance(viewModel.book.name, viewModel.book.author).show(fragmentManager)
+                ChooseBookSourceFragment.newInstance(viewModel.book.name, viewModel.book.author).show(fragmentManager!!)
             }
         }
 

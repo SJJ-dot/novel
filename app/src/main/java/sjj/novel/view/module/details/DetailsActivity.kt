@@ -5,16 +5,17 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
+import com.bumptech.glide.Glide
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_details.*
 import org.jetbrains.anko.startActivity
-import sjj.alog.Log
 import sjj.novel.BaseActivity
 import sjj.novel.R
 import sjj.novel.databinding.ActivityDetailsBinding
 import sjj.novel.model.Chapter
 import sjj.novel.util.getModel
 import sjj.novel.util.observeOnMain
+import sjj.novel.util.requestOptions
 import sjj.novel.view.fragment.ChapterListFragment
 import sjj.novel.view.fragment.ChooseBookSourceFragment
 import sjj.novel.view.module.read.ReadActivity
@@ -40,6 +41,13 @@ class DetailsActivity : BaseActivity(),ChapterListFragment.ItemClickListener {
                 .commitAllowingStateLoss()
 
         val bind: ActivityDetailsBinding = DataBindingUtil.setContentView(this, R.layout.activity_details)
+
+        model.bookCoverImgUrl.onBackpressureLatest().observeOnMain().subscribe {
+            Glide.with(this)
+                    .applyDefaultRequestOptions(requestOptions)
+                    .load(it)
+                    .into(bookCover)
+        }.destroy()
 
         bind.model = model
         originWebsite.setOnClickListener { _ ->

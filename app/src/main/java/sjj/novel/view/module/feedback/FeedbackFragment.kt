@@ -48,18 +48,18 @@ class FeedbackFragment : BaseFragment() {
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater?.inflate(R.menu.fragment_login_menu, menu)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.fragment_login_menu, menu)
         AppConfig.gitHubAuthToken.observe(this, Observer {
-            val item = menu?.findItem(R.id.menu_login)
+            val item = menu.findItem(R.id.menu_login)
             item?.title = if (it.isNullOrBlank()) "登陆" else "已登录"
         })
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
             R.id.menu_login -> {
-                LoginFragment().show(fragmentManager)
+                LoginFragment().show(fragmentManager!!)
                 true
             }
             else -> super.onOptionsItemSelected(item)

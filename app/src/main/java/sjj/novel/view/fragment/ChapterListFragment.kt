@@ -44,7 +44,7 @@ class ChapterListFragment : BaseFragment() {
 
     private lateinit var model: ChapterListViewModel
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         listener = findImpl()
     }

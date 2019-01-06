@@ -2,10 +2,13 @@ package sjj.novel.view.module.details
 
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.processors.BehaviorProcessor
+import io.reactivex.processors.FlowableProcessor
 import sjj.novel.R
 import sjj.novel.data.repository.novelDataRepository
 import sjj.novel.data.repository.novelSourceRepository
@@ -16,7 +19,7 @@ import sjj.novel.util.resStr
 
 class DetailsViewModel(val name: String, val author: String) : ViewModel() {
 
-    val bookCoverImgUrl = ObservableField<String>()
+    var bookCoverImgUrl = BehaviorProcessor.create<String>()
     val bookName = ObservableField<String>()
     val bookAuthor = ObservableField<String>()
     val bookIntro = ObservableField<String>()
@@ -29,7 +32,7 @@ class DetailsViewModel(val name: String, val author: String) : ViewModel() {
 
     fun fillViewModel(): Flowable<Book> = novelDataRepository.getBookInBookSource(name, author).flatMap { book ->
         this.book = book
-        bookCoverImgUrl.set(book.bookCoverImgUrl)
+        bookCoverImgUrl.onNext( book.bookCoverImgUrl)
         bookName.set(book.name)
         bookAuthor.set(R.string.author_.resStr(book.author))
         bookIntro.set(book.intro)

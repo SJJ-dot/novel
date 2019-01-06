@@ -6,6 +6,7 @@ import androidx.databinding.ObservableField
 import androidx.databinding.ObservableInt
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.processors.BehaviorProcessor
 import sjj.novel.R
 import sjj.novel.data.repository.novelDataRepository
 import sjj.novel.data.repository.novelSourceRepository
@@ -24,7 +25,7 @@ class BookShelfViewModel : ViewModel() {
                 this.book = book
                 bookName.set(book.name)
                 author.set(R.string.author_.resStr(book.author))
-                bookCover.set(book.bookCoverImgUrl)
+                bookCover.onNext(book.bookCoverImgUrl)
                 loading.set(book.loadStatus == Book.LoadState.Loading)
             }
         }
@@ -50,7 +51,6 @@ class BookShelfViewModel : ViewModel() {
                 model
             }
         }.toList().toFlowable().map { mutableList ->
-            mutableList.map { it.bookSourceRecord.sequence }.log()
             mutableList.sortBy { it.bookSourceRecord.sequence }
             mutableList
         }
@@ -95,7 +95,7 @@ class BookShelfViewModel : ViewModel() {
         lateinit var book: Book
         lateinit var bookSourceRecord: BookSourceRecord
 
-        val bookCover = ObservableField<String>()
+        var bookCover = BehaviorProcessor.create<String>()
         val bookName = ObservableField<String>()
         val author = ObservableField<String>()
         val lastChapter = ObservableField<String>()
