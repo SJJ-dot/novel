@@ -32,7 +32,7 @@ import sjj.novel.view.reader.page.TxtChapter
 import kotlin.math.max
 import kotlin.math.min
 
-class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack,ChapterListFragment.ItemClickListener {
+class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack, ChapterListFragment.ItemClickListener {
     companion object {
         const val BOOK_NAME = "BOOK_NAME"
         const val BOOK_AUTHOR = "BOOK_AUTHOR"
@@ -80,19 +80,18 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack,ChapterListF
         modelReaderSetting = getModel { arrayOf(intent.getStringExtra(BOOK_NAME), intent.getStringExtra(BOOK_AUTHOR)) }
 
         supportFragmentManager.beginTransaction()
-                .replace(R.id.chapter_list,ChapterListFragment.create(model.name,model.author))
+                .replace(R.id.chapter_list, ChapterListFragment.create(model.name, model.author))
                 .commitAllowingStateLoss()
 
         model.book.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe { book ->
             title = book.name
             //阅读记录
             model.readIndex.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
-                val index = min(max(book.chapterList.lastIndex, 0), it.readIndex)
 
                 mPageLoader.setBookRecord(BookRecordBean().apply {
                     bookId = book.url
-                    chapter = index
-                    pagePos = it.pagePos
+                    chapter = min(max(book.chapterList.lastIndex, 0), if (it.isThrough) it.readIndex + 1 else it.readIndex)
+                    pagePos = if (it.isThrough && book.chapterList.lastIndex > it.readIndex) 0 else it.pagePos
                     isThrough = it.isThrough
                 })
 
@@ -268,6 +267,7 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack,ChapterListF
     override fun getPageLoader(): PageLoader? {
         return mPageLoader
     }
+
     /**
      * 章节列表点击回调
      */

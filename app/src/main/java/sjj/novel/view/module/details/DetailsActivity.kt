@@ -52,15 +52,7 @@ class DetailsActivity : BaseActivity(),ChapterListFragment.ItemClickListener {
 
             reading.setOnClickListener { _ ->
                 model.bookSourceRecord.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
-                    if (it.isThrough && it.readIndex == book.chapterList.size - 2) {
-                        //有更新点击阅读直接进入下一章
-                        model.setReadIndex(book.chapterList.last()).observeOn(AndroidSchedulers.mainThread()).subscribe {
-                            startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)
-                        }.destroy("read book")
-
-                    } else {
-                        startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)
-                    }
+                    startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)
                 }.destroy("load book source record")
             }
 

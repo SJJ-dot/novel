@@ -120,17 +120,7 @@ class BookshelfFragment : BaseFragment() {
             val viewModel = data.get(position)
             bind!!.model = viewModel
             holder.itemView.setOnClickListener { v ->
-
-                if (viewModel.bookSourceRecord.isThrough && viewModel.bookSourceRecord.readIndex <= ((viewModel.book.lastChapter?.index
-                                ?: 0) - 1)) {
-                    //有更新点击阅读直接进入下一章
-                    model.setReadIndex(viewModel.book.lastChapter!!, viewModel.book).observeOn(AndroidSchedulers.mainThread()).subscribe {
-                        startActivity<ReadActivity>(ReadActivity.BOOK_NAME to viewModel.book.name, ReadActivity.BOOK_AUTHOR to viewModel.book.author)
-                    }.destroy("read book")
-
-                } else {
-                    startActivity<ReadActivity>(ReadActivity.BOOK_NAME to viewModel.book.name, ReadActivity.BOOK_AUTHOR to viewModel.book.author)
-                }
+                startActivity<ReadActivity>(ReadActivity.BOOK_NAME to viewModel.book.name, ReadActivity.BOOK_AUTHOR to viewModel.book.author)
             }
             holder.itemView.intro.setOnClickListener {
                 startActivity<DetailsActivity>(DetailsActivity.BOOK_NAME to viewModel.book.name, DetailsActivity.BOOK_AUTHOR to viewModel.book.author)
