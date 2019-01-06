@@ -83,10 +83,10 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack, ChapterList
                 .replace(R.id.chapter_list, ChapterListFragment.create(model.name, model.author))
                 .commitAllowingStateLoss()
 
-        model.book.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe { book ->
+        model.book.firstElement().observeOnMain().subscribe { book ->
             title = book.name
             //阅读记录
-            model.readIndex.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
+            model.readIndex.firstElement().observeOnMain().subscribe {
 
                 mPageLoader.setBookRecord(BookRecordBean().apply {
                     bookId = book.url

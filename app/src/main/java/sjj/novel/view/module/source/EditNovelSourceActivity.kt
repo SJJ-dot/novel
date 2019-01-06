@@ -112,7 +112,7 @@ class EditNovelSourceActivity : BaseActivity() {
             bind?.model = data!![p1]
             bind?.delete?.setOnClickListener {
                 model.deleteSearchResultViewModel(data!![p1])
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .observeOnMain()
                         .subscribe({
                             notifyDataSetChanged()
                         }, { throwable ->

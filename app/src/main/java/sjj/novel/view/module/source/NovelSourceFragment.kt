@@ -28,7 +28,7 @@ class NovelSourceFragment : BaseFragment() {
         novel_source.adapter = adapter
         model = getModel()
         model.getAllBookParseRule()
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMain()
                 .subscribe {
                     it.forEach {
                         if (it.enable)
@@ -56,7 +56,7 @@ class NovelSourceFragment : BaseFragment() {
                 //同步书源。退出后就会停止同步。体验可能不是很好但我并不关心
                 newSnackbar(novel_source, "正在同步书源，请稍后……", Snackbar.LENGTH_INDEFINITE)
                 model.syncNovelSource()
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .observeOnMain()
                         .subscribe({
                             newSnackbar(novel_source, "同步成功", Snackbar.LENGTH_SHORT)
                         }, {

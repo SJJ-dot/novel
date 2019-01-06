@@ -15,6 +15,7 @@ import sjj.novel.R
 import sjj.novel.view.module.accounts.LoginFragment
 import sjj.novel.databinding.FragmentFeedbackBinding
 import sjj.novel.util.getModel
+import sjj.novel.util.observeOnMain
 
 /**
  *意见反馈
@@ -36,7 +37,7 @@ class FeedbackFragment : BaseFragment() {
         Log.e(this)
         submit.setOnClickListener { _ ->
             showSnackbar(submit, "正在提交……", Snackbar.LENGTH_INDEFINITE)
-            model.submit().observeOn(AndroidSchedulers.mainThread())
+            model.submit().observeOnMain()
                     .subscribe({
                         showSnackbar(submit, "反馈成功")
                     }, {

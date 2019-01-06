@@ -77,14 +77,14 @@ class BookshelfFragment : BaseFragment() {
         })
         mItemTouchHelper.attachToRecyclerView(bookList)
 
-        model.books.observeOn(AndroidSchedulers.mainThread()).subscribe {
+        model.books.observeOnMain().subscribe {
             adapter.data.clear()
             adapter.data.addAll(it)
             adapter.notifyDataSetChanged()
         }.destroy()
         bookListRefreshLayout.setOnRefreshListener {
             model.refresh()
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .observeOnMain()
                     .doOnError {
                         toast("$it")
                     }.doOnTerminate {

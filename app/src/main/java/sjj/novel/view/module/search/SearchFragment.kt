@@ -60,7 +60,7 @@ class SearchFragment : BaseFragment() {
                 model.addSearchHistory(SearchHistory(content = p0)).subscribe()
                 searchView.clearFocus()
                 refresh_progress_bar.isAutoLoading = true
-                model.search(p0).observeOn(AndroidSchedulers.mainThread()).doAfterTerminate {
+                model.search(p0).observeOnMain().doAfterTerminate {
                     refresh_progress_bar.isAutoLoading = false
                 }.subscribe({ ls ->
                     resultBookAdapter.data = ls
@@ -87,7 +87,7 @@ class SearchFragment : BaseFragment() {
 
         model = getModel()
 
-        model.getSearchHistory().observeOn(AndroidSchedulers.mainThread()).subscribe { history ->
+        model.getSearchHistory().observeOnMain().subscribe { history ->
             tfl_search_history.removeAllViews()
             history.forEach {
                 val tagView = layoutInflater.inflate(R.layout.item_search_history, tfl_search_history, false) as TextView
@@ -128,7 +128,7 @@ class SearchFragment : BaseFragment() {
 
             bind?.model = bookGroup
             holder.itemView.setOnClickListener { _ ->
-                model.saveBookSourceRecord(bookGroup.book).observeOn(AndroidSchedulers.mainThread()).subscribe { _ ->
+                model.saveBookSourceRecord(bookGroup.book).observeOnMain().subscribe { _ ->
                     startActivity<DetailsActivity>(DetailsActivity.BOOK_NAME to bookGroup.book.bookName, DetailsActivity.BOOK_AUTHOR to bookGroup.book.author)
                 }
             }

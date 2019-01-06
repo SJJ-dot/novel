@@ -59,7 +59,7 @@ class DetailsActivity : BaseActivity(),ChapterListFragment.ItemClickListener {
             }
 
             reading.setOnClickListener { _ ->
-                model.bookSourceRecord.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
+                model.bookSourceRecord.firstElement().observeOnMain().subscribe {
                     startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)
                 }.destroy("load book source record")
             }

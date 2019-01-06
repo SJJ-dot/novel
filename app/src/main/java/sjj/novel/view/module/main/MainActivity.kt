@@ -2,7 +2,6 @@ package sjj.novel.view.module.main
 
 import android.Manifest
 import android.os.Bundle
-import android.view.Gravity
 import android.view.MenuItem
 import androidx.core.view.GravityCompat
 import androidx.navigation.NavController
@@ -25,7 +24,7 @@ class MainActivity : BaseActivity() {
 
     //lazy 有bug 需要绑定activity 生命周期
     private lateinit var navController: NavController
-    private lateinit var appBarConfiguration:AppBarConfiguration
+    private lateinit var appBarConfiguration: AppBarConfiguration
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,6 +64,19 @@ class MainActivity : BaseActivity() {
                 longToast(s)
             }
         })
+//        Schedulers.newThread().scheduleDirect {
+//            val p = BehaviorProcessor.create<String>()
+//            p.doOnNext {
+//                Log.e(it)
+//            }.onBackpressureLatest().observeOnMain().subscribe {
+//                Thread.sleep(500)
+//                Log.e("subscribe 2 " + it)
+//            }
+//            (0 until 1000).forEach {
+//                p.onNext("$it")
+//            }
+//
+//        }
 
     }
 

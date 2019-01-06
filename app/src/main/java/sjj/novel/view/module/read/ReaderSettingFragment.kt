@@ -17,6 +17,7 @@ import sjj.novel.BaseFragment
 import sjj.novel.R
 import sjj.novel.databinding.FragmentReaderSettingBinding
 import sjj.novel.util.getModelActivity
+import sjj.novel.util.observeOnMain
 import sjj.novel.view.reader.page.PageLoader
 import sjj.rx.destroy
 
@@ -86,7 +87,7 @@ class ReaderSettingFragment : BaseFragment() {
         }
         read_tv_cloud_download.setOnClickListener {
             showSnackbar(read_tv_cloud_download, "正在下载章节")
-            model.cachedBookChapter().observeOn(AndroidSchedulers.mainThread()).doOnCancel {
+            model.cachedBookChapter().observeOnMain().doOnCancel {
                 showSnackbar(read_tv_cloud_download, "章节下载取消")
             }.subscribe({ p: Pair<Int, Int> ->
             }, { throwable ->

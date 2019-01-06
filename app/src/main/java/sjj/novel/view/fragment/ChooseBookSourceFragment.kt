@@ -55,7 +55,7 @@ class ChooseBookSourceFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         adapter.setHasStableIds(true)
         books.adapter = adapter
-        model.fillViewModel().observeOn(AndroidSchedulers.mainThread()).subscribe {
+        model.fillViewModel().observeOnMain().subscribe {
             adapter.data = it
             adapter.notifyDataSetChanged()
         }.destroy("ChooseBookSourceFragment fill view model")
@@ -86,7 +86,7 @@ class ChooseBookSourceFragment : BaseFragment() {
             }.destroy("fragment shelf book cover ${bookGroup.id}")
 
             holder.itemView.setOnClickListener { _ ->
-                model.setBookSource(bookGroup.book).observeOn(AndroidSchedulers.mainThread()).subscribe {
+                model.setBookSource(bookGroup.book).observeOnMain().subscribe {
                     dismiss()
                 }.destroy("set novel source")
             }
