@@ -1,11 +1,8 @@
 package sjj.novel.view.module.read
 
-import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.Transformations
-import sjj.alog.Log
 import sjj.novel.data.repository.novelDataRepository
 import sjj.novel.model.Book
 import sjj.novel.model.BookSourceRecord
@@ -19,7 +16,7 @@ class DownChapterViewModel(var bookName: String, var bookAuthor: String) : ViewM
         get() {
             if (field.value == null) {
                 novelDataRepository.getBookInBookSource(bookName, bookAuthor).subscribe {
-                    book.setValue(it)
+                    field.setValue(it)
                 }.autoDispose("download chapter load book")
             }
             return field
