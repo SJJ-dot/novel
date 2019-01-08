@@ -13,6 +13,7 @@ import sjj.novel.R
 import sjj.novel.data.source.remote.rule.BookParseRule
 import sjj.novel.util.getModel
 import sjj.novel.util.gson
+import sjj.novel.util.observeOnMain
 import sjj.novel.view.adapter.BaseAdapter
 
 class NovelSourceFragment : BaseFragment() {
@@ -27,7 +28,7 @@ class NovelSourceFragment : BaseFragment() {
         novel_source.adapter = adapter
         model = getModel()
         model.getAllBookParseRule()
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMain()
                 .subscribe {
                     it.forEach {
                         if (it.enable)
@@ -41,12 +42,12 @@ class NovelSourceFragment : BaseFragment() {
 
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater?.inflate(R.menu.fragment_novel_source_menu, menu)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.fragment_novel_source_menu, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
             R.id.menu_create_novel_source -> {
                 startActivity<EditNovelSourceActivity>()
                 true
@@ -55,7 +56,7 @@ class NovelSourceFragment : BaseFragment() {
                 //同步书源。退出后就会停止同步。体验可能不是很好但我并不关心
                 newSnackbar(novel_source, "正在同步书源，请稍后……", Snackbar.LENGTH_INDEFINITE)
                 model.syncNovelSource()
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .observeOnMain()
                         .subscribe({
                             newSnackbar(novel_source, "同步成功", Snackbar.LENGTH_SHORT)
                         }, {
@@ -81,7 +82,7 @@ class NovelSourceFragment : BaseFragment() {
             val rule = data[p1]
             holder.itemView.cb_book_source.text = rule.sourceName
             holder.itemView.iv_share_source.setOnClickListener {
-                model.share(rule).observeOn(AndroidSchedulers.mainThread()).subscribe({
+                model.share(rule).observeOnMain().subscribe({
                     showSnackbar(holder.itemView, "分享成功")
                 }, {
                     showSnackbar(holder.itemView, "分享失败:${it.message}")

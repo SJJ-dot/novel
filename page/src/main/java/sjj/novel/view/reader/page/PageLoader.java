@@ -1202,7 +1202,6 @@ public abstract class PageLoader {
                 paragraph = strings[i];
                 i++;
             }
-            paragraph = StringUtils.convertCC(mContext, paragraph, convertType);
             // 重置段落
             if (!showTitle) {
                 paragraph = paragraph.replaceAll("\\s", "");
@@ -1227,7 +1226,7 @@ public abstract class PageLoader {
                     // 创建Page
                     TxtPage page = new TxtPage();
                     page.position = pages.size();
-                    page.title = StringUtils.convertCC(mContext, chapter.title, convertType);
+                    page.title = chapter.title;
                     page.lines = new ArrayList<>(lines);
                     page.titleLines = titleLinesCount;
                     pages.add(page);
@@ -1280,7 +1279,7 @@ public abstract class PageLoader {
             //创建Page
             TxtPage page = new TxtPage();
             page.position = pages.size();
-            page.title = StringUtils.convertCC(mContext, chapter.title, convertType);
+            page.title =  chapter.title;
             page.lines = new ArrayList<>(lines);
             page.titleLines = titleLinesCount;
             pages.add(page);

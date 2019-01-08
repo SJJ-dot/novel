@@ -6,12 +6,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.bumptech.glide.Glide
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_choose_book_source.*
+import kotlinx.android.synthetic.main.item_details_book_source_list.view.*
 import sjj.novel.BaseFragment
 import sjj.novel.R
 import sjj.novel.databinding.FragmentChooseBookSourceBinding
 import sjj.novel.util.getModel
+import sjj.novel.util.observeOnMain
+import sjj.novel.util.requestOptions
+import sjj.novel.view.adapter.BaseAdapter
 
 
 /**
@@ -50,7 +55,7 @@ class ChooseBookSourceFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         adapter.setHasStableIds(true)
         books.adapter = adapter
-        model.fillViewModel().observeOn(AndroidSchedulers.mainThread()).subscribe {
+        model.fillViewModel().observeOnMain().subscribe {
             adapter.data = it
             adapter.notifyDataSetChanged()
         }.destroy("ChooseBookSourceFragment fill view model")
@@ -60,20 +65,28 @@ class ChooseBookSourceFragment : BaseFragment() {
         }
     }
 
-    private inner class ChooseBookSourceAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>() {
+    private inner class ChooseBookSourceAdapter : BaseAdapter() {
         var data = listOf<ChooseBookSourceViewModel.ChooseBookSourceItemViewModel>()
         override fun getItemCount(): Int = data.size
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): androidx.recyclerview.widget.RecyclerView.ViewHolder {
-            val binding = DataBindingUtil.inflate<sjj.novel.databinding.ItemDetailsBookSourceListBinding>(LayoutInflater.from(parent.context), R.layout.item_details_book_source_list, parent, false)
-            return object : androidx.recyclerview.widget.RecyclerView.ViewHolder(binding.root) {}
+
+        override fun itemLayoutRes(viewType: Int): Int {
+            return R.layout.item_details_book_source_list
         }
 
         override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
             val bind = DataBindingUtil.bind<sjj.novel.databinding.ItemDetailsBookSourceListBinding>(holder.itemView)
             val bookGroup = data[position]
             bind?.model = bookGroup
+
+            bookGroup.bookCover.onBackpressureLatest().observeOnMain().subscribe {
+                Glide.with(this@ChooseBookSourceFragment)
+                        .applyDefaultRequestOptions(requestOptions)
+                        .load(it)
+                        .into(holder.itemView.bookCover)
+            }.destroy("fragment shelf book cover ${bookGroup.id}")
+
             holder.itemView.setOnClickListener { _ ->
-                model.setBookSource(bookGroup.book).observeOn(AndroidSchedulers.mainThread()).subscribe {
+                model.setBookSource(bookGroup.book).observeOnMain().subscribe {
                     dismiss()
                 }.destroy("set novel source")
             }

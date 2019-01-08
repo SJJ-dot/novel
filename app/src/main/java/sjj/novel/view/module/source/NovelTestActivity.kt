@@ -19,6 +19,7 @@ import sjj.novel.logcat.LogCatIBinder
 import sjj.novel.logcat.LogCatIBinderCallBack
 import sjj.novel.logcat.LogCatService
 import sjj.novel.util.getModel
+import sjj.novel.util.observeOnMain
 import java.util.*
 
 class NovelTestActivity : BaseActivity() {
@@ -40,18 +41,18 @@ class NovelTestActivity : BaseActivity() {
             arrayOf(intent.getStringExtra(NOVEL_SOURCE_TOP_LEVEL_DOMAIN) ?: "")
         }
         search.setOnClickListener { _ ->
-            model.search(search_name.text.toString().trim()).observeOn(AndroidSchedulers.mainThread()).subscribe { list ->
+            model.search(search_name.text.toString().trim()).observeOnMain().subscribe { list ->
                 if (list.isEmpty()) {
                     toast("搜索结果为空")
                     return@subscribe
                 }
                 refresh.setOnClickListener { _ ->
-                    model.getBook(list.first().url).observeOn(AndroidSchedulers.mainThread()).subscribe { book ->
+                    model.getBook(list.first().url).observeOnMain().subscribe { book ->
                         if (book.chapterList.isEmpty()) {
                             toast("小说章节列表为空")
                         } else {
                             chapter.setOnClickListener { _ ->
-                                model.getChapterContent(book.chapterList.first()).observeOn(AndroidSchedulers.mainThread()).subscribe {
+                                model.getChapterContent(book.chapterList.first()).observeOnMain().subscribe {
                                     if (it.content.isNullOrBlank()) {
                                         toast("小说章节内容为空")
                                     }

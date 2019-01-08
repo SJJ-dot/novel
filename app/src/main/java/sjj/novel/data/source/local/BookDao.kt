@@ -13,6 +13,13 @@ interface BookDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertRecordAndBooks(bookSource: BookSourceRecord, books: List<Book>)
 
+    @Query("update BookSourceRecord set sequence=:sequence where bookName=:bookName and author=:author")
+    fun updateBookSourceRecordSeq(sequence: Int, bookName: String, author: String)
+
+    @Query("SELECT MAX(sequence) FROM BookSourceRecord")
+    fun getBookSourceRecordMaxSeq(): Int
+
+
     @Query("select * from Book where url in (select bookUrl from BookSourceRecord)")
     fun getBooksInRecord(): Flowable<List<Book>>
 

@@ -59,5 +59,8 @@
     <string name="intro">简介</string>
     <string name="book_source_test">书源测试</string>
     <string name="edit_parsing_rules">编辑解析规则</string>
+    <string name="select_download_chapters">选择下载章节：</string>
+    <string name="dowbload_chapter_start">从：%s</string>
+    <string name="dowbload_chapter_end">到：%s</string>
 
 </resources>

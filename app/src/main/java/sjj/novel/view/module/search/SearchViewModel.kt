@@ -3,11 +3,13 @@ package sjj.novel.view.module.search
 import androidx.lifecycle.ViewModel
 import androidx.databinding.ObservableField
 import io.reactivex.Observable
+import io.reactivex.processors.BehaviorProcessor
 import sjj.novel.R
 import sjj.novel.data.repository.novelDataRepository
 import sjj.novel.data.source.local.localFictionDataSource
 import sjj.novel.model.BookSourceRecord
 import sjj.novel.model.SearchHistory
+import sjj.novel.util.id
 import sjj.novel.util.resStr
 
 class SearchViewModel : ViewModel() {
@@ -16,7 +18,7 @@ class SearchViewModel : ViewModel() {
         it.map { record ->
             val model = BookSearchItemViewModel()
             model.book = record
-            model.bookCover.set(record.currentBook?.bookCoverImgUrl)
+            model.bookCover.onNext(record.currentBook?.bookCoverImgUrl)
             model.bookName.set(record.bookName)
             model.author.set(R.string.author_.resStr(record.author))
             model.lastChapter.set(R.string.newest_.resStr(record.currentBook?.lastChapter?.chapterName))
@@ -35,11 +37,13 @@ class SearchViewModel : ViewModel() {
 
     class BookSearchItemViewModel {
         lateinit var book:BookSourceRecord
-        val bookCover = ObservableField<String>()
+        val bookCover = BehaviorProcessor.create<String>()
         val bookName = ObservableField<String>()
         val author = ObservableField<String>()
         val lastChapter = ObservableField<String>()
         val origin = ObservableField<String>()
+
+        val id by lazy { book.bookUrl.id }
 
     }
 }

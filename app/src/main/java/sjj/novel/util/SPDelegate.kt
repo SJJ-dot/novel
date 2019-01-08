@@ -1,9 +1,8 @@
 package sjj.novel.util
 
-import androidx.lifecycle.MutableLiveData
 import android.content.Context
 import android.content.SharedPreferences
-import android.os.Looper
+import androidx.lifecycle.MutableLiveData
 import sjj.novel.Session
 import kotlin.reflect.KProperty
 import kotlin.reflect.jvm.jvmErasure
@@ -11,7 +10,7 @@ import kotlin.reflect.jvm.jvmErasure
 @Suppress("IMPLICIT_CAST_TO_ANY", "UNCHECKED_CAST")
 class DelegateSharedPreferences<T>(private val def: T,
                                    private val k: String? = null,
-                                   val sp: () -> SharedPreferences? = { Session.ctx.getSharedPreferences("appconfig",Context.MODE_PRIVATE) }) {
+                                   val sp: () -> SharedPreferences? = { Session.ctx.getSharedPreferences("appconfig", Context.MODE_PRIVATE) }) {
     operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
 
         val key: String = k ?: property.name
@@ -54,7 +53,7 @@ class DelegateSharedPreferences<T>(private val def: T,
  */
 class DelegateLiveData<T>(private val def: T,
                           private val k: String? = null,
-                          val sp: () -> SharedPreferences? = { Session.ctx.getSharedPreferences("appconfig",Context.MODE_PRIVATE)  },
+                          val sp: () -> SharedPreferences? = { Session.ctx.getSharedPreferences("appconfig", Context.MODE_PRIVATE) },
                           val toString: ((T) -> String)? = null,
                           val fromString: ((String?) -> T)? = null) {
     private var liveData: MutableLiveData<T>? = null
@@ -77,15 +76,10 @@ class HoldLiveData<T>(private val def: T,
                       private val key: String,
                       private val property: KProperty<*>,
                       val sp: () -> SharedPreferences?,
-                      val toString: ((T) -> String)? = null, val fromString: ((String?) -> T)? = null) : MutableLiveData<T>() {
+                      val toString: ((T) -> String)? = null, val fromString: ((String?) -> T)? = null) : SafeLiveData<T>() {
 
     init {
-
-        if (Thread.currentThread() == Looper.getMainLooper().thread) {
-            super.setValue(initValue())
-        } else {
-            super.postValue(initValue())
-        }
+        super.setValue(initValue())
     }
 
     /**
@@ -99,7 +93,7 @@ class HoldLiveData<T>(private val def: T,
         Long::class.java -> sp()?.getLong(key, def as Long)
         Set::class.java -> sp()?.getStringSet(key, def as? Set<String>)
         else -> fromString!!(sp()?.getString(key, toString!!(def)))
-    } as? T
+    } as T
 
     /**
      * 保存数据到 SharedPreferences 中
@@ -117,14 +111,8 @@ class HoldLiveData<T>(private val def: T,
         }
         edit?.apply()
 
-
         //通知 live data 更新
-        if (Thread.currentThread() == Looper.getMainLooper().thread) {
-            super.setValue(value)
-        } else {
-            super.postValue(value)
-        }
-
+        super.setValue(value)
     }
 
 

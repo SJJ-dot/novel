@@ -49,11 +49,11 @@ open class BaseFragment : androidx.fragment.app.DialogFragment(), AutoDisposeEnh
         }
     }
 
-    fun show(manager: androidx.fragment.app.FragmentManager?) {
+    fun show(manager: androidx.fragment.app.FragmentManager) {
         super.show(manager, null)
     }
 
-    fun show(transaction: androidx.fragment.app.FragmentTransaction?): Int {
+    fun show(transaction: androidx.fragment.app.FragmentTransaction): Int {
         return super.show(transaction, javaClass.name)
     }
 

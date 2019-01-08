@@ -6,8 +6,8 @@
     <data>
 
         <variable
-            name="book"
-            type="sjj.novel.model.Book" />
+            name="model"
+            type="sjj.novel.view.module.details.DetailsViewModel" />
 
         <import type="sjj.novel.model.Book" />
 
@@ -31,7 +31,8 @@
                 android:id="@+id/detailsRefreshLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/material_white">
+                android:background="@color/material_white"
+                app:refreshing="@{model.isLoading}">
 
                 <androidx.core.widget.NestedScrollView
                     android:layout_width="match_parent"
@@ -42,7 +43,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
-                        <com.facebook.drawee.view.SimpleDraweeView
+                        <ImageView
                             android:id="@+id/bookCover"
                             android:layout_width="100dp"
                             android:layout_height="150dp"
@@ -52,16 +53,13 @@
                             android:layout_marginBottom="16dp"
                             android:outlineProvider="bounds"
                             android:padding="2dp"
-                            android:scaleType="centerInside"
                             android:translationZ="2dp"
-                            app:failureImage="@drawable/ic_laokuoteng"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.0"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintVertical_bias="0.0"
-                            app:progressBarImage="@drawable/ic_wait" />
+                            app:layout_constraintVertical_bias="0.0" />
 
                         <sjj.novel.widget.AutofitTextView
                             android:id="@+id/bookName"
@@ -71,7 +69,7 @@
                             android:layout_marginTop="16dp"
                             android:layout_marginEnd="16dp"
                             android:layout_marginBottom="8dp"
-                            android:text="@{book.name}"
+                            android:text="@{model.bookName}"
                             android:textColor="@color/colorText"
                             android:textSize="20sp"
                             app:layout_constraintBottom_toBottomOf="parent"
@@ -108,7 +106,7 @@
                             android:layout_marginTop="16dp"
                             android:layout_marginEnd="16dp"
                             android:layout_marginBottom="8dp"
-                            android:text="@{book.author}"
+                            android:text="@{model.bookAuthor}"
                             android:textColor="@color/colorText"
                             android:textSize="16sp"
                             app:layout_constraintBottom_toBottomOf="parent"
@@ -144,6 +142,7 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="8dp"
                             android:padding="8dp"
+                            android:text="@{model.origin}"
                             android:textColor="@color/colorTextLight"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
@@ -179,6 +178,7 @@
                             android:layout_marginTop="16dp"
                             android:layout_marginEnd="16dp"
                             android:layout_marginBottom="16dp"
+                            android:text="@{model.lastChapter}"
                             android:textColor="@color/colorText"
                             android:textSize="16sp"
                             app:layout_constraintBottom_toBottomOf="parent"
@@ -196,6 +196,7 @@
                             android:layout_marginTop="16dp"
                             android:layout_marginEnd="16dp"
                             android:layout_marginBottom="16dp"
+                            android:text="@{model.bookIntro}"
                             android:textColor="@color/colorTextLight"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
@@ -232,7 +233,7 @@
             android:id="@+id/chapter_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="end"/>
+            android:layout_gravity="end" />
     </androidx.drawerlayout.widget.DrawerLayout>
 
 </layout>

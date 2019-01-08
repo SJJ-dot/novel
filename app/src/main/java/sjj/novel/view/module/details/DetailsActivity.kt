@@ -1,25 +1,24 @@
 package sjj.novel.view.module.details
 
-import androidx.databinding.DataBindingUtil
 import android.os.Bundle
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import android.view.*
-import android.widget.TextView
+import android.view.Menu
+import android.view.MenuItem
 import androidx.core.view.GravityCompat
+import androidx.databinding.DataBindingUtil
+import com.bumptech.glide.Glide
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_details.*
-import org.jetbrains.anko.find
 import org.jetbrains.anko.startActivity
 import sjj.novel.BaseActivity
-import sjj.novel.DISPOSABLE_ACTIVITY_DETAILS_REFRESH
 import sjj.novel.R
 import sjj.novel.databinding.ActivityDetailsBinding
 import sjj.novel.model.Chapter
-import sjj.novel.view.module.read.ReadActivity
 import sjj.novel.util.getModel
 import sjj.novel.util.observeOnMain
+import sjj.novel.util.requestOptions
 import sjj.novel.view.fragment.ChapterListFragment
 import sjj.novel.view.fragment.ChooseBookSourceFragment
+import sjj.novel.view.module.read.ReadActivity
 
 /**
  * Created by SJJ on 2017/10/10.
@@ -43,38 +42,33 @@ class DetailsActivity : BaseActivity(),ChapterListFragment.ItemClickListener {
 
         val bind: ActivityDetailsBinding = DataBindingUtil.setContentView(this, R.layout.activity_details)
 
-        model.book.observeOn(AndroidSchedulers.mainThread()).subscribe { book ->
-            bind.book = book
-            originWebsite.text = book.origin?.sourceName
-            originWebsite.setOnClickListener { v ->
-                ChooseBookSourceFragment.newInstance(book.name, book.author).show(supportFragmentManager)
-            }
+        model.bookCoverImgUrl.onBackpressureLatest().observeOnMain().subscribe {
+            Glide.with(this)
+                    .applyDefaultRequestOptions(requestOptions)
+                    .load(it)
+                    .into(bookCover)
+        }.destroy()
 
+        bind.model = model
+        originWebsite.setOnClickListener { _ ->
+            ChooseBookSourceFragment.newInstance(model.name, model.author).show(supportFragmentManager)
+        }
+        model.fillViewModel().observeOnMain().subscribe {book->
             detailsRefreshLayout.setOnRefreshListener {
-                model.refresh(book).observeOn(AndroidSchedulers.mainThread()).doOnTerminate {
-                    detailsRefreshLayout.isRefreshing = false
-                }.subscribe().destroy(DISPOSABLE_ACTIVITY_DETAILS_REFRESH)
+                model.refresh(book).subscribe().destroy("details activity refresh book")
             }
-            reading.setOnClickListener { _ ->
-                model.bookSourceRecord.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
-                    if (it.isThrough && it.readIndex == book.chapterList.size - 2) {
-                        //有更新点击阅读直接进入下一章
-                        model.setReadIndex(book.chapterList.last()).observeOn(AndroidSchedulers.mainThread()).subscribe {
-                            startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)
-                        }.destroy("read book")
 
-                    } else {
-                        startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)
-                    }
+            reading.setOnClickListener { _ ->
+                model.bookSourceRecord.firstElement().observeOnMain().subscribe {
+                    startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)
                 }.destroy("load book source record")
             }
-            intro.text = book.intro
-            bookCover.setImageURI(book.bookCoverImgUrl)
-            if (book.chapterList.isNotEmpty()) {
-                latestChapter.text = book.chapterList.last().chapterName
+
+            val lastChapter = book.lastChapter
+            if (lastChapter != null) {
                 latestChapter.setOnClickListener { v ->
                     v.isEnabled = false
-                    model.setReadIndex(book.chapterList.last()).observeOn(AndroidSchedulers.mainThread()).doOnTerminate {
+                    model.setReadIndex(lastChapter).observeOnMain().doOnTerminate {
                         v.isEnabled = true
                     }.subscribe {
                         startActivity<ReadActivity>(ReadActivity.BOOK_NAME to model.name, ReadActivity.BOOK_AUTHOR to model.author)
@@ -84,6 +78,7 @@ class DetailsActivity : BaseActivity(),ChapterListFragment.ItemClickListener {
                 latestChapter.text = "无章节信息"
                 latestChapter.isClickable = false
             }
+
         }.destroy("book details activity")
     }
 
@@ -95,9 +90,6 @@ class DetailsActivity : BaseActivity(),ChapterListFragment.ItemClickListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.chapter_list -> {
-                model.bookSourceRecord.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe { index ->
-
-                }
                 drawer_layout.openDrawer(GravityCompat.END)
                 true
             }

@@ -13,6 +13,7 @@ import sjj.novel.BaseFragment
 import sjj.novel.R
 import sjj.novel.databinding.FragmentLoginBinding
 import sjj.novel.util.getModel
+import sjj.novel.util.observeOnMain
 
 
 class LoginFragment : BaseFragment() {
@@ -28,7 +29,7 @@ class LoginFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         submit.setOnClickListener {
             showSnackbar(submit, "正在登陆……")
-            model.login().observeOn(AndroidSchedulers.mainThread()).subscribe({
+            model.login().observeOnMain().subscribe({
                 showSnackbar(submit, "登陆成功")
                 dismiss()
             }, { throwable ->

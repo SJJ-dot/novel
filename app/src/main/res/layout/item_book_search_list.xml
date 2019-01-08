@@ -10,6 +10,7 @@
             name="model"
             type="sjj.novel.view.module.search.SearchViewModel.BookSearchItemViewModel" />
     </data>
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="100dp"
@@ -19,28 +20,25 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <com.facebook.drawee.view.SimpleDraweeView
+            <ImageView
                 android:id="@+id/bookCover"
                 android:layout_width="65dp"
                 android:layout_height="0dp"
                 android:layout_gravity="center_vertical"
                 android:layout_margin="5dp"
-                app:imageURI='@{model.bookCover}'
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                fresco:failureImage="@drawable/ic_laokuoteng"
-                fresco:progressBarImage="@drawable/ic_wait" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <sjj.novel.widget.AutofitTextView
                 android:id="@+id/bookName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:textColor="@color/colorText"
                 android:layout_marginStart="5dp"
-                android:textSize="18sp"
+                android:gravity="center_vertical"
                 android:text='@{model.bookName}'
+                android:textColor="@color/colorText"
+                android:textSize="18sp"
                 app:layout_constraintBottom_toTopOf="@+id/author"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/bookCover"
@@ -66,9 +64,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
+                android:text='@{model.lastChapter}'
                 android:textColor="@color/colorTextLight"
                 android:textSize="12sp"
-                android:text='@{model.lastChapter}'
                 app:layout_constraintBottom_toTopOf="@+id/haveRead"
                 app:layout_constraintEnd_toEndOf="@id/bookName"
                 app:layout_constraintStart_toStartOf="@+id/author"
@@ -80,9 +78,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
+                android:text='@{model.origin}'
                 android:textColor="@color/colorTextLight"
                 android:textSize="12sp"
-                android:text='@{model.origin}'
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@id/bookName"
                 app:layout_constraintStart_toStartOf="@+id/lastChapter"

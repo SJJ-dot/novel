@@ -9,12 +9,15 @@ import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.SeekBar
+import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.NavHostFragment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_reader_setting.*
 import sjj.novel.BaseFragment
 import sjj.novel.R
+import sjj.novel.databinding.FragmentReaderSettingBinding
 import sjj.novel.util.getModelActivity
+import sjj.novel.util.observeOnMain
 import sjj.novel.view.reader.page.PageLoader
 import sjj.rx.destroy
 
@@ -32,8 +35,7 @@ class ReaderSettingFragment : BaseFragment() {
                 else -> null
             }
         }
-    private lateinit var model: ReadViewModel
-    private lateinit var controller: CallBack.Controller
+    private lateinit var model: ReaderSettingViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_reader_setting, container, false)
@@ -42,6 +44,8 @@ class ReaderSettingFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         model = getModelActivity()
+        val bind = DataBindingUtil.bind<FragmentReaderSettingBinding>(view)
+        bind?.model = model
 
         read_tv_pre_chapter.setOnClickListener {
             callBack?.getPageLoader()?.skipPreChapter()
@@ -82,53 +86,17 @@ class ReaderSettingFragment : BaseFragment() {
             NavHostFragment.findNavController(this).navigate(R.id.fragment_reader_font_setting)
         }
         read_tv_cloud_download.setOnClickListener {
-            //            <!--有时间的话下载需要改成service-->
-            model.book.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe { book ->
-                showSnackbar(read_tv_cloud_download, "正在下载章节")
-                model.cachedBookChapter(book.url).observeOn(AndroidSchedulers.mainThread()).doOnCancel {
-                    showSnackbar(read_tv_cloud_download, "章节下载取消")
-                }.subscribe({ p: Pair<Int, Int> ->
-                }, { throwable ->
-                    showSnackbar(read_tv_cloud_download, "章节下载中断:${throwable.message}")
-                }, {
-                    showSnackbar(read_tv_cloud_download, "章节下载完成")
-                }).destroy("cache chapters", activity?.lifecycle
-                        ?: return@subscribe)//绑定activity的生命周期。退出阅读界面后停止下载
-            }.destroy("cache chapters")
+            showSnackbar(read_tv_cloud_download, "正在下载章节")
+            model.cachedBookChapter().observeOnMain().doOnCancel {
+                showSnackbar(read_tv_cloud_download, "章节下载取消")
+            }.subscribe({ p: Pair<Int, Int> ->
+            }, { throwable ->
+                showSnackbar(read_tv_cloud_download, "章节下载中断:${throwable.message}")
+            }, {
+                showSnackbar(read_tv_cloud_download, "章节下载完成")
+            }).destroy("cache chapters", activity?.lifecycle
+                    ?: return@setOnClickListener)//绑定activity的生命周期。退出阅读界面后停止下载
         }
-        callBack?.setController(object : CallBack.Controller {
-            override fun setPagePos(pos: Int) {
-                this@ReaderSettingFragment.setPagePos(pos)
-            }
-            override fun setPageCount(count: Int) {
-                this@ReaderSettingFragment.setPageCount(count)
-            }
-        })
-    }
-
-    override fun onStart() {
-        super.onStart()
-        callBack?.getPageLoader()?.also {
-            setPageCount(it.pageCount)
-            setPagePos(it.pagePos)
-        }
-    }
-
-    /**
-     * 设置当前章节页数
-     */
-    fun setPageCount(count: Int) {
-        read_sb_chapter_progress?.max = maxOf(0, count - 1)
-        read_sb_chapter_progress?.progress = 0
-        val loader = callBack?.getPageLoader()
-        read_sb_chapter_progress?.isEnabled = !(loader == null || loader.pageStatus == PageLoader.STATUS_LOADING || loader.pageStatus == PageLoader.STATUS_ERROR)
-    }
-
-    /**
-     * 当前页数
-     */
-    fun setPagePos(pos: Int) {
-        read_sb_chapter_progress?.progress = pos
     }
 
     interface CallBack {
@@ -138,13 +106,6 @@ class ReaderSettingFragment : BaseFragment() {
         fun openChapterList()
 
         fun getPageLoader(): PageLoader?
-
-        fun setController(controller: Controller)
-
-        interface Controller {
-            fun setPagePos(pos: Int)
-            fun setPageCount(count: Int)
-        }
     }
 
 

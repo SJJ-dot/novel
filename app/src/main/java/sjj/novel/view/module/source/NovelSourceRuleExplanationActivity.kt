@@ -9,6 +9,7 @@ import kotlinx.android.synthetic.main.activity_novel_source_rule_explanation.*
 import sjj.novel.BaseActivity
 import sjj.novel.R
 import sjj.novel.databinding.ActivityNovelSourceRuleExplanationBinding
+import sjj.novel.util.observeOnMain
 
 /**
  *小说源编辑规则说明
@@ -24,7 +25,7 @@ class NovelSourceRuleExplanationActivity : BaseActivity() {
         settings.builtInZoomControls = true
         settings.displayZoomControls = false
         showSnackbar(text,"加载中……", Snackbar.LENGTH_INDEFINITE)
-        model.refresh().observeOn(AndroidSchedulers.mainThread()).subscribe({
+        model.refresh().observeOnMain().subscribe({
             showSnackbar(text,"加载成功")
             text.loadData(it, "text/html", "utf8")
         }, {

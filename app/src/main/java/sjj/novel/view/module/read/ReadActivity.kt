@@ -1,23 +1,27 @@
 package sjj.novel.view.module.read
 
-import androidx.lifecycle.Observer
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
+import android.view.MotionEvent
 import androidx.core.view.GravityCompat
+import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
+import com.google.android.material.snackbar.Snackbar
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_read.*
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
+import sjj.alog.Log
 import sjj.novel.*
-import sjj.novel.view.module.details.DetailsActivity
 import sjj.novel.model.Book
 import sjj.novel.model.Chapter
 import sjj.novel.util.getModel
 import sjj.novel.util.initScreenBrightness
 import sjj.novel.util.observeOnMain
 import sjj.novel.view.fragment.ChapterListFragment
+import sjj.novel.view.fragment.ChapterListViewModel
+import sjj.novel.view.module.details.DetailsActivity
 import sjj.novel.view.reader.bean.BookBean
 import sjj.novel.view.reader.bean.BookRecordBean
 import sjj.novel.view.reader.page.PageLoader
@@ -28,18 +32,18 @@ import sjj.novel.view.reader.page.TxtChapter
 import kotlin.math.max
 import kotlin.math.min
 
-class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack,ChapterListFragment.ItemClickListener,ChapterListFragment.ShowController {
+class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack, ChapterListFragment.ItemClickListener {
     companion object {
-        val BOOK_NAME = "BOOK_NAME"
-        val BOOK_AUTHOR = "BOOK_AUTHOR"
+        const val BOOK_NAME = "BOOK_NAME"
+        const val BOOK_AUTHOR = "BOOK_AUTHOR"
     }
 
     private lateinit var model: ReadViewModel
+    private lateinit var modelChapterList: ChapterListViewModel
+    private lateinit var modelDownload: DownChapterViewModel
+    private lateinit var modelReaderSetting: ReaderSettingViewModel
 
     private val mPageLoader by lazy { chapterContent.pageLoader }
-
-    private var controller: ReaderSettingFragment.CallBack.Controller? = null
-    private var controllerChapterList: ChapterListFragment.Controller? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,21 +75,23 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack,ChapterListF
         })
 
         model = getModel { arrayOf(intent.getStringExtra(BOOK_NAME), intent.getStringExtra(BOOK_AUTHOR)) }
+        modelChapterList = getModel { arrayOf(intent.getStringExtra(BOOK_NAME), intent.getStringExtra(BOOK_AUTHOR)) }
+        modelDownload = getModel { arrayOf(intent.getStringExtra(BOOK_NAME), intent.getStringExtra(BOOK_AUTHOR)) }
+        modelReaderSetting = getModel { arrayOf(intent.getStringExtra(BOOK_NAME), intent.getStringExtra(BOOK_AUTHOR)) }
 
         supportFragmentManager.beginTransaction()
-                .replace(R.id.chapter_list,ChapterListFragment.create(model.name,model.author))
+                .replace(R.id.chapter_list, ChapterListFragment.create(model.name, model.author))
                 .commitAllowingStateLoss()
 
-        model.book.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe { book ->
+        model.book.firstElement().observeOnMain().subscribe { book ->
             title = book.name
             //阅读记录
-            model.readIndex.firstElement().observeOn(AndroidSchedulers.mainThread()).subscribe {
-                val index = min(max(book.chapterList.lastIndex, 0), it.readIndex)
+            model.readIndex.firstElement().observeOnMain().subscribe {
 
                 mPageLoader.setBookRecord(BookRecordBean().apply {
                     bookId = book.url
-                    chapter = index
-                    pagePos = it.pagePos
+                    chapter = min(max(book.chapterList.lastIndex, 0), if (it.isThrough) it.readIndex + 1 else it.readIndex)
+                    pagePos = if (it.isThrough && book.chapterList.lastIndex > it.readIndex) 0 else it.pagePos
                     isThrough = it.isThrough
                 })
 
@@ -95,16 +101,20 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack,ChapterListF
                     }
 
                     override fun onChapterChange(pos: Int) {
-                        controllerChapterList?.scrollToPosition(pos)
+                        modelChapterList.readIndex.set(pos)
                     }
 
                     override fun requestChapters(requestChapters: MutableList<TxtChapter>) {
                         model.getChapter(requestChapters).observeOnMain().subscribe({
-                            if (mPageLoader.pageStatus == STATUS_LOADING)
+                            if (mPageLoader.pageStatus == STATUS_LOADING) {
                                 mPageLoader.openChapter()
+                                modelReaderSetting.pageLoaderStatus.set(mPageLoader.pageStatus)
+                            }
                         }, {
-                            if (mPageLoader.pageStatus == STATUS_LOADING)
+                            if (mPageLoader.pageStatus == STATUS_LOADING) {
                                 mPageLoader.chapterError()
+                                modelReaderSetting.pageLoaderStatus.set(mPageLoader.pageStatus)
+                            }
                         }).destroy("requestChapters")
                     }
 
@@ -112,11 +122,13 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack,ChapterListF
                     }
 
                     override fun onPageCountChange(count: Int) {
-                        controller?.setPageCount(count)
+                        modelReaderSetting.pageCount.set(count)
+                        modelReaderSetting.pageLoaderStatus.set(mPageLoader.pageStatus)
                     }
 
                     override fun onPageChange(pos: Int) {
-                        controller?.setPagePos(pos)
+                        modelReaderSetting.pagePos.set(pos)
+                        modelReaderSetting.pageLoaderStatus.set(mPageLoader.pageStatus)
                     }
 
                 })
@@ -256,22 +268,11 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack,ChapterListF
         return mPageLoader
     }
 
-    override fun setController(controller: ReaderSettingFragment.CallBack.Controller) {
-        this.controller = controller
-    }
-
     /**
      * 章节列表点击回调
      */
     override fun onClick(chapter: Chapter) {
         model.setReadIndex(chapter, 0).subscribe().destroy(DISPOSABLE_READ_INDEX)
         mPageLoader.skipToChapter(chapter.index)
-    }
-
-    /**
-     * 章节列表控制回调
-     */
-    override fun set(controller: ChapterListFragment.Controller) {
-        controllerChapterList = controller
     }
 }
