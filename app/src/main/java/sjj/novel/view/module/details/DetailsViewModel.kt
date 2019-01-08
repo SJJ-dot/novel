@@ -34,7 +34,7 @@ class DetailsViewModel(val name: String, val author: String) : ViewModel() {
         this.book = book
         bookCoverImgUrl.onNext( book.bookCoverImgUrl)
         bookName.set(book.name)
-        bookAuthor.set(R.string.author_.resStr(book.author))
+        bookAuthor.set(book.author)
         bookIntro.set(book.intro)
         isLoading.set(book.loadStatus == Book.LoadState.Loading)
         novelSourceRepository.getBookParse(name, author).map { list ->
