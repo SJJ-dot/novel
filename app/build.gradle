@@ -19,16 +19,14 @@ android {
             storePassword properties.getProperty("STORE_PASSWORD")
         }
     }
-    compileSdkVersion 28
+    compileSdkVersion build_versions.target_sdk
     defaultConfig {
         applicationId "sjj.novel"
-        minSdkVersion 21
-        targetSdkVersion 28
+        minSdkVersion build_versions.min_sdk
+        targetSdkVersion build_versions.target_sdk
         versionCode commitCont
         versionName "1.0.$commitCont-($shortHash)"
         multiDexEnabled true
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     android.applicationVariants.all { variant ->
         variant.outputs.all {
@@ -60,130 +58,69 @@ android {
     }
 
 }
-def dbflow_version = "4.1.1"
-def retrofit2_version = "2.4.0"
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
-    implementation 'com.google.android.material:material:1.1.0-alpha02'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib'
-    implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlin_version}"
-    implementation 'org.jetbrains.anko:anko:0.10.8'
+    implementation deps.androidx.appcompat
+    implementation deps.androidx.constraintlayout
+    implementation deps.androidx.legacy
+    implementation deps.androidx.cardview
 
-    //    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.18'
-    implementation "com.squareup.retrofit2:retrofit:$retrofit2_version"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit2_version"
-    implementation "com.squareup.retrofit2:converter-gson:$retrofit2_version"
-    implementation "com.squareup.retrofit2:converter-scalars:$retrofit2_version"
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.9.0'
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.4'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
-    implementation 'io.reactivex.rxjava2:rxkotlin:2.3.0'
-    implementation 'com.sjianjun:aLog:1.1.4'
-    implementation 'com.sjianjun:rxutils:1.0.5'
-    implementation 'org.jsoup:jsoup:1.11.3'
-    implementation 'com.sjianjun:permissionUtil:1.1.3'
+    implementation deps.google.material
+    implementation deps.google.flexbox
 
-    implementation 'com.github.bumptech.glide:glide:4.8.0'
+    implementation deps.kotlin.stdlib
+    implementation deps.kotlin.reflect
+    implementation deps.anko
 
-    // alternately - if using Java8, use the following instead of compiler
+    implementation deps.retrofit2.retrofit
+    implementation deps.retrofit2.rxjava2
+    implementation deps.retrofit2.gson
+    implementation deps.retrofit2.scalars
+    implementation deps.okhttp_logging_interceptor
 
-    //    implementation "org.jetbrains.kotlin:kotlin-reflect:'*.jar'], dir: 'libs'"
+    implementation deps.rxjava2.rxjava
+    implementation deps.rxjava2.rxandroid
+    implementation deps.rxjava2.rxkotlin
 
-    //    kapt "com.android.databinding:compiler:${gradle_plugin}"
-    def room_version = '2.1.0-alpha03'
+    implementation deps.sjianjun.aLog
+    implementation deps.sjianjun.rxutils
+    implementation deps.sjianjun.permissionUtil
 
-    // or, for latest rc, use "1.1.1-rc1"
-    implementation "androidx.room:room-runtime:$room_version"
-    kapt "androidx.room:room-compiler:$room_version"
+    implementation deps.jsoup
 
-    // optional - RxJava support for Room
-    implementation "androidx.room:room-rxjava2:$room_version"
-    def lifecycle_version = '2.1.0-alpha01'
+    implementation deps.glide
 
-    // ViewModel and LiveData
-    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+    kapt deps.androidx.room.compiler
+    implementation deps.androidx.room.runtime
+    implementation deps.androidx.room.rxjava2
 
-    // alternatively - just ViewModel
+    kapt deps.androidx.lifecycle.compiler
+    implementation deps.androidx.lifecycle.extensions
+    implementation deps.androidx.lifecycle.reactivestreams
 
-    //    implementation "android.arch.lifecycle:viewmodel-ktx:$lifecycle_version" // use -ktx for Kotlin
+    implementation deps.androidx.paging.runtime
+    implementation deps.androidx.paging.rxjava2
 
-    //    // alternatively - just LiveData
+    implementation deps.androidx.navigation.fragment
+    implementation deps.androidx.navigation.ui
 
-    //    implementation "android.arch.lifecycle:livedata:$lifecycle_version"
-    kapt "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-reactivestreams:$lifecycle_version"
+    implementation deps.multidex
 
-    //    def lifecycle_version = "2.0.0-alpha1"
+    implementation deps.bugly
 
-    //    // ViewModel and LiveData
 
-    //    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
-
-    // alternatively - just ViewModel
-
-    //    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
-
-    // use -ktx for Kotlin
-
-    // alternatively - just LiveData
-
-    //    implementation "androidx.lifecycle:lifecycle-livedata:$lifecycle_version"
-
-    // alternatively - Lifecycles only (no ViewModel or LiveData). Some UI
-
-    //     AndroidX libraries use this lightweight import for Lifecycle
-
-    //    implementation "androidx.lifecycle:lifecycle-runtime:$lifecycle_version"
-
-    //    kapt "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
-
-    // alternately - if using Java8, use the following instead of lifecycle-compiler
-
-    //    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
-
-    // optional - ReactiveStreams support for LiveData
-
-    //    implementation "androidx.lifecycle:lifecycle-reactivestreams-ktx:$lifecycle_version"
-
-    // use -ktx for Kotlin
-
-    //    // optional - Test helpers for LiveData
-
-    //    testImplementation "androidx.arch.core:core-testing:$lifecycle_version"
-    def paging_version = '2.1.0-rc01'
-    implementation "androidx.paging:paging-runtime:$paging_version"
-
-    // optional - RxJava support, currently in release candidate
-    implementation 'android.arch.paging:rxjava2:1.0.1'
-    def nav_version = "1.0.0-alpha09"
-    implementation "android.arch.navigation:navigation-fragment:$nav_version"
-
-    // use -ktx for Kotlin
-    implementation "android.arch.navigation:navigation-ui:$nav_version"
-    implementation 'androidx.multidex:multidex:2.0.1'
-
-    implementation 'com.tencent.bugly:crashreport_upgrade:1.3.6'
-
-    //浏览器调试工具 网络拦截 数据库查看
-    implementation 'com.facebook.stetho:stetho:1.5.0'
-    implementation 'com.facebook.stetho:stetho-okhttp3:1.5.0'
+    implementation deps.stetho.stetho
+    implementation deps.stetho.okhttp3
 
     //动画
-    implementation 'com.victor:lib:1.0.4'
+    implementation deps.victor
 
     //recycleview 快速滑动条
     implementation project(path: ':fastscroller')
-    implementation 'com.google.android:flexbox:1.0.0'
     implementation project(':refreshprogressbar')
-    implementation 'org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5'
 
-    //字符串比较
-    implementation 'net.ricecode:string-similarity:1.0.0'
+    implementation deps.github
+    implementation deps.similarity
 
-    //    implementation 'info.debatty:java-string-similarity:1.2.0'
     implementation project(':page')
 }

@@ -1,0 +1,107 @@
+ext.deps = [:]
+
+
+def deps = ext.deps
+deps.android_gradle_plugin = "com.android.tools.build:gradle:3.3.0-rc03"
+
+deps.jsoup = 'org.jsoup:jsoup:1.11.3'
+deps.glide = 'com.github.bumptech.glide:glide:4.8.0'
+deps.multidex = 'androidx.multidex:multidex:2.0.1'
+deps.bugly = 'com.tencent.bugly:crashreport_upgrade:1.3.6'
+deps.victor = 'com.victor:lib:1.0.4'
+deps.github = 'org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5'
+//字符串比较
+deps.similarity = 'net.ricecode:string-similarity:1.0.0'
+deps.anko = 'org.jetbrains.anko:anko:0.10.8'
+
+
+def google = [:]
+google.material = "com.google.android.material:material:1.1.0-alpha02"
+google.flexbox = 'com.google.android:flexbox:1.0.0'
+deps.google = google
+
+def androidx = [:]
+androidx.appcompat = "androidx.appcompat:appcompat:1.1.0-alpha01"
+androidx.constraintlayout = "androidx.constraintlayout:constraintlayout:1.1.3"
+androidx.legacy = "androidx.legacy:legacy-support-v4:1.0.0"
+androidx.cardview = "androidx.cardview:cardview:1.0.0"
+androidx.recyclerview = 'androidx.recyclerview:recyclerview:1.0.0-beta01'
+
+def room = [:]
+def room_version = '2.1.0-alpha03'
+room.compiler = "androidx.room:room-compiler:$room_version"
+room.runtime = "androidx.room:room-runtime:$room_version"
+room.rxjava2 = "androidx.room:room-rxjava2:$room_version"
+androidx.room = room
+
+def lifecycle = [:]
+def lifecycle_version = '2.1.0-alpha01'
+lifecycle.compiler = "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
+lifecycle.extensions = "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+lifecycle.reactivestreams = "androidx.lifecycle:lifecycle-reactivestreams:$lifecycle_version"
+androidx.lifecycle = lifecycle
+
+def paging = [:]
+paging.runtime = "androidx.paging:paging-runtime:2.1.0-rc01"
+paging.rxjava2 = "android.arch.paging:rxjava2:1.0.1"
+androidx.paging = paging
+
+def navigation = [:]
+def nav_version = "1.0.0-alpha09"
+navigation.fragment = "android.arch.navigation:navigation-fragment:$nav_version"
+navigation.ui = "android.arch.navigation:navigation-ui:$nav_version"
+androidx.navigation = navigation
+
+deps.androidx = androidx
+
+def kotlin = [:]
+kotlin.stdlib = "org.jetbrains.kotlin:kotlin-stdlib:1.3.10"
+kotlin.plugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.10"
+kotlin.reflect = "org.jetbrains.kotlin:kotlin-reflect:1.3.10"
+deps.kotlin = kotlin
+
+def retrofit2 = [:]
+retrofit2.retrofit = "com.squareup.retrofit2:retrofit:2.4.0"
+retrofit2.rxjava2 = "com.squareup.retrofit2:adapter-rxjava2:2.4.0"
+retrofit2.gson = "com.squareup.retrofit2:converter-gson:2.4.0"
+retrofit2.scalars = "com.squareup.retrofit2:converter-scalars:2.4.0"
+deps.retrofit2 = retrofit2
+deps.okhttp_logging_interceptor = "com.squareup.okhttp3:logging-interceptor:3.9.0"
+
+def rxjava2 = [:]
+rxjava2.rxjava = 'io.reactivex.rxjava2:rxjava:2.2.4'
+rxjava2.rxandroid = 'io.reactivex.rxjava2:rxandroid:2.1.0'
+rxjava2.rxkotlin = 'io.reactivex.rxjava2:rxkotlin:2.3.0'
+deps.rxjava2 = rxjava2
+
+def sjianjun = [:]
+sjianjun.aLog = 'com.sjianjun:aLog:1.1.4'
+sjianjun.rxutils = 'com.sjianjun:rxutils:1.0.5'
+sjianjun.permissionUtil = 'com.sjianjun:permissionUtil:1.1.3'
+deps.sjianjun = sjianjun
+
+//浏览器调试工具 网络拦截 数据库查看
+def stetho = [:]
+stetho.stetho = 'com.facebook.stetho:stetho:1.5.0'
+stetho.okhttp3 = 'com.facebook.stetho:stetho-okhttp3:1.5.0'
+deps.stetho = stetho
+
+
+def build_versions = [:]
+build_versions.min_sdk = 21
+build_versions.target_sdk = 28
+build_versions.build_tools = "28.0.3"
+ext.build_versions = build_versions
+
+static def addRepos(RepositoryHandler handler) {
+    //        maven{url "https://dl.bintray.com/soli/maven"}
+    handler.google()
+    handler.jcenter()
+    handler.mavenCentral()
+    handler.maven { url "https://www.jitpack.io" }
+    handler.maven {
+        url 'https://dl.bintray.com/qichuan/maven/'
+    }
+}
+
+ext.addRepos = this.&addRepos
