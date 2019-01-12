@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <data>
+
         <variable
             name="model"
-            type="sjj.novel.view.fragment.ChapterListViewModel.ChapterViewModel"/>
+            type="sjj.novel.view.fragment.ChapterListViewModel.ChapterViewModel" />
     </data>
-    <androidx.cardview.widget.CardView
+
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp">
@@ -20,13 +23,14 @@
             android:text="@{model.chapterName}"
             android:textColor="@{model.isReading?@color/material_red_A700:@color/colorText}"
             tools:text="标题" />
+
         <View
             android:id="@+id/mark"
             android:layout_width="5dp"
-            android:rotation="-45"
+            android:layout_height="25dp"
+            android:layout_gravity="end"
             android:layout_marginTop="-5dp"
             android:background="@{model.isLoadSuccess()?@color/material_green_A700:@color/material_grey_500}"
-            android:layout_gravity="end"
-            android:layout_height="25dp"/>
-    </androidx.cardview.widget.CardView>
+            android:rotation="-45" />
+    </com.google.android.material.card.MaterialCardView>
 </layout>
