@@ -29,4 +29,5 @@ dependencies {
     implementation deps.androidx.appcompat
     implementation deps.rxjava2.rxjava
     implementation deps.rxjava2.rxandroid
+    implementation deps.sjianjun.aLog
 }
