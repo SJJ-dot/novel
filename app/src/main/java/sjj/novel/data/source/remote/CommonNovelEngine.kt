@@ -36,7 +36,7 @@ class CommonNovelEngine(val rule: BookParseRule) : NovelDataRepository.RemoteSou
                 return@flatMap service.searchPost(searchRule.serverUrl, parameter)
             }
         }.map { response ->
-            Log.i("搜索 解析html")
+            Log.i("搜索 解析html:${response.body()}")
             val document = Jsoup.parse(response.body(), response.baseUrl)
             val resultRules = rule.searchRule!!.resultRules!!
             Log.i("搜索 遍历搜索结果解析规则列表:" + resultRules.size)
@@ -91,7 +91,7 @@ class CommonNovelEngine(val rule: BookParseRule) : NovelDataRepository.RemoteSou
 
     override fun getBook(url: String): Observable<Book> {
         return service.loadHtml(url).map { response ->
-            Log.i("详情 解析html")
+            Log.i("详情 解析html:${response.body()}")
             val document = Jsoup.parse(response.body(), response.baseUrl)
             val introRule = rule.introRule!!
             Log.i("详情 书籍url 简介规则:$introRule")
@@ -154,7 +154,7 @@ class CommonNovelEngine(val rule: BookParseRule) : NovelDataRepository.RemoteSou
 
     override fun getChapterContent(chapter: Chapter): Observable<Chapter> {
         return service.loadHtml(chapter.url).map {
-            Log.i("章节内容 解析html")
+            Log.i("章节内容 解析html:${it.body()}")
             val document = Jsoup.parse(it.body(), it.baseUrl)
             chapter.content = document.select(rule.chapterContentRule!!.bookChapterContent).html()
             Log.i("章节内容 获取到章节内容：" + chapter.content)

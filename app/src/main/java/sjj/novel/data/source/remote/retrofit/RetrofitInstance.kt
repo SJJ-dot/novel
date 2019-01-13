@@ -38,31 +38,15 @@ object RetrofitInstance {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .writeTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
-//            .addNetworkInterceptor {
-//                val response = it.proceed(it.request())
-//                if (response.code() == HttpURLConnection.HTTP_MOVED_TEMP) {
-//                    val buffer = Buffer()
-//                    it.request().body()?.writeTo(buffer)
-//                    val utf8 = Charset.forName("UTF-8")
-//                    val charset: Charset = it.request().body()?.contentType()?.charset(utf8) ?: utf8
-//                    val body = if (isPlaintext(buffer)) buffer.readString(charset) else ""
-//                    App.app.config.setHttp302Url(it.request().url().toString(), response.header("Location") ?: "", body)
-//                }
-//                response
-//            }
-//                .connectionSpecs(Collections.singletonList(ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
-//                        .tlsVersions(TlsVersion.TLS_1_0, TlsVersion.TLS_1_1, TlsVersion.TLS_1_2)
-//                        .cipherSuites(
-//                                CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
-//                                CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
-//                                CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,
-//                                CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
-//                                CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
-//                                CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA,
-//                                CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256)
-//                        .build()))
                 .addNetworkInterceptor(StethoInterceptor())
-                .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+                .addInterceptor {
+                    it.proceed(it.request().newBuilder()
+                            .addHeader("Keep-Alive", "300")
+                            .addHeader("Connection", "Keep-Alive")
+                            .addHeader("Cache-Control", "no-cache")
+                            .build())
+                }
+                .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
                 .build()
     }
 
