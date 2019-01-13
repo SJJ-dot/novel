@@ -9,10 +9,4 @@ class ReaderSettingViewModel(val bookName: String, val bookAuthor: String) : Vie
     val pageCount = ObservableInt()
     val pagePos = ObservableInt()
     val pageLoaderStatus = ObservableInt()
-
-    fun cachedBookChapter(): Flowable<Pair<Int, Int>> {
-        return novelDataRepository.getBookSourceRecord(bookName, bookAuthor).firstElement().toFlowable().flatMap {
-            novelDataRepository.cachedBookChapter(it.bookUrl)
-        }
-    }
 }

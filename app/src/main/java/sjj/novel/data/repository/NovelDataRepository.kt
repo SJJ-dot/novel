@@ -19,6 +19,8 @@ import sjj.novel.util.host
 import sjj.novel.util.lazyFromIterable
 import sjj.novel.util.resStr
 import java.util.concurrent.TimeUnit
+import kotlin.math.max
+import kotlin.math.min
 
 val novelDataRepository by lazy { NovelDataRepository() }
 
@@ -121,8 +123,42 @@ class NovelDataRepository {
     fun getBooks(): Flowable<List<Book>> = localSource.getAllReadingBook()
 
 
-    fun cachedBookChapter(bookUrl: String): Flowable<Pair<Int, Int>> {
-        return localSource.getUnLoadChapters(bookUrl).map { cs -> cs.mapIndexed { index, chapter -> index to cs.size to chapter } }.lazyFromIterable {
+    fun cachedBookChapter(start: Chapter, end: Chapter): Flowable<Pair<Int, Int>> {
+        return localSource.getUnLoadChapters(start.bookUrl).map { cs ->
+            val s = if (start.index <= end.index) start else end
+            val e = if (start.index > end.index) start else end
+            var i = cs.indexOf(s)
+            if (i == -1) {
+                for (c in cs) {
+                    if (c.index >= s.index) {
+                        i = c.index
+                        break
+                    }
+                }
+            }
+            var i2 = cs.indexOf(e)
+
+            if (i2 == -1) {
+                for (c in cs) {
+                    if (c.index >= s.index) {
+                        i2 = c.index
+                    }
+                    if (c.index >= s.index) {
+                        break
+                    }
+                }
+            }
+
+            if (i == -1 || i2 == -1) {
+                emptyList()
+            } else {
+                cs.subList(min(i, i2), max(i, i2) + 1)
+                        .mapIndexed { index, chapter ->
+                            index to cs.size to chapter
+                        }
+            }
+
+        }.lazyFromIterable {
             loadChapter(it.second).map { _ -> it.first }.delay(500, TimeUnit.MILLISECONDS)
         }.concat().toFlowable(BackpressureStrategy.LATEST)
     }
@@ -180,7 +216,7 @@ class NovelDataRepository {
             .build()).build()
 
     fun getChapterIntro(bookUrl: String): Flowable<List<Chapter>> {
-       return localSource.getChapterIntro(bookUrl)
+        return localSource.getChapterIntro(bookUrl)
     }
 
 

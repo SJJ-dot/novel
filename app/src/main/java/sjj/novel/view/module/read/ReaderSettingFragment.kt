@@ -86,16 +86,19 @@ class ReaderSettingFragment : BaseFragment() {
             NavHostFragment.findNavController(this).navigate(R.id.fragment_reader_font_setting)
         }
         read_tv_cloud_download.setOnClickListener {
-            showSnackbar(read_tv_cloud_download, "正在下载章节")
-            model.cachedBookChapter().observeOnMain().doOnCancel {
-                showSnackbar(read_tv_cloud_download, "章节下载取消")
-            }.subscribe({ p: Pair<Int, Int> ->
-            }, { throwable ->
-                showSnackbar(read_tv_cloud_download, "章节下载中断:${throwable.message}")
-            }, {
-                showSnackbar(read_tv_cloud_download, "章节下载完成")
-            }).destroy("cache chapters", activity?.lifecycle
-                    ?: return@setOnClickListener)//绑定activity的生命周期。退出阅读界面后停止下载
+
+            NavHostFragment.findNavController(this).navigate(R.id.fragment_reader_download_chapter)
+
+//            showSnackbar(read_tv_cloud_download, "正在下载章节")
+//            model.cachedBookChapter().observeOnMain().doOnCancel {
+//                showSnackbar(read_tv_cloud_download, "章节下载取消")
+//            }.subscribe({ p: Pair<Int, Int> ->
+//            }, { throwable ->
+//                showSnackbar(read_tv_cloud_download, "章节下载中断:${throwable.message}")
+//            }, {
+//                showSnackbar(read_tv_cloud_download, "章节下载完成")
+//            }).destroy("cache chapters", activity?.lifecycle
+//                    ?: return@setOnClickListener)//绑定activity的生命周期。退出阅读界面后停止下载
         }
     }
 

@@ -1,5 +1,7 @@
 apply plugin: 'com.android.library'
-
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion build_versions.target_sdk
 
@@ -28,4 +30,9 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation deps.androidx.appcompat
+    implementation deps.androidx.recyclerview
+    implementation deps.kotlin.stdlib
+}
+repositories {
+    mavenCentral()
 }

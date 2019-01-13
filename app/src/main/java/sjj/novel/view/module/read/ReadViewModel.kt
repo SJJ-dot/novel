@@ -59,9 +59,6 @@ class ReadViewModel(val name: String, val author: String) : ViewModel() {
         return novelDataRepository.setReadIndex(name, author, index, pagePos, isThrough)
     }
 
-
-    fun cachedBookChapter(bookUrl: String) = novelDataRepository.cachedBookChapter(bookUrl)
-
     fun refresh(): Observable<Book> {
         return book.firstElement().toObservable().flatMap {
             novelDataRepository.refreshBook(it.url)
