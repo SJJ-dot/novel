@@ -13,7 +13,7 @@
             type="sjj.novel.view.module.main.BookShelfViewModel.BookShelfItemViewModel" />
     </data>
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_margin="5dp">
@@ -107,13 +107,13 @@
                 android:id="@+id/intro"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingStart="18dp"
+                android:paddingTop="18dp"
+                android:paddingEnd="8dp"
                 android:text="简介"
                 android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="@id/origin"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/origin" />
+                app:layout_constraintBaseline_toBaselineOf="@+id/origin"
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <sjj.novel.widget.BadgeView
                 android:id="@+id/bv_unread"
@@ -141,5 +141,5 @@
                 app:loading_color="@color/colorPrimary"
                 app:loading_width="2dp" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 </layout>

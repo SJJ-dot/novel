@@ -1,1 +1,1 @@
-include ':app', ':fastscroller', ':refreshprogressbar', ':page'
+include ':app', ':fastscroller', ':refreshprogressbar', ':page', ':reader'

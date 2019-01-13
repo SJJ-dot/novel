@@ -1,17 +1,13 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
-
-
+    compileSdkVersion build_versions.target_sdk
 
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 28
+        minSdkVersion  build_versions.min_sdk
+        targetSdkVersion build_versions.target_sdk
         versionCode 1
         versionName "1.0"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
     }
 
@@ -30,14 +26,8 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-
-    implementation 'androidx.appcompat:appcompat:1.0.0-beta01'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.1.0-alpha4'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha4'
-
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.4'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
-    // OpenCC to convert Simp. Chinese to Trad. Chinese
-//    implementation "com.zqc.opencc.android.lib:lib-opencc-android:0.8.0@aar"
+    implementation deps.androidx.appcompat
+    implementation deps.rxjava2.rxjava
+    implementation deps.rxjava2.rxandroid
+    implementation deps.sjianjun.aLog
 }
