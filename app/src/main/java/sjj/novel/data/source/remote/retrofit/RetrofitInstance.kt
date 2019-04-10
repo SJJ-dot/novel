@@ -12,18 +12,22 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 import sjj.novel.data.source.remote.retrofit.charset.HtmlEncodeConverter
 import java.io.EOFException
 import java.util.concurrent.TimeUnit
-import java.util.Collections.singletonList
-import okhttp3.CipherSuite
-import okhttp3.TlsVersion
-import okhttp3.ConnectionSpec
-import java.util.*
+import sjj.alog.Log
+import sjj.novel.R
+import sjj.novel.Session
+import java.security.KeyStore
+import java.security.SecureRandom
+import java.security.cert.CertPathValidatorException
+import java.security.cert.CertificateFactory
+import java.security.cert.X509Certificate
+import javax.net.ssl.*
 
 
 object RetrofitInstance {
 
     fun defRetrofit(baseUrl: String): Retrofit {
         return Retrofit.Builder()
-                .client(defOkHttpClient())
+                .client(defOkHttpClient)
                 .baseUrl(baseUrl)
                 .addConverterFactory(HtmlEncodeConverter.create())
                 .addConverterFactory(ScalarsConverterFactory.create())
@@ -33,8 +37,9 @@ object RetrofitInstance {
                 .build()
     }
 
-    fun defOkHttpClient(): OkHttpClient {
-        return OkHttpClient.Builder()
+    val defOkHttpClient: OkHttpClient
+        get() =  OkHttpClient.Builder()
+                .setCertificate(R.raw.ssl_37shuwu)
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .writeTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
@@ -48,6 +53,70 @@ object RetrofitInstance {
                 }
                 .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
                 .build()
+
+
+    fun OkHttpClient.Builder.setCertificate(vararg cerResID: Int): OkHttpClient.Builder {
+        try {
+            val certificateFactory = CertificateFactory.getInstance("X.509");
+            val keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keyStore.load(null, null);
+
+            cerResID.forEach {
+                val inputStream = Session.ctx.resources.openRawResource(it)
+                val ca = certificateFactory.generateCertificate(inputStream)
+                keyStore.setCertificateEntry("ca $it", ca)
+                inputStream.close();
+            }
+
+            val tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+            tmf.init(keyStore)
+
+            val defFactory = TrustManagerFactory.getInstance("X509");
+            defFactory.init(null as KeyStore?)
+            val manager:X509TrustManager = object : X509TrustManager {
+                override fun checkClientTrusted(chain: Array<out X509Certificate>, authType: String) {
+                    Log.i("checkClientTrusted")
+                }
+
+                override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {
+                    Log.i("checkServerTrusted")
+
+//                    try {
+//                        defFactory.getTrustManagers().forEach {
+//                            it as X509TrustManager
+//                            it.checkServerTrusted(chain, authType)
+//                        }
+//                    } catch (e: CertPathValidatorException) {
+//                        Log.e("checkServer error",e)
+//                        try {
+//                            tmf.trustManagers.forEach {
+//                                it as X509TrustManager
+//                                it.checkServerTrusted(chain, authType)
+//                            }
+//                        } catch (e: CertPathValidatorException) {
+//                            Log.e("checkServer error",e)
+//                            throw e
+//                        }
+//                    }
+                }
+
+                override fun getAcceptedIssuers(): Array<X509Certificate> {
+                    return arrayOf()
+                }
+
+            }
+
+
+            val sslContext = SSLContext.getInstance("TLS")
+            sslContext.init(null, arrayOf(manager), SecureRandom())
+            sslSocketFactory(sslContext.socketFactory, manager);
+//            hostnameVerifier { hostName, session ->
+//                true
+//            }
+        } catch (e: Exception) {
+            Log.e("setCertificate ERROR ", e)
+        }
+        return this
     }
 
     fun isPlaintext(buffer: Buffer): Boolean {

@@ -2,7 +2,7 @@ ext.deps = [:]
 
 
 def deps = ext.deps
-deps.android_gradle_plugin = "com.android.tools.build:gradle:3.3.0-rc03"
+deps.android_gradle_plugin = "com.android.tools.build:gradle:3.3.2"
 
 deps.jsoup = 'org.jsoup:jsoup:1.11.3'
 deps.glide = 'com.github.bumptech.glide:glide:4.8.0'
