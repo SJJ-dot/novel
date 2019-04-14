@@ -3,8 +3,8 @@ buildscript {
     apply from: 'versions.gradle'
     addRepos(repositories)
     dependencies {
-        classpath deps.android_gradle_plugin
-        classpath deps.kotlin.plugin
+        classpath deps_classpath_android_gradle_plugin
+        classpath deps_classpath_kotlin_plugin
     }
     repositories {
         mavenCentral()

@@ -6,24 +6,23 @@ apply plugin: 'kotlin-android-extensions'
 def shortHash = 'git log -1 --pretty=%h'.execute([], project.rootDir).text.trim().toUpperCase()
 def commitCont = 'git rev-list HEAD --count'.execute([], project.rootDir).text.trim().toInteger()
 def currentBranch = 'git symbolic-ref --short -q HEAD'.execute([], project.rootDir).text.trim()
+
 android {
     signingConfigs {
         config {
-
             Properties properties = new Properties()
             properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
             keyAlias properties.getProperty('KEY_ALIAS')
             keyPassword properties.getProperty("KEY_PASSWORD")
             storeFile file(properties.getProperty("STORE_FILE"))
             storePassword properties.getProperty("STORE_PASSWORD")
         }
     }
-    compileSdkVersion build_versions.target_sdk
+    compileSdkVersion build_versions_target_sdk
     defaultConfig {
         applicationId "sjj.novel"
-        minSdkVersion build_versions.min_sdk
-        targetSdkVersion build_versions.target_sdk
+        minSdkVersion build_versions_min_sdk
+        targetSdkVersion build_versions_target_sdk
         versionCode commitCont
         versionName "1.0.$commitCont-($shortHash)"
         multiDexEnabled true
@@ -60,67 +59,67 @@ android {
 }
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation deps.androidx.appcompat
-    implementation deps.androidx.constraintlayout
-    implementation deps.androidx.legacy
-    implementation deps.androidx.cardview
+    implementation deps_androidx_appcompat
+    implementation deps_androidx_constraintlayout
+    implementation deps_androidx_legacy
+    implementation deps_androidx_cardview
 
-    implementation deps.google.material
-    implementation deps.google.flexbox
+    implementation deps_google_material
+    implementation deps_google_flexbox
 
-    implementation deps.kotlin.stdlib
-    implementation deps.kotlin.reflect
-    implementation deps.anko
+    implementation deps_kotlin_stdlib
+    implementation deps_kotlin_reflect
+    implementation deps_anko
 
-    implementation deps.retrofit2.retrofit
-    implementation deps.retrofit2.rxjava2
-    implementation deps.retrofit2.gson
-    implementation deps.retrofit2.scalars
-    implementation deps.okhttp_logging_interceptor
+    implementation deps_retrofit2_retrofit
+    implementation deps_retrofit2_rxjava2
+    implementation deps_retrofit2_gson
+    implementation deps_retrofit2_scalars
+    implementation deps_okhttp_logging_interceptor
 
-    implementation deps.rxjava2.rxjava
-    implementation deps.rxjava2.rxandroid
-    implementation deps.rxjava2.rxkotlin
+    implementation deps_rxjava2_rxjava
+    implementation deps_rxjava2_rxandroid
+    implementation deps_rxjava2_rxkotlin
 
-    implementation deps.sjianjun.aLog
-    implementation deps.sjianjun.rxutils
-    implementation deps.sjianjun.permissionUtil
+    implementation deps_sjianjun_aLog
+    implementation deps_sjianjun_rxutils
+    implementation deps_sjianjun_permissionUtil
 
-    implementation deps.jsoup
+    implementation deps_jsoup
 
-    implementation deps.glide
+    implementation deps_glide
 
-    kapt deps.androidx.room.compiler
-    implementation deps.androidx.room.runtime
-    implementation deps.androidx.room.rxjava2
+    kapt deps_androidx_room_compiler
+    implementation deps_androidx_room_runtime
+    implementation deps_androidx_room_rxjava2
 
-    kapt deps.androidx.lifecycle.compiler
-    implementation deps.androidx.lifecycle.extensions
-    implementation deps.androidx.lifecycle.reactivestreams
+    kapt deps_androidx_lifecycle_compiler
+    implementation deps_androidx_lifecycle_extensions
+    implementation deps_androidx_lifecycle_reactivestreams
 
-    implementation deps.androidx.paging.runtime
-    implementation deps.androidx.paging.rxjava2
+    implementation deps_androidx_paging_runtime
+    implementation deps_androidx_paging_rxjava2
 
-    implementation deps.androidx.navigation.fragment
-    implementation deps.androidx.navigation.ui
+    implementation deps_androidx_navigation_fragment
+    implementation deps_androidx_navigation_ui
 
-    implementation deps.multidex
+    implementation deps_multidex
 
-    implementation deps.bugly
+    implementation deps_bugly
 
 
-    implementation deps.stetho.stetho
-    implementation deps.stetho.okhttp3
+    implementation deps_stetho_stetho
+    implementation deps_stetho_okhttp3
 
     //动画
-    implementation deps.victor
+    implementation deps_victor
 
     //recycleview 快速滑动条
     implementation project(path: ':fastscroller')
     implementation project(':refreshprogressbar')
 
-    implementation deps.github
-    implementation deps.similarity
+    implementation deps_github
+    implementation deps_similarity
 
     implementation project(':page')
 }

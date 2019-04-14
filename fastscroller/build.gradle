@@ -1,13 +1,13 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion build_versions.target_sdk
+    compileSdkVersion build_versions_target_sdk
 
 
 
     defaultConfig {
-        minSdkVersion  build_versions.min_sdk
-        targetSdkVersion build_versions.target_sdk
+        minSdkVersion  build_versions_min_sdk
+        targetSdkVersion build_versions_target_sdk
         versionCode 1
         versionName "1.0"
 
@@ -29,6 +29,6 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation deps.androidx.recyclerview
-    implementation deps.androidx.constraintlayout
+    implementation deps_androidx_recyclerview
+    implementation deps_androidx_constraintlayout
 }

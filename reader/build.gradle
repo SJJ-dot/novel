@@ -3,11 +3,11 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 android {
-    compileSdkVersion build_versions.target_sdk
+    compileSdkVersion build_versions_target_sdk
 
     defaultConfig {
-        minSdkVersion  build_versions.min_sdk
-        targetSdkVersion build_versions.target_sdk
+        minSdkVersion  build_versions_min_sdk
+        targetSdkVersion build_versions_target_sdk
         versionCode 1
         versionName "1.0"
 
@@ -29,9 +29,9 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation deps.androidx.appcompat
-    implementation deps.androidx.recyclerview
-    implementation deps.kotlin.stdlib
+    implementation deps_androidx_appcompat
+    implementation deps_androidx_recyclerview
+    implementation deps_kotlin_stdlib
 }
 repositories {
     mavenCentral()
