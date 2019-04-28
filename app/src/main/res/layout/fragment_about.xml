@@ -10,15 +10,11 @@
         android:layout_width="117dp"
         android:layout_height="124dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="124dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.15"
         app:srcCompat="@mipmap/ic_launcher2" />
 
     <TextView
@@ -38,18 +34,19 @@
 
     <sjj.novel.widget.LinksClickableTextView
         android:layout_width="0dp"
-        android:layout_height="152dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="88dp"
+        android:layout_marginBottom="8dp"
+        android:autoLink="all"
         android:clickable="true"
         android:focusable="true"
         android:text="@string/about_app"
         app:layout_constraintBottom_toTopOf="@+id/versionCode"
-        android:autoLink="all"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView3"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.052" />
 </androidx.constraintlayout.widget.ConstraintLayout>
