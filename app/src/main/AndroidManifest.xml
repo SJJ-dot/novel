@@ -32,7 +32,7 @@
             android:label="@string/edit_parsing_rules" />
         <activity
             android:name="sjj.novel.view.module.main.MainActivity"
-            android:theme="@style/AppTheme.StatusBar">
+            android:theme="@style/splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

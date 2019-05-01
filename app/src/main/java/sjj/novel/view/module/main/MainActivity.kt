@@ -27,6 +27,7 @@ class MainActivity : BaseActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.AppTheme_StatusBar)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 

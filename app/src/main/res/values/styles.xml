@@ -15,6 +15,10 @@
     <style name="AppTheme.StatusBar">
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:background">@null</item>
+    </style>
+    <style name="splash" parent="AppTheme.StatusBar">
+        <item name="android:background">@drawable/splash_background</item>
     </style>
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
