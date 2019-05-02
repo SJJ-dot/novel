@@ -1,5 +1,6 @@
 package sjj.novel
 
+import android.annotation.SuppressLint
 import com.google.android.material.snackbar.Snackbar
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
@@ -8,6 +9,8 @@ import android.util.DisplayMetrics
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.sjj.umeng.onPageEnd
+import com.sjj.umeng.onPageStart
 import sjj.alog.Log
 import sjj.rx.AutoDisposeEnhance
 
@@ -16,8 +19,20 @@ import sjj.rx.AutoDisposeEnhance
  */
 open class BaseFragment : androidx.fragment.app.DialogFragment(), AutoDisposeEnhance {
 
+    override fun onResume() {
+        super.onResume()
+        onPageStart(this.javaClass.simpleName)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        onPageEnd(this.javaClass.simpleName)
+    }
+
+
     private var snackbar: Snackbar? = null
 
+    @SuppressLint("WrongConstant")
     fun showSnackbar(view: View?, msg: String, duration: Int = Snackbar.LENGTH_SHORT) {
         Log.i(msg)
         if (snackbar == null) {

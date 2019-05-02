@@ -3,6 +3,7 @@ package sjj.novel
 import android.app.Application
 import android.os.StrictMode
 import com.facebook.stetho.Stetho
+import com.sjj.umeng.initUM
 import com.tencent.bugly.Bugly
 import io.reactivex.plugins.RxJavaPlugins
 import sjj.alog.Log
@@ -25,6 +26,7 @@ class App:Application() {
         Bugly.init(this, "6dbb38183e", BuildConfig.DEBUG)
         ActivityLifecycle.setActivityLifecycleCallback(this)
 
+        initUM(this)
 
         // 分别为MainThread和VM设置Strict Mode
         if (BuildConfig.DEBUG && false) {

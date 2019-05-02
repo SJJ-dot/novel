@@ -1,1 +1,1 @@
-include ':app', ':fastscroller', ':refreshprogressbar', ':page', ':reader'
+include ':app', ':fastscroller', ':refreshprogressbar', ':page', ':reader', ':umeng', ':umengpush'

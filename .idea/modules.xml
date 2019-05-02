@@ -8,6 +8,8 @@
       <module fileurl="file://$PROJECT_DIR$/page/page.iml" filepath="$PROJECT_DIR$/page/page.iml" />
       <module fileurl="file://$PROJECT_DIR$/reader/reader.iml" filepath="$PROJECT_DIR$/reader/reader.iml" />
       <module fileurl="file://$PROJECT_DIR$/refreshprogressbar/refreshprogressbar.iml" filepath="$PROJECT_DIR$/refreshprogressbar/refreshprogressbar.iml" />
+      <module fileurl="file://$PROJECT_DIR$/umeng/umeng.iml" filepath="$PROJECT_DIR$/umeng/umeng.iml" />
+      <module fileurl="file://$PROJECT_DIR$/umengpush/umengpush.iml" filepath="$PROJECT_DIR$/umengpush/umengpush.iml" />
     </modules>
   </component>
 </project>

@@ -8,6 +8,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import androidx.navigation.fragment.NavHostFragment
 import com.bumptech.glide.Glide
+import com.sjj.umeng.onEvent
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.item_book_search_list.view.*
@@ -45,6 +46,9 @@ class SearchFragment : BaseFragment() {
         searchView.imeOptions = EditorInfo.IME_ACTION_SEARCH
         init(searchView)
         searchView.isIconified = false
+
+        onEvent("search_page")
+
     }
 
     private fun init(searchView: SearchView) {

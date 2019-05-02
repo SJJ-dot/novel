@@ -1,0 +1,38 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android-extensions'
+android {
+    compileSdkVersion 28
+
+
+    defaultConfig {
+        minSdkVersion build_versions_min_sdk
+        targetSdkVersion build_versions_target_sdk
+        versionCode 1
+        versionName "1.0"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation deps_androidx_appcompat
+    implementation deps_kotlin_stdlib
+    implementation deps_kotlin_reflect
+    implementation deps_rxjava2_rxjava
+    implementation deps_rxjava2_rxandroid
+
+
+}
+repositories {
+    mavenCentral()
+}
