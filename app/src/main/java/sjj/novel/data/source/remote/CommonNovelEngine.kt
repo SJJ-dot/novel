@@ -3,6 +3,7 @@ package sjj.novel.data.source.remote
 import io.reactivex.Observable
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
+import org.jsoup.select.Elements
 import retrofit2.Response
 import retrofit2.http.*
 import sjj.alog.Log
@@ -13,6 +14,7 @@ import sjj.novel.data.source.remote.rule.Method
 import sjj.novel.model.Book
 import sjj.novel.model.Chapter
 import java.net.URLEncoder
+import kotlin.math.min
 
 class CommonNovelEngine(val rule: BookParseRule) : NovelDataRepository.RemoteSource, HttpDataSource() {
 
@@ -28,6 +30,17 @@ class CommonNovelEngine(val rule: BookParseRule) : NovelDataRepository.RemoteSou
             val searchRule = it.searchRule!!
             Log.i("搜索 编码参数")
             val parameter = mutableMapOf<String, String>()
+            val list = searchRule.searchKey.split("&")
+            if (list.size > 1) {
+                list.forEach {
+                    val kv = it.split("=")
+                    if (kv.size == 1) {
+                        parameter[kv[0]] = URLEncoder.encode(search, searchRule.charset.name)
+                    } else {
+                        parameter[kv[0]] = URLEncoder.encode(kv[1], searchRule.charset.name)
+                    }
+                }
+            }
             parameter[searchRule.searchKey] = URLEncoder.encode(search, searchRule.charset.name)
             Log.i("搜索 请求方式：${searchRule.method}")
             if (searchRule.method == Method.GET) {
@@ -41,7 +54,21 @@ class CommonNovelEngine(val rule: BookParseRule) : NovelDataRepository.RemoteSou
             val resultRules = rule.searchRule!!.resultRules!!
             Log.i("搜索 遍历搜索结果解析规则列表:" + resultRules.size)
             resultRules.forEach { resultRule ->
-                val elements = document.select(resultRule.bookInfos)
+
+                val result = Regex("(.*)\\[(\\d*+):(\\d*+)]").find(resultRule.bookInfos)
+                val elements: Elements = if (result != null) {
+                    val select = document.select(result.groupValues[1])
+                    if (select.size <= 1) {
+                        select
+                    } else {
+                        val start = ((result.groupValues[2].toIntOrNull() ?: 0) + select.size) % select.size
+                        val end = result.groupValues[3].toIntOrNull()?.plus(select.size)?.rem(select.size) ?: select.size
+                        Elements(select.subList(start, end))
+                    }
+                } else {
+                    document.select(resultRule.bookInfos)
+                }
+
                 Log.i("搜索 遍历搜索结果书籍信息列表： " + elements.size)
                 val books = mutableListOf<Book>()
                 elements.forEach { element ->
@@ -57,7 +84,7 @@ class CommonNovelEngine(val rule: BookParseRule) : NovelDataRepository.RemoteSou
                         books.add(book)
                         Log.i("搜索 解析最新章节 lastChapterUrl:${resultRule.lastChapterUrl}")
                         if (resultRule.lastChapterUrl.isNotBlank()) {
-                            val lastChapterUrl = element.select(resultRule.lastChapterUrl).first()?.absUrl("href")?.trim()
+                            val lastChapterUrl = element.select(resultRule.lastChapterUrl).first()?.absUrl(if (resultRule.lastChapterUrl.contains("meta[")) "content" else "href")?.trim()
                             val chapterName = element.select(resultRule.lastChapterName).text(resultRule.lastChapterNameRegex)
                             Log.i("搜索 lastChapterUrl：$lastChapterUrl chapterName:$chapterName")
                             if (lastChapterUrl?.isNotBlank() == true && chapterName.isNotBlank()) {
@@ -66,7 +93,7 @@ class CommonNovelEngine(val rule: BookParseRule) : NovelDataRepository.RemoteSou
                         }
                         Log.i("搜索 解析封面 bookCoverImgUrl:${resultRule.bookCoverImgUrl}")
                         if (resultRule.bookCoverImgUrl.isNotBlank()) {
-                            val trim = element.select(resultRule.bookCoverImgUrl).first()?.absUrl("src")?.trim()
+                            val trim = element.select(resultRule.bookCoverImgUrl).first()?.absUrl(if (resultRule.bookCoverImgUrl.contains("meta[")) "content" else "src")?.trim()
                             Log.i("搜索 bookCoverImgUrl：$trim")
                             if (trim?.isNotBlank() == true) {
                                 book.bookCoverImgUrl = trim
@@ -78,6 +105,7 @@ class CommonNovelEngine(val rule: BookParseRule) : NovelDataRepository.RemoteSou
                     return@map books
                 }
             }
+            Log.i("搜索 未搜索到结果 ${rule.sourceName}")
             return@map listOf<Book>()
         }.doOnNext { books ->
             //搜索结果未加载详情
@@ -85,6 +113,8 @@ class CommonNovelEngine(val rule: BookParseRule) : NovelDataRepository.RemoteSou
                 it.origin = rule
                 it.loadStatus = Book.LoadState.UnLoad
             }
+        }.doOnError {
+            Log.e("搜索 搜索出错 ${rule.sourceName} ${it.message}", it)
         }
     }
 
@@ -102,7 +132,7 @@ class CommonNovelEngine(val rule: BookParseRule) : NovelDataRepository.RemoteSou
             Log.i("详情 作者 书名:$bookName")
             val bookAuthor = document.select(introRule.bookAuthor).text(introRule.bookAuthorRegex).trim()
             Log.i("详情 封面url 作者:$bookAuthor")
-            val bookCoverSrc = document.select(introRule.bookCoverImgUrl).first().absUrl("src").trim()
+            val bookCoverSrc = document.select(introRule.bookCoverImgUrl).first().absUrl(if (introRule.bookCoverImgUrl.contains("meta[")) "content" else "src").trim()
             Log.i("详情 简介 封面url:$bookCoverSrc")
             val bookIntro = document.select(introRule.bookIntro).text(introRule.bookIntroRegex)
             Log.i("详情 章节列表url 简介:$bookIntro")
@@ -133,6 +163,8 @@ class CommonNovelEngine(val rule: BookParseRule) : NovelDataRepository.RemoteSou
         }.doOnNext {
             it.origin = rule
             it.loadStatus = Book.LoadState.Loaded
+        }.doOnError {
+            Log.e("详情 加载出错 ${rule.sourceName} ${it.message}", it)
         }
     }
 
@@ -140,8 +172,20 @@ class CommonNovelEngine(val rule: BookParseRule) : NovelDataRepository.RemoteSou
         val chapterListRule = rule.chapterListRule!!
         val chapters = mutableListOf<Chapter>()
         Log.i("详情 遍历章节元素")
-        element.select(chapterListRule.bookChapterList).forEachIndexed { index, e ->
-            val url = e.select(chapterListRule.bookChapterUrl).first().absUrl("href").trim()
+        val result = Regex("(.*)\\[(\\d*+):(\\d*+)]").find(chapterListRule.bookChapterList)
+
+        val elements: Elements
+        if (result != null) {
+            val select = element.select(result.groupValues[1])
+            val start = ((result.groupValues[2].toIntOrNull() ?: 0) + select.size) % select.size
+            val end = result.groupValues[3].toIntOrNull()?.plus(select.size)?.rem(select.size) ?: select.size
+            elements = Elements(select.subList(start, end))
+        } else {
+            elements = element.select(chapterListRule.bookChapterList)
+        }
+
+        elements.forEachIndexed { index, e ->
+            val url = e.select(chapterListRule.bookChapterUrl).first().absUrl(if (chapterListRule.bookChapterUrl.contains("meta[")) "content" else "href").trim()
             Log.i("详情 章节名 url:$url")
             val name = e.select(chapterListRule.bookChapterName).text(chapterListRule.bookChapterNameRegex).trim()
             Log.i("详情 创建章节对象 章节名:$name")
@@ -160,6 +204,8 @@ class CommonNovelEngine(val rule: BookParseRule) : NovelDataRepository.RemoteSou
             Log.i("章节内容 获取到章节内容：" + chapter.content)
             chapter.isLoadSuccess = true
             chapter
+        }.doOnError {
+            Log.e("章节内容 出错 ${rule.sourceName} ${it.message}", it)
         }
     }
 

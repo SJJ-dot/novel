@@ -78,6 +78,10 @@ abstract class HttpDataSource{
      * 通过给定的正则表达式匹配输出 第一个元组
      */
     fun Elements.text(regex: String): String {
+        val attr = attr("content")
+        if (attr.isNotEmpty()) {
+            return attr
+        }
         val text = html()
         //如果没有正则表达式设置 直接返回文本
         if (regex.isEmpty()) {
@@ -99,7 +103,14 @@ abstract class HttpDataSource{
         return if (cssQuery.isBlank()) {
             response.baseUrl
         } else {
-            select(cssQuery).first()?.absUrl("href") ?: response.baseUrl
+            val elements = select(cssQuery).first()
+            if (cssQuery.contains("meta[")) {
+                val attr = elements?.attr("content")
+                if (attr?.isNotEmpty() == true) {
+                    return attr
+                }
+            }
+            elements?.absUrl("href") ?: response.baseUrl
         }
     }
 

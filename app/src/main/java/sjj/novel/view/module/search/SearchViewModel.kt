@@ -14,15 +14,15 @@ import sjj.novel.util.resStr
 
 class SearchViewModel : ViewModel() {
 
-    fun search(text: String) = novelDataRepository.search(text).map {
-        it.map { record ->
+    fun search(text: String) = novelDataRepository.search(text).map { list ->
+        list.sortedByDescending { it.books?.size }.map { record ->
             val model = BookSearchItemViewModel()
             model.book = record
             model.bookCover.onNext(record.currentBook?.bookCoverImgUrl)
             model.bookName.set(record.bookName)
             model.author.set(R.string.author_.resStr(record.author))
             model.lastChapter.set(R.string.newest_.resStr(record.currentBook?.lastChapter?.chapterName))
-            model.origin.set(R.string.origin_.resStr(record.currentBook?.origin?.sourceName,record.books?.size))
+            model.origin.set(R.string.origin_.resStr(record.currentBook?.origin?.sourceName, record.books?.size))
             model
         }
     }
@@ -36,7 +36,7 @@ class SearchViewModel : ViewModel() {
     fun saveBookSourceRecord(books: BookSourceRecord) = novelDataRepository.saveBookSourceRecord(books)
 
     class BookSearchItemViewModel {
-        lateinit var book:BookSourceRecord
+        lateinit var book: BookSourceRecord
         val bookCover = BehaviorProcessor.create<String>()
         val bookName = ObservableField<String>()
         val author = ObservableField<String>()
