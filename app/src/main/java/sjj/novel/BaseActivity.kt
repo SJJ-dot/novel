@@ -1,10 +1,11 @@
 package sjj.novel
 
+import android.annotation.SuppressLint
 import android.content.SharedPreferences
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.appbar_layout.*
 import sjj.rx.AutoDisposeEnhance
 
@@ -15,7 +16,8 @@ import sjj.rx.AutoDisposeEnhance
 abstract class BaseActivity : AppCompatActivity(), AutoDisposeEnhance {
     private var snackbar: Snackbar? = null
 
-    fun showSnackbar(view: View, msg: String, duration: Int = Snackbar.LENGTH_SHORT) {
+    @SuppressLint("WrongConstant")
+    fun showSnackbar(view: View, msg: String, @Snackbar.Duration duration: Int = Snackbar.LENGTH_SHORT) {
         if (snackbar == null) {
             snackbar = Snackbar.make(view, msg, duration)
         } else {

@@ -90,15 +90,20 @@
             app:layout_constraintTop_toTopOf="parent" />
     </LinearLayout>
 
-
-    <sjj.novel.view.scroller.FastScrollRecyclerView
-        android:id="@+id/console"
+    <HorizontalScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_margin="5dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn" />
+        app:layout_constraintTop_toBottomOf="@id/btn">
+        <sjj.novel.view.scroller.FastScrollRecyclerView
+            android:id="@+id/console"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+    </HorizontalScrollView>
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

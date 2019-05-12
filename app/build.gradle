@@ -122,5 +122,4 @@ dependencies {
     implementation deps_similarity
 
     implementation project(':page')
-    implementation project(':umeng')
 }
