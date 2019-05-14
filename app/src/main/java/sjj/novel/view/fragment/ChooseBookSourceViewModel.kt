@@ -62,8 +62,8 @@ class ChooseBookSourceViewModel(val bookName: String, val bookAuthor: String) : 
     fun refresh(): Observable<Book> {
         isRefreshing.set(true)
         return localFictionDataSource.getBooks(bookName, bookAuthor).firstElement().toObservable().flatMap {
-            Observable.fromIterable(it).flatMap {
-                novelDataRepository.refreshBook(it.url)
+            Observable.fromIterable(it).flatMap { book ->
+                novelDataRepository.refreshBook(book.url).onErrorReturnItem(book)
             }
         }.doOnTerminate {
             isRefreshing.set(false)
