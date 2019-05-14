@@ -129,6 +129,7 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack, ChapterList
                     override fun onPageChange(pos: Int) {
                         modelReaderSetting.pagePos.set(pos)
                         modelReaderSetting.pageLoaderStatus.set(mPageLoader.pageStatus)
+                        mPageLoader.saveRecord()
                     }
 
                 })
@@ -247,11 +248,6 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack, ChapterList
                     .commit()
             supportActionBar?.show()
         }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        mPageLoader.saveRecord()
     }
 
     /**

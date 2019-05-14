@@ -11,14 +11,15 @@ import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.longToast
+import org.mozilla.javascript.Context
 import sjj.alog.Log
 import sjj.novel.AppConfig
 import sjj.novel.BaseActivity
 import sjj.novel.R
+import sjj.novel.util.log
 import sjj.permission.PermissionCallback
 import sjj.permission.model.Permission
 import sjj.permission.util.PermissionUtil
-
 
 class MainActivity : BaseActivity() {
 
@@ -65,19 +66,14 @@ class MainActivity : BaseActivity() {
                 longToast(s)
             }
         })
-//        Schedulers.newThread().scheduleDirect {
-//            val p = BehaviorProcessor.create<String>()
-//            p.doOnNext {
-//                Log.e(it)
-//            }.onBackpressureLatest().observeOnMain().subscribe {
-//                Thread.sleep(500)
-//                Log.e("subscribe 2 " + it)
-//            }
-//            (0 until 1000).forEach {
-//                p.onNext("$it")
-//            }
-//
-//        }
+
+        val context = Context.enter()
+        val scope = context.initStandardObjects()
+        context.optimizationLevel = -1
+        context.languageVersion = Context.VERSION_ES6
+        val any = context.evaluateString(scope, "10*199", null, 0, null)
+        any.log()
+        Context.exit()
 
     }
 
