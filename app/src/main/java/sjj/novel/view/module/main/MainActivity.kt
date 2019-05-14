@@ -101,4 +101,8 @@ class MainActivity : BaseActivity() {
             super.onBackPressed()
         }
     }
+
+    override fun isEnableSwipeBack(): Boolean {
+        return false
+    }
 }

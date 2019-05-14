@@ -122,4 +122,6 @@ dependencies {
     implementation deps_similarity
 
     implementation project(':page')
+
+    implementation deps_swipeback
 }

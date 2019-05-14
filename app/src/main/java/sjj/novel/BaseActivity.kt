@@ -2,19 +2,36 @@ package sjj.novel
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
+import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.appbar_layout.*
+import me.imid.swipebacklayout.lib.SwipeBackLayout
+import me.imid.swipebacklayout.lib.app.SwipeBackActivity
 import sjj.rx.AutoDisposeEnhance
 
 
 /**
  * Created by SJJ on 2017/10/5.
  */
-abstract class BaseActivity : AppCompatActivity(), AutoDisposeEnhance {
+abstract class BaseActivity : SwipeBackActivity(), AutoDisposeEnhance {
     private var snackbar: Snackbar? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        //滑动返回设置
+        swipeBackLayout?.setEnableGesture(isEnableSwipeBack())
+        swipeBackLayout?.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT)
+    }
+
+    /**
+     * 是否开启滑动返回
+     */
+    protected open fun isEnableSwipeBack(): Boolean {
+        return true
+    }
 
     @SuppressLint("WrongConstant")
     fun showSnackbar(view: View, msg: String, @Snackbar.Duration duration: Int = Snackbar.LENGTH_SHORT) {
