@@ -19,6 +19,7 @@ import sjj.novel.model.Chapter
 import sjj.novel.util.getModel
 import sjj.novel.util.initScreenBrightness
 import sjj.novel.util.observeOnMain
+import sjj.novel.util.submit
 import sjj.novel.view.fragment.ChapterListFragment
 import sjj.novel.view.fragment.ChapterListViewModel
 import sjj.novel.view.module.details.DetailsActivity
@@ -129,6 +130,9 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack, ChapterList
                     override fun onPageChange(pos: Int) {
                         modelReaderSetting.pagePos.set(pos)
                         modelReaderSetting.pageLoaderStatus.set(mPageLoader.pageStatus)
+                        submit({
+                            mPageLoader.saveRecord()
+                        },100).destroy("save read record")
                     }
 
                 })
@@ -247,11 +251,6 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack, ChapterList
                     .commit()
             supportActionBar?.show()
         }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        mPageLoader.saveRecord()
     }
 
     /**
