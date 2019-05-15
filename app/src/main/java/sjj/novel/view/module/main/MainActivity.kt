@@ -16,6 +16,7 @@ import sjj.alog.Log
 import sjj.novel.AppConfig
 import sjj.novel.BaseActivity
 import sjj.novel.R
+import sjj.novel.model.Book
 import sjj.novel.util.log
 import sjj.permission.PermissionCallback
 import sjj.permission.model.Permission
@@ -73,6 +74,15 @@ class MainActivity : BaseActivity() {
         context.languageVersion = Context.VERSION_ES6
         val any = context.evaluateString(scope, "10*199", null, 0, null)
         any.log()
+        val book = Book("aaaaaaaaaaaaaaaaaaaa")
+        val jsBook = Context.javaToJS(book, scope)
+        scope.put("book", scope, jsBook)
+
+        val evaluateString = context.evaluateString(scope, """
+           var a = document.getClass(".aa")
+
+        """.trimIndent(), null, 0, null)
+        Log.e(Context.toString(evaluateString))
         Context.exit()
 
     }

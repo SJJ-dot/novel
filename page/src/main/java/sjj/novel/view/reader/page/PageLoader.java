@@ -564,7 +564,7 @@ public abstract class PageLoader {
      */
     public void saveRecord() {
 
-        if (mChapterList.isEmpty() || mCollBook == null) {
+        if (mChapterList.isEmpty() || mCollBook == null || mCurPage == null) {
             return;
         }
         mBookRecord.bookId = mCollBook.id;
