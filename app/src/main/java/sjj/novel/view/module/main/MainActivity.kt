@@ -68,22 +68,22 @@ class MainActivity : BaseActivity() {
             }
         })
 
-        val context = Context.enter()
-        val scope = context.initStandardObjects()
-        context.optimizationLevel = -1
-        context.languageVersion = Context.VERSION_ES6
-        val any = context.evaluateString(scope, "10*199", null, 0, null)
-        any.log()
-        val book = Book("aaaaaaaaaaaaaaaaaaaa")
-        val jsBook = Context.javaToJS(book, scope)
-        scope.put("book", scope, jsBook)
-
-        val evaluateString = context.evaluateString(scope, """
-           var a = document.getClass(".aa")
-
-        """.trimIndent(), null, 0, null)
-        Log.e(Context.toString(evaluateString))
-        Context.exit()
+//        val context = Context.enter()
+//        val scope = context.initStandardObjects()
+//        context.optimizationLevel = -1
+//        context.languageVersion = Context.VERSION_ES6
+//        val any = context.evaluateString(scope, "10*199", null, 0, null)
+//        any.log()
+//        val book = Book("aaaaaaaaaaaaaaaaaaaa")
+//        val jsBook = Context.javaToJS(book, scope)
+//        scope.put("book", scope, jsBook)
+//
+//        val evaluateString = context.evaluateString(scope, """
+//           var a = document.getClass(".aa")
+//
+//        """.trimIndent(), null, 0, null)
+//        Log.e(Context.toString(evaluateString))
+//        Context.exit()
 
     }
 

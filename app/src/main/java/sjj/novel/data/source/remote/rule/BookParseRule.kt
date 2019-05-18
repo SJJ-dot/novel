@@ -8,6 +8,11 @@ import androidx.room.PrimaryKey
  */
 @Entity
 class BookParseRule {
+    companion object{
+        const val VERSION_CSS_QUERY = 0
+        const val VERSION_JAVA_SCRIPT = 1
+    }
+    var version = VERSION_CSS_QUERY
     /**
      * 书源名称
      */

@@ -15,7 +15,7 @@ import sjj.novel.model.Chapter
 import sjj.novel.model.SearchHistory
 
 
-@Database(entities = [Book::class, BookSourceRecord::class, Chapter::class, BookParseRule::class, SearchHistory::class], version = 8, exportSchema = false)
+@Database(entities = [Book::class, BookSourceRecord::class, Chapter::class, BookParseRule::class, SearchHistory::class], version = 9, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class BooksDataBase : RoomDatabase() {
     abstract fun bookDao(): BookDao
@@ -84,6 +84,10 @@ val booksDataBase by lazy {
                         seq++
                     }
                     cursor.close()
+                }
+            }).addMigrations(object : Migration(8,9) {
+                override fun migrate(database: SupportSQLiteDatabase) {
+                    database.execSQL("ALTER TABLE `BookParseRule` ADD COLUMN `version` INTEGER  NOT NULL default 0")
                 }
             })
             .build()
