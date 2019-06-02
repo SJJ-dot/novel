@@ -38,6 +38,7 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack, ChapterList
         const val BOOK_NAME = "BOOK_NAME"
         const val BOOK_AUTHOR = "BOOK_AUTHOR"
     }
+    override val isEnableSwipeBack: Boolean = false
 
     private lateinit var model: ReadViewModel
     private lateinit var modelChapterList: ChapterListViewModel
