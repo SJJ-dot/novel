@@ -564,19 +564,24 @@ public abstract class PageLoader {
      * 保存阅读记录
      */
     public void saveRecord() {
-
-        if (!isChapterOpen || mChapterList.isEmpty() || mCollBook == null || mCurPage == null) {
+        List<TxtChapter> chapterList = this.mChapterList;
+        BookBean collBook = this.mCollBook;
+        TxtPage curPage = this.mCurPage;
+        BookRecordBean bookRecord = this.mBookRecord;
+        int curChapterPos = this.mCurChapterPos;
+        List<TxtPage> curPageList = this.mCurPageList;
+        if (!isChapterOpen || chapterList.isEmpty() || collBook == null || curPage == null || curPageList == null) {
             return;
         }
-        mBookRecord.bookId = mCollBook.id;
-        mBookRecord.chapter = mCurChapterPos;
-
-        if (mCurPage != null) {
-            mBookRecord.pagePos = mCurPage.position;
+        if (curChapterPos == bookRecord.chapter && bookRecord.pagePos == curPage.position) {
+            return;
         }
-        if (mCurPageList == null) return;
-        mBookRecord.isThrough = mCurChapterPos == mChapterList.size() - 1 && mCurPageList.size() == mCurPage.position + 1;
-        mPageChangeListener.onBookRecordChange(mBookRecord);
+        bookRecord.bookId = collBook.id;
+        bookRecord.chapter = curChapterPos;
+        bookRecord.pagePos = curPage.position;
+
+        bookRecord.isThrough = curChapterPos == chapterList.size() - 1 && curPageList.size() == curPage.position + 1;
+        mPageChangeListener.onBookRecordChange(bookRecord);
     }
 
     public void setBookRecord(BookRecordBean record) {

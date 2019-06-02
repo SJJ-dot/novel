@@ -108,8 +108,8 @@ dependencies {
     implementation deps_bugly
 
 
-    implementation deps_stetho_stetho
-    implementation deps_stetho_okhttp3
+//    implementation deps_stetho_stetho
+//    implementation deps_stetho_okhttp3
 
     //动画
     implementation deps_victor

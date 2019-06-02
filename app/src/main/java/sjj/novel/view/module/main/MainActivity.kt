@@ -23,7 +23,7 @@ import sjj.permission.model.Permission
 import sjj.permission.util.PermissionUtil
 
 class MainActivity : BaseActivity() {
-
+    override val isEnableSwipeBack: Boolean = false
     //lazy 有bug 需要绑定activity 生命周期
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -108,7 +108,4 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    override fun isEnableSwipeBack(): Boolean {
-        return false
-    }
 }

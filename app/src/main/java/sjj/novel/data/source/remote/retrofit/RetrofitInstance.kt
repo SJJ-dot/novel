@@ -1,6 +1,5 @@
 package sjj.novel.data.source.remote.retrofit
 
-import com.facebook.stetho.okhttp3.StethoInterceptor
 import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -9,18 +8,19 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
-import sjj.novel.data.source.remote.retrofit.charset.HtmlEncodeConverter
-import java.io.EOFException
-import java.util.concurrent.TimeUnit
 import sjj.alog.Log
 import sjj.novel.R
 import sjj.novel.Session
+import sjj.novel.data.source.remote.retrofit.charset.HtmlEncodeConverter
+import java.io.EOFException
 import java.security.KeyStore
 import java.security.SecureRandom
-import java.security.cert.CertPathValidatorException
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
-import javax.net.ssl.*
+import java.util.concurrent.TimeUnit
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManagerFactory
+import javax.net.ssl.X509TrustManager
 
 
 object RetrofitInstance {
@@ -43,7 +43,7 @@ object RetrofitInstance {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .writeTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
-                .addNetworkInterceptor(StethoInterceptor())
+//                .addNetworkInterceptor(StethoInterceptor())
                 .addInterceptor {
                     it.proceed(it.request().newBuilder()
                             .addHeader("Keep-Alive", "300")
@@ -51,7 +51,7 @@ object RetrofitInstance {
                             .addHeader("Cache-Control", "no-cache")
                             .build())
                 }
-                .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
+                .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                 .build()
 
 

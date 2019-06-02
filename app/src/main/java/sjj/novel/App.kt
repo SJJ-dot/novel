@@ -2,7 +2,6 @@ package sjj.novel
 
 import android.app.Application
 import android.os.StrictMode
-import com.facebook.stetho.Stetho
 import com.halfhp.rxtracer.RxTracer
 import com.tencent.bugly.Bugly
 import io.reactivex.plugins.RxJavaPlugins
@@ -12,7 +11,7 @@ import sjj.alog.Log
 /**
  * Created by SJJ on 2017/9/3.
  */
-class App:Application() {
+class App : Application() {
     companion object {
         lateinit var app: App
     }
@@ -50,8 +49,6 @@ class App:Application() {
         }
 
         RxJavaPlugins.setErrorHandler { Log.e("error $it",it) }
-
-        Stetho.initializeWithDefaults(this);
 
         RxTracer.enable()
     }

@@ -17,20 +17,14 @@ import sjj.rx.AutoDisposeEnhance
  */
 abstract class BaseActivity : SwipeBackActivity(), AutoDisposeEnhance {
     private var snackbar: Snackbar? = null
+    protected open val isEnableSwipeBack = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         //滑动返回设置
-        swipeBackLayout?.setEnableGesture(isEnableSwipeBack())
+        swipeBackLayout?.setEnableGesture(isEnableSwipeBack)
         swipeBackLayout?.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT)
-    }
-
-    /**
-     * 是否开启滑动返回
-     */
-    protected open fun isEnableSwipeBack(): Boolean {
-        return true
     }
 
     @SuppressLint("WrongConstant")
