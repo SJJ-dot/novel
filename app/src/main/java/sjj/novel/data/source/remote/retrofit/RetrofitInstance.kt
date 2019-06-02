@@ -33,7 +33,7 @@ object RetrofitInstance {
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
 //                .addCallAdapterFactory(ObserveOnMainCallAdapterFactory())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.computation()))
                 .build()
     }
 

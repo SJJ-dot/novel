@@ -7,10 +7,11 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.text.TextPaint;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import android.text.TextPaint;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -564,7 +565,7 @@ public abstract class PageLoader {
      */
     public void saveRecord() {
 
-        if (mChapterList.isEmpty() || mCollBook == null || mCurPage == null) {
+        if (!isChapterOpen || mChapterList.isEmpty() || mCollBook == null || mCurPage == null) {
             return;
         }
         mBookRecord.bookId = mCollBook.id;
@@ -572,8 +573,6 @@ public abstract class PageLoader {
 
         if (mCurPage != null) {
             mBookRecord.pagePos = mCurPage.position;
-        } else {
-            mBookRecord.pagePos = 0;
         }
         if (mCurPageList == null) return;
         mBookRecord.isThrough = mCurChapterPos == mChapterList.size() - 1 && mCurPageList.size() == mCurPage.position + 1;
@@ -582,7 +581,7 @@ public abstract class PageLoader {
 
     public void setBookRecord(BookRecordBean record) {
         mBookRecord = record;
-        mCurChapterPos = mBookRecord.chapter;
+        mCurChapterPos = record.chapter;
         mLastChapterPos = mCurChapterPos;
         if (isChapterOpen) {
             skipToChapter(record.chapter);
@@ -1279,7 +1278,7 @@ public abstract class PageLoader {
             //创建Page
             TxtPage page = new TxtPage();
             page.position = pages.size();
-            page.title =  chapter.title;
+            page.title = chapter.title;
             page.lines = new ArrayList<>(lines);
             page.titleLines = titleLinesCount;
             pages.add(page);

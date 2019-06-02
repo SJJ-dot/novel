@@ -19,6 +19,7 @@ import sjj.novel.model.Chapter
 import sjj.novel.util.getModel
 import sjj.novel.util.initScreenBrightness
 import sjj.novel.util.observeOnMain
+import sjj.novel.util.submit
 import sjj.novel.view.fragment.ChapterListFragment
 import sjj.novel.view.fragment.ChapterListViewModel
 import sjj.novel.view.module.details.DetailsActivity
@@ -124,12 +125,23 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack, ChapterList
                     override fun onPageCountChange(count: Int) {
                         modelReaderSetting.pageCount.set(count)
                         modelReaderSetting.pageLoaderStatus.set(mPageLoader.pageStatus)
+                        //这个阅读器库内部bug 回调时内部的属性值还没有修改
+                        if (mPageLoader.pageStatus != STATUS_LOADING) {
+                            submit {
+                                mPageLoader.saveRecord()
+                            }
+                        }
                     }
 
                     override fun onPageChange(pos: Int) {
                         modelReaderSetting.pagePos.set(pos)
                         modelReaderSetting.pageLoaderStatus.set(mPageLoader.pageStatus)
-                        mPageLoader.saveRecord()
+                        //这个阅读器库内部bug 回调时内部的属性值还没有修改
+                        if (mPageLoader.pageStatus != STATUS_LOADING) {
+                            submit {
+                                mPageLoader.saveRecord()
+                            }
+                        }
                     }
 
                 })

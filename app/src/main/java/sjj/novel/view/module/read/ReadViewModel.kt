@@ -1,12 +1,13 @@
 package sjj.novel.view.module.read
 
-import androidx.lifecycle.ViewModel
 import android.text.Html
-import androidx.databinding.ObservableInt
+import androidx.lifecycle.ViewModel
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import sjj.alog.Log
 import sjj.novel.data.repository.novelDataRepository
 import sjj.novel.model.Book
+import sjj.novel.model.BookSourceRecord
 import sjj.novel.model.Chapter
 import sjj.novel.util.lazyFromIterable
 import sjj.novel.view.reader.page.TxtChapter
@@ -23,7 +24,7 @@ class ReadViewModel(val name: String, val author: String) : ViewModel() {
         }
     }
 
-    private var lastReadIndex = 0
+    private var lastReadIndex:BookSourceRecord? = null
     private var isThrough: Boolean? = null
 
     fun getChapters(bookUrl: String) = novelDataRepository.getChapters(bookUrl)
@@ -47,15 +48,16 @@ class ReadViewModel(val name: String, val author: String) : ViewModel() {
     }
 
     val readIndex = novelDataRepository.getBookSourceRecord(name, author).doOnNext {
-        lastReadIndex = it.readIndex
+        lastReadIndex = it
     }
 
     fun setReadIndex(index: Chapter, pagePos: Int, isThrough: Boolean = false): Observable<Int> {
-        if (lastReadIndex == index.index && this.isThrough == isThrough) {
+        if (lastReadIndex?.readIndex == index.index && lastReadIndex?.pagePos == pagePos && lastReadIndex?.isThrough == isThrough) {
             return Observable.empty()
         }
-        this.isThrough = isThrough
-        lastReadIndex = index.index
+        lastReadIndex?.readIndex = index.index
+        lastReadIndex?.pagePos = pagePos
+        lastReadIndex?.isThrough = isThrough
         return novelDataRepository.setReadIndex(name, author, index, pagePos, isThrough)
     }
 

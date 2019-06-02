@@ -124,4 +124,6 @@ dependencies {
     implementation project(':page')
 
     implementation deps_swipeback
+
+    implementation deps_rxtracer
 }
