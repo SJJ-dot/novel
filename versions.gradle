@@ -93,7 +93,7 @@ rxjava2.rxkotlin = 'io.reactivex.rxjava2:rxkotlin:2.3.0'
 deps.rxjava2 = rxjava2
 
 def sjianjun = [:]
-sjianjun.aLog = 'com.sjianjun:aLog:1.1.4'
+sjianjun.aLog = 'com.sjianjun:aLog:1.2.0'
 sjianjun.rxutils = 'com.sjianjun:rxutils:1.0.5'
 sjianjun.permissionUtil = 'com.sjianjun:permissionUtil:1.1.3'
 deps.sjianjun = sjianjun

@@ -1,11 +1,14 @@
 package sjj.novel
 
 import android.app.Application
+import android.os.Environment
 import android.os.StrictMode
 import com.halfhp.rxtracer.RxTracer
 import com.tencent.bugly.Bugly
 import io.reactivex.plugins.RxJavaPlugins
+import sjj.alog.Config
 import sjj.alog.Log
+import java.io.File
 
 
 /**
@@ -48,9 +51,15 @@ class App : Application() {
                     .build())
         }
 
-        RxJavaPlugins.setErrorHandler { Log.e("error $it",it) }
+        RxJavaPlugins.setErrorHandler { Log.e("error $it", it) }
 
         RxTracer.enable()
+
+        Config.init(Config().apply {
+            hold = true
+            val logDir = externalCacheDir ?: Environment.getExternalStorageDirectory() ?: cacheDir
+            dir = File(logDir, "log")
+        })
     }
 
     fun exit() {
