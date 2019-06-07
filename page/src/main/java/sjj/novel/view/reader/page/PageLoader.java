@@ -548,6 +548,9 @@ public abstract class PageLoader {
     }
 
     public TxtChapter getCurChapter() {
+        if (mChapterList == null) {
+            return null;
+        }
         return mChapterList.size() > mCurChapterPos ? mChapterList.get(mCurChapterPos) : null;
     }
 

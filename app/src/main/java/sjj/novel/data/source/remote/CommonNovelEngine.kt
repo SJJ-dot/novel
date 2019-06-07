@@ -32,7 +32,7 @@ class CommonNovelEngine(val rule: BookParseRule) : NovelDataRepository.RemoteSou
         return Observable.just(rule).flatMap {
             Log.i("搜索 搜索规则")
             val searchRule = it.searchRule!!
-            Log.i("搜索 编码参数")
+            Log.i("搜索 编码参数 ${searchRule.charset.name}")
             val parameter = mutableMapOf<String, String>()
             val list = searchRule.searchKey.split("&")
             if (list.size > 1) {
@@ -44,8 +44,9 @@ class CommonNovelEngine(val rule: BookParseRule) : NovelDataRepository.RemoteSou
                         parameter[kv[0]] = URLEncoder.encode(kv[1], searchRule.charset.name)
                     }
                 }
+            } else {
+                parameter[searchRule.searchKey] = URLEncoder.encode(search, searchRule.charset.name)
             }
-            parameter[searchRule.searchKey] = URLEncoder.encode(search, searchRule.charset.name)
             Log.i("搜索 请求方式：${searchRule.method}")
             if (searchRule.method == Method.GET) {
                 return@flatMap service.searchGet(searchRule.serverUrl, parameter)

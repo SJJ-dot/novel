@@ -209,10 +209,13 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack, ChapterList
                 true
             }
             R.id.menu_refresh -> {
-                mPageLoader.curChapter?.also {
-                    model.getChapter(listOf(it), true).observeOnMain().subscribe({ txtChapter ->
+                mPageLoader.curChapter?.also { chapter ->
+                    showSnackbar(chapterContent, "正在重新加载当前章节，请稍后……", Snackbar.LENGTH_INDEFINITE)
+                    model.getChapter(listOf(chapter), true).observeOnMain().subscribe({ txtChapter ->
                         mPageLoader.refreshChapter(txtChapter.first())
+                        showSnackbar(chapterContent, "加载完成")
                     }, {
+                        showSnackbar(chapterContent, "加载失败：${it.message}")
                         toast("刷新失败")
                     }).destroy("requestChapters menu_refresh")
                 }
