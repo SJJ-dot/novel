@@ -1308,6 +1308,9 @@ public abstract class PageLoader {
      * @return:获取上一个页面
      */
     private TxtPage getPrevPage() {
+        if (mCurPage == null) {
+            return null;
+        }
         int pos = mCurPage.position - 1;
         if (pos < 0) {
             return null;
@@ -1322,6 +1325,9 @@ public abstract class PageLoader {
      * @return:获取下一的页面
      */
     private TxtPage getNextPage() {
+        if (mCurPage == null) {
+            return null;
+        }
         int pos = mCurPage.position + 1;
         if (pos >= mCurPageList.size()) {
             return null;
