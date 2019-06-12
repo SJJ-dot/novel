@@ -52,6 +52,7 @@ class ReadViewModel(val name: String, val author: String) : ViewModel() {
     }
 
     fun setReadIndex(index: Chapter, pagePos: Int, isThrough: Boolean = false): Observable<Int> {
+        Log.i("chapter index:${index.index} page index:$pagePos isThrough:$isThrough $index",Exception())
         if (lastReadIndex?.readIndex == index.index && lastReadIndex?.pagePos == pagePos && lastReadIndex?.isThrough == isThrough) {
             return Observable.empty()
         }

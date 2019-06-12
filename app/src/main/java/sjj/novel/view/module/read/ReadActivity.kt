@@ -126,23 +126,11 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack, ChapterList
                     override fun onPageCountChange(count: Int) {
                         modelReaderSetting.pageCount.set(count)
                         modelReaderSetting.pageLoaderStatus.set(mPageLoader.pageStatus)
-                        //这个阅读器库内部bug 回调时内部的属性值还没有修改
-                        if (mPageLoader.pageStatus != STATUS_LOADING) {
-                            submit {
-                                mPageLoader.saveRecord()
-                            }
-                        }
                     }
 
                     override fun onPageChange(pos: Int) {
                         modelReaderSetting.pagePos.set(pos)
                         modelReaderSetting.pageLoaderStatus.set(mPageLoader.pageStatus)
-                        //这个阅读器库内部bug 回调时内部的属性值还没有修改
-                        if (mPageLoader.pageStatus != STATUS_LOADING) {
-                            submit {
-                                mPageLoader.saveRecord()
-                            }
-                        }
                     }
 
                 })
@@ -159,6 +147,11 @@ class ReadActivity : BaseActivity(), ReaderSettingFragment.CallBack, ChapterList
         AppConfig.fontSize.observe(this, Observer {
             mPageLoader.setTextSize(it!!)
         })
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mPageLoader.saveRecord()
     }
 
     private fun initBookData(book: Book) {
