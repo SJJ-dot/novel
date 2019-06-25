@@ -1,5 +1,8 @@
 package sjj.novel.data.source.remote.retrofit
 
+import com.franmontiel.persistentcookiejar.PersistentCookieJar
+import com.franmontiel.persistentcookiejar.cache.SetCookieCache
+import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor
 import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -37,12 +40,13 @@ object RetrofitInstance {
                 .build()
     }
 
-    val defOkHttpClient: OkHttpClient
-        get() =  OkHttpClient.Builder()
+    val defOkHttpClient: OkHttpClient by lazy {
+        OkHttpClient.Builder()
                 .setCertificate(R.raw.ssl_37shuwu)
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .writeTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
+                .cookieJar(PersistentCookieJar(SetCookieCache(), SharedPrefsCookiePersistor(Session.ctx)))
 //                .addNetworkInterceptor(StethoInterceptor())
                 .addInterceptor {
                     it.proceed(it.request().newBuilder()
@@ -53,7 +57,7 @@ object RetrofitInstance {
                 }
                 .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                 .build()
-
+    }
 
     fun OkHttpClient.Builder.setCertificate(vararg cerResID: Int): OkHttpClient.Builder {
         try {

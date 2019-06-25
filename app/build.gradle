@@ -126,4 +126,6 @@ dependencies {
     implementation deps_swipeback
 
     implementation deps_rxtracer
+
+    implementation deps_cookie_jar
 }
