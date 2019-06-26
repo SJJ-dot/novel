@@ -1,8 +1,14 @@
-package sjj.novel.data.source.remote.retrofit;
+package sjj.novel.data.source.remote.retrofit.interceptor;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Connection;
@@ -18,7 +24,9 @@ import okhttp3.internal.http.HttpHeaders;
 import okhttp3.internal.platform.Platform;
 import okio.Buffer;
 import okio.BufferedSource;
+import sjj.novel.data.source.remote.retrofit.charset.CharsetDetector;
 
+import static android.text.TextUtils.isEmpty;
 import static okhttp3.internal.platform.Platform.INFO;
 
 /**
@@ -229,11 +237,7 @@ public final class HttpLoggingInterceptor implements Interceptor {
                 source.request(Long.MAX_VALUE); // Buffer the entire body.
                 Buffer buffer = source.buffer();
 
-                Charset charset = UTF8;
-                MediaType contentType = responseBody.contentType();
-                if (contentType != null) {
-                    charset = contentType.charset(UTF8);
-                }
+                Charset charset = getResponseCharset(responseBody.contentType(),buffer);
 
                 if (!isPlaintext(buffer)) {
                     logger.log("");
@@ -281,5 +285,52 @@ public final class HttpLoggingInterceptor implements Interceptor {
         String contentEncoding = headers.get("Content-Encoding");
         return contentEncoding != null && !contentEncoding.equalsIgnoreCase("identity");
     }
+
+
+    private Charset getResponseCharset(MediaType mediaType,Buffer buffer) throws IOException {
+        String charsetStr;
+        //根据http头判断
+        if (mediaType != null) {
+            Charset charset = mediaType.charset();
+            if (charset != null) {
+                charsetStr = charset.displayName();
+                if (!isEmpty(charsetStr)) {
+                    return Charset.forName(charsetStr);
+                }
+            }
+        }
+        //根据meta判断
+        byte[] headerBytes = buffer.readByteArray(Math.min(buffer.size(),1024));
+        Document doc = Jsoup.parse(new String(headerBytes, StandardCharsets.UTF_8));
+        Elements metaTags = doc.getElementsByTag("meta");
+        for (Element metaTag : metaTags) {
+            String content = metaTag.attr("content");
+            String http_equiv = metaTag.attr("http-equiv");
+            charsetStr = metaTag.attr("charset");
+            if (!charsetStr.isEmpty()) {
+                if (!isEmpty(charsetStr)) {
+                    return Charset.forName(charsetStr);
+                }
+            }
+            if (http_equiv.toLowerCase().equals("content-type")) {
+                if (content.toLowerCase().contains("charset")) {
+                    charsetStr = content.substring(content.toLowerCase().indexOf("charset") + "charset=".length());
+                } else {
+                    charsetStr = content.substring(content.toLowerCase().indexOf(";") + 1);
+                }
+                if (!isEmpty(charsetStr)) {
+                    try {
+                        return Charset.forName(charsetStr);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        //根据内容判断
+        charsetStr = CharsetDetector.detectCharset(buffer.inputStream());
+        return Charset.forName(charsetStr);
+    }
+
 }
 

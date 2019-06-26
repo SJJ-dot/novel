@@ -1,4 +1,4 @@
-package sjj.novel.data.source.remote.retrofit
+package sjj.novel.data.source.remote.retrofit.ann
 
 /**
  * 标记返回的数据是html 需要使用 HtmlEncodeConverter 转换

@@ -18,9 +18,11 @@ import java.util.Arrays;
 
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
+import okhttp3.internal.Util;
+import okio.BufferedSource;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
-import sjj.novel.data.source.remote.retrofit.Html;
+import sjj.novel.data.source.remote.retrofit.ann.Html;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -45,10 +47,14 @@ public class HtmlEncodeConverter extends Converter.Factory {
         for (Annotation annotation : annotations) {
             if (annotation instanceof Html) {
                 return value -> {
-                    if (type.equals(String.class)) {
-                        return stringConverter(value);
-                    } else {
-                        return gson.getAdapter(TypeToken.get(type)).fromJson(stringConverter(value));
+                    try {
+                        if (type.equals(String.class)) {
+                            return stringConverter(value);
+                        } else {
+                            return gson.getAdapter(TypeToken.get(type)).fromJson(stringConverter(value));
+                        }
+                    } finally {
+                        Util.closeQuietly(value);
                     }
                 };
             }
@@ -60,7 +66,10 @@ public class HtmlEncodeConverter extends Converter.Factory {
     private String stringConverter(ResponseBody value) throws IOException {
         String charsetStr;
         MediaType mediaType = value.contentType();
-        byte[] responseBytes = value.bytes();
+        BufferedSource source = value.source();
+        source.request(Long.MAX_VALUE);
+        byte[] responseBytes = source.buffer().readByteArray();
+
         //根据http头判断
         if (mediaType != null) {
             Charset charset = mediaType.charset();
@@ -72,7 +81,7 @@ public class HtmlEncodeConverter extends Converter.Factory {
             }
         }
         //根据meta判断
-        byte[] headerBytes = Arrays.copyOfRange(responseBytes, 0, 1024);
+        byte[] headerBytes = Arrays.copyOfRange(responseBytes, 0, Math.min(responseBytes.length,1024));
         Document doc = Jsoup.parse(new String(headerBytes, StandardCharsets.UTF_8));
         Elements metaTags = doc.getElementsByTag("meta");
         for (Element metaTag : metaTags) {

@@ -1,7 +1,7 @@
-package sjj.novel.data.source.remote
+package sjj.novel.data.source.remote.parser
 
-import io.reactivex.Observable
 import retrofit2.Response
+import sjj.novel.data.source.remote.CommonNovelEngine
 import sjj.novel.data.source.remote.rule.BookParseRule
 import sjj.novel.model.Book
 import sjj.novel.model.Chapter

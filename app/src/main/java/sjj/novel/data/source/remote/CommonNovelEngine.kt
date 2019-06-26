@@ -1,14 +1,13 @@
 package sjj.novel.data.source.remote
 
 import io.reactivex.Observable
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
-import org.jsoup.select.Elements
 import retrofit2.Response
 import retrofit2.http.*
 import sjj.alog.Log
 import sjj.novel.data.repository.NovelDataRepository
-import sjj.novel.data.source.remote.retrofit.Html
+import sjj.novel.data.source.remote.parser.CssQueryNovelParser
+import sjj.novel.data.source.remote.parser.JavaScriptNovelParser
+import sjj.novel.data.source.remote.retrofit.ann.Html
 import sjj.novel.data.source.remote.rule.BookParseRule
 import sjj.novel.data.source.remote.rule.Method
 import sjj.novel.model.Book

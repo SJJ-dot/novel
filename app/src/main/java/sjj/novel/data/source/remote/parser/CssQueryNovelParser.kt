@@ -1,20 +1,20 @@
-package sjj.novel.data.source.remote
+package sjj.novel.data.source.remote.parser
 
 import android.text.Html
-import io.reactivex.Observable
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 import retrofit2.Response
 import sjj.alog.Log
+import sjj.novel.data.source.remote.CommonNovelEngine
 import sjj.novel.data.source.remote.rule.BookParseRule
 import sjj.novel.model.Book
 import sjj.novel.model.Chapter
 
 class CssQueryNovelParser(private val rule: BookParseRule) : CommonNovelEngine.NovelParser {
     override fun parseChapterContent(chapter: Chapter, response: Response<String>): Chapter {
-        Log.i("章节内容 解析html:${response.body()}")
+        Log.i("章节内容 解析html")
         val document = Jsoup.parse(response.body(), response.baseUrl)
         chapter.content = document.select(rule.chapterContentRule!!.bookChapterContent).html()
         Log.i("章节内容 获取到章节内容：" + chapter.content)
@@ -53,7 +53,7 @@ class CssQueryNovelParser(private val rule: BookParseRule) : CommonNovelEngine.N
     }
 
     override fun parseBook(url: String, response: Response<String>): Book {
-        Log.i("详情 解析html:${response.body()}")
+        Log.i("详情 解析html")
         val document = Jsoup.parse(response.body(), response.baseUrl)
         val introRule = rule.introRule!!
         Log.i("详情 书籍url 简介规则:$introRule")
@@ -81,7 +81,7 @@ class CssQueryNovelParser(private val rule: BookParseRule) : CommonNovelEngine.N
     }
 
     override fun parseSearch(search: String, response: Response<String>): List<Book> {
-        Log.i("搜索 解析html:${response.body()}")
+        Log.i("搜索 解析html")
         val document = Jsoup.parse(response.body(), response.baseUrl)
         val resultRules = rule.searchRule!!.resultRules!!
         Log.i("搜索 遍历搜索结果解析规则列表:" + resultRules.size)

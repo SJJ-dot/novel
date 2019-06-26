@@ -53,9 +53,10 @@ class App : Application() {
 
         RxJavaPlugins.setErrorHandler { Log.e("error $it", it) }
 
-        RxTracer.enable()
+//        RxTracer.enable()
 
         Config.init(Config().apply {
+            printAllLog = true
             hold = true
             val logDir = externalCacheDir ?: Environment.getExternalStorageDirectory() ?: cacheDir
             dir = File(logDir, "log")

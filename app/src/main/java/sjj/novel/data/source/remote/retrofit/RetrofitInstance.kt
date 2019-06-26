@@ -5,7 +5,6 @@ import com.franmontiel.persistentcookiejar.cache.SetCookieCache
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor
 import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import okio.Buffer
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -15,6 +14,7 @@ import sjj.alog.Log
 import sjj.novel.R
 import sjj.novel.Session
 import sjj.novel.data.source.remote.retrofit.charset.HtmlEncodeConverter
+import sjj.novel.data.source.remote.retrofit.interceptor.HttpLoggingInterceptor
 import java.io.EOFException
 import java.security.KeyStore
 import java.security.SecureRandom
@@ -48,13 +48,13 @@ object RetrofitInstance {
                 .readTimeout(10, TimeUnit.SECONDS)
                 .cookieJar(PersistentCookieJar(SetCookieCache(), SharedPrefsCookiePersistor(Session.ctx)))
 //                .addNetworkInterceptor(StethoInterceptor())
-                .addInterceptor {
-                    it.proceed(it.request().newBuilder()
-                            .addHeader("Keep-Alive", "300")
-                            .addHeader("Connection", "Keep-Alive")
-                            .addHeader("Cache-Control", "no-cache")
-                            .build())
-                }
+//                .addInterceptor {
+//                    it.proceed(it.request().newBuilder()
+//                            .addHeader("Keep-Alive", "300")
+//                            .addHeader("Connection", "Keep-Alive")
+//                            .addHeader("Cache-Control", "no-cache")
+//                            .build())
+//                }
                 .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                 .build()
     }
