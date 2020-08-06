@@ -8,16 +8,6 @@ def commitCont = 'git rev-list HEAD --count'.execute([], project.rootDir).text.t
 def currentBranch = 'git symbolic-ref --short -q HEAD'.execute([], project.rootDir).text.trim()
 
 android {
-    signingConfigs {
-        config {
-            Properties properties = new Properties()
-            properties.load(project.rootProject.file('local.properties').newDataInputStream())
-            keyAlias properties.getProperty('KEY_ALIAS')
-            keyPassword properties.getProperty("KEY_PASSWORD")
-            storeFile file(properties.getProperty("STORE_FILE"))
-            storePassword properties.getProperty("STORE_PASSWORD")
-        }
-    }
     compileSdkVersion build_versions_target_sdk
     defaultConfig {
         applicationId "sjj.novel"
@@ -38,14 +28,12 @@ android {
 //            minifyEnabled true
 //            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 //        proguardFiles 'proguardRules.pro', getDefaultProguardFile('proguard-android.txt')
-            signingConfig signingConfigs.config
         }
         debug {
             applicationIdSuffix ".debug"
 //            shrinkResources true
 //            minifyEnabled true
 //            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.config
         }
     }
     dataBinding {

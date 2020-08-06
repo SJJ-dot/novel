@@ -29,12 +29,12 @@ class LogCatService : Service() {
     private val binder: LogCatIBinder.Stub = object : LogCatIBinder.Stub() {
         override fun register(callback: LogCatIBinderCallBack?) {
             mCallbacks.register(callback)
-            Log.e("LogCatService", "register")
+            Log.e("LogCatService", "register binder:$this callback:$callback")
         }
 
         override fun unRegister(callback: LogCatIBinderCallBack?) {
             mCallbacks.unregister(callback)
-            Log.e("LogCatService", "unRegister")
+            Log.e("LogCatService", "unRegister binder:$this callback:$callback")
         }
     }
 

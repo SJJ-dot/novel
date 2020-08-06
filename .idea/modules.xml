@@ -5,6 +5,11 @@
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/fastscroller/fastscroller.iml" filepath="$PROJECT_DIR$/fastscroller/fastscroller.iml" />
       <module fileurl="file://$PROJECT_DIR$/fiction.iml" filepath="$PROJECT_DIR$/fiction.iml" />
+      <module fileurl="file://$PROJECT_DIR$/novel.iml" filepath="$PROJECT_DIR$/novel.iml" group="novel" />
+      <module fileurl="file://$PROJECT_DIR$/app/novel-app.iml" filepath="$PROJECT_DIR$/app/novel-app.iml" group="novel/app" />
+      <module fileurl="file://$PROJECT_DIR$/fastscroller/novel-fastscroller.iml" filepath="$PROJECT_DIR$/fastscroller/novel-fastscroller.iml" group="novel/fastscroller" />
+      <module fileurl="file://$PROJECT_DIR$/page/novel-page.iml" filepath="$PROJECT_DIR$/page/novel-page.iml" group="novel/page" />
+      <module fileurl="file://$PROJECT_DIR$/refreshprogressbar/novel-refreshprogressbar.iml" filepath="$PROJECT_DIR$/refreshprogressbar/novel-refreshprogressbar.iml" group="novel/refreshprogressbar" />
       <module fileurl="file://$PROJECT_DIR$/page/page.iml" filepath="$PROJECT_DIR$/page/page.iml" />
       <module fileurl="file://$PROJECT_DIR$/refreshprogressbar/refreshprogressbar.iml" filepath="$PROJECT_DIR$/refreshprogressbar/refreshprogressbar.iml" />
     </modules>

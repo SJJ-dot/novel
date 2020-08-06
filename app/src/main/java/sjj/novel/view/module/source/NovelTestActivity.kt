@@ -85,11 +85,11 @@ class NovelTestActivity : BaseActivity() {
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             //服务已连接回调是在主线程
-            Log.e("LogCatService 服务已连接")
+
             toast("LogCatService 服务已连接")
             service?.also {
-                val logcat = it as LogCatIBinder
-                logcat.register(object : LogCatIBinderCallBack.Stub() {
+
+                val callback = object : LogCatIBinderCallBack.Stub() {
                     override fun onCapture(msg: String?) {
                         //回调不在主线程
                         runOnUiThread {
@@ -100,7 +100,10 @@ class NovelTestActivity : BaseActivity() {
                             adapter.notifyDataSetChanged()
                         }
                     }
-                })
+                }
+                val logcat =LogCatIBinder.Stub.asInterface(it)
+                Log.e("LogCatService 服务已连接 binderProxy:$service binder:$logcat callback:$callback ")
+                logcat.register(callback)
             }
         }
     }
